@@ -4,7 +4,7 @@
       <settings>
         <option name="imageTag" value="civiclife-1.0" />
         <option name="containerName" value="CivicLife" />
-        <option name="sourceFilePath" value="Dockerfile" />
+        <option name="sourceFilePath" value="backend/Dockerfile" />
       </settings>
     </deployment>
     <method v="2" />
