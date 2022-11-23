@@ -1,5 +1,4 @@
 FROM openjdk:19
-LABEL author=”LOMIC”
 RUN echo $VERSION
 #RUN addgroup -S spring && adduser -S spring -G spring
 VOLUME ["/var/www", "/var/log/apache2", "/etc/apache2"]
