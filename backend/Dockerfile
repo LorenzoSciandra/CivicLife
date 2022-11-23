@@ -1,6 +1,5 @@
 FROM openjdk:19
-RUN echo $VERSION
-#RUN addgroup -S spring && adduser -S spring -G spring
+RUN groupadd -r spring && useradd -r -gspring spring
 VOLUME ["/var/www", "/var/log/apache2", "/etc/apache2"]
 EXPOSE 8080
 ARG DEPENDENCY=target
