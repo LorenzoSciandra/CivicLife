@@ -2,8 +2,8 @@ package com.civiclife.backend.model;
 import javax.persistence.*;
 
 @Entity
-@Table (name = "user")
-public class User {
+@Table (name = "utente")
+public class Utente {
         @Id
         @GeneratedValue(strategy = GenerationType.AUTO)
         private long id;
@@ -14,10 +14,10 @@ public class User {
         @Column(name = "age")
         private int age;
 
-        public User() {
+        public Utente() {
         }
 
-        public User(String first_name, int age) {
+        public Utente(String first_name, int age) {
             this.first_name = first_name;
             this.age = age;
         }
