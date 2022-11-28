@@ -19,7 +19,8 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import {ListChildComponentProps} from 'react-window';
-import basquiaPulito from "./imgs/basquiaPulito.png"
+import basquiaPulito from "./imgs/logo_CivicLife.png"
+import UpperButtonMenu from "./UpperButtonMenu";
 
 const PersonalData = () => {
     const theme = createTheme({
@@ -30,8 +31,6 @@ const PersonalData = () => {
             },
         }
     );
-
-
 
     type ButtonStyleType={
         background: string,
@@ -46,30 +45,11 @@ const PersonalData = () => {
         color: '#feac0d'
     }
     const buttons= ['Dati', 'Vaccini', 'Bonus']
-    const [dataList, setDataList] = useState(['ciao', 'ciao2', 'ciao3', 'ciao4', 'ciao5', 'ciao', 'ciao2'])
-    const [activeButton, setActiveButton] = useState('data');
-    const [dataButton, setDataButton] = useState<ButtonStyleType>(activeButtonColor)
-    const [vaxButton, setVaxButton] = useState<ButtonStyleType>(inactiveButtonColor)
-    const [voteButton, setVoteButton] = useState<ButtonStyleType>(inactiveButtonColor)
-
-
-    const handleChange = (event: React.MouseEvent<HTMLElement>, newActiveButton: string,) => {
-        if(newActiveButton===buttons[0]){
-            setDataButton(activeButtonColor)
-            setVaxButton(inactiveButtonColor)
-            setVoteButton(inactiveButtonColor)
-        }
-        else if(newActiveButton===buttons[1]){
-            setDataButton(inactiveButtonColor)
-            setVaxButton(activeButtonColor)
-            setVoteButton(inactiveButtonColor)
-        }else if(newActiveButton===buttons[2]){
-            setDataButton(inactiveButtonColor)
-            setVaxButton(inactiveButtonColor)
-            setVoteButton(activeButtonColor)
-        }
-        setActiveButton(newActiveButton)
-    };
+    const [dataList, setDataList] = useState<any[]>(['dato1', 'dato2', 'dato3', 'dato4', 'dato5', 'dato6', 'dato7'])
+    const [vaxinesList, setvaxinesList] = useState<any[]>(['vaccino1', 'vaccino2', 'vaccino3', 'vaccino4'])
+    const [bonusList, setBonusList] = useState<any[]>(['bonus1', 'bonus2'])
+    const [showingList, setShowingList]= useState<any[]>(dataList)
+    const [activeButton, setActiveButton] = useState(buttons[0]);
 
     const handleOperation=()=>{
         if(activeButton===buttons[0]){
@@ -110,39 +90,10 @@ const PersonalData = () => {
         <ThemeProvider theme={theme}>
             <Grid container className="App-header">
                 <Grid container direction="row" spacing={2} >
-                    <Grid item xs={12} display="flex">
-                        <IconButton><KeyboardBackspaceIcon sx={{fontSize: 60, color: '#ffffff'}}/></IconButton>
-                    </Grid>
-                    <Grid item xs={12} display="flex" justifyContent="center" alignItems="center">
-                        <ToggleButtonGroup
-                            value={activeButton}
-                            exclusive
-                            onChange={handleChange}
-                            aria-label="Platform"
-                        >
-                            <ToggleButton style={{
-                                backgroundColor: dataButton.background,
-                                color: dataButton.color,
-                                borderColor: '#000000',
-                                fontSize: '25px'
-                            }} value={buttons[0]}>{buttons[0]}</ToggleButton>
-                            <ToggleButton style={{
-                                backgroundColor: vaxButton.background,
-                                color: vaxButton.color,
-                                borderColor: '#000000',
-                                fontSize: '25px'
-                            }} value={buttons[1]}>{buttons[1]}</ToggleButton>
-                            <ToggleButton style={{
-                                backgroundColor: voteButton.background,
-                                color: voteButton.color,
-                                borderColor: '#000000',
-                                fontSize: '25px'
-                            }} value={buttons[2]}>{buttons[2]}</ToggleButton>
-                        </ToggleButtonGroup>
-                    </Grid>
+                    <UpperButtonMenu first_label={buttons[0]} second_label={buttons[1]} third_label={buttons[2]} first_list={dataList} second_list={vaxinesList} third_list={bonusList} listSetter={setShowingList} buttonSetter={setActiveButton}/>
                     <Grid item xs={12} display="flex" justifyContent="center" alignItems="center">
                         <Box sx={{width: '70%', height: '100%'}}>
-                            {dataList.map((value, index) => {
+                            {showingList.map((value, index) => {
                                 return (
                                     <ListItem key={index}>
                                         <CssTextField sx={{ input: { color: 'white' } , style:{color:'white'}}} label={value} />
@@ -166,21 +117,8 @@ const PersonalData = () => {
                             }
                         </Button>
                     </Grid>
-                    <Grid item display="flex" alignItems={'center'}>
-                        <CardMedia
-                            component="img"
-                            image={basquiaPulito}
-                            sx={{
-                                width: '8%',
-                            }}
-                            alt="Logo"
-                        />
-                        <Typography
-                            style={{color: '#feac0d', textAlign: 'center', fontSize: '1.5rem'}}>CivicLife</Typography>
-                    </Grid>
                 </Grid>
             </Grid>
-
         </ThemeProvider>
     );
 }

@@ -1,7 +1,7 @@
 import React from 'react';
 import './App.css';
 import {Button, createTheme, Grid, Typography} from "@mui/material";
-import basquiaPulito from "./imgs/basquiaPulito.png"
+import basquiaPulito from "./imgs/logo_CivicLife.png"
 
 const Login = () => {
 
