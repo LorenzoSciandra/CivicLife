@@ -1,14 +1,14 @@
-package com.civiclife.backend;
+package com.civiclife.userservice;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class BackendApplication {
+public class UserServiceApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(BackendApplication.class, args);
-        System.out.println("Prova");
+        SpringApplication.run(UserServiceApplication.class, args);
+        System.out.println("Cazzo");
     }
 
 }

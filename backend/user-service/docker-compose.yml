@@ -17,8 +17,8 @@ services:
       restart: unless-stopped
   app:
     build: .
-    image: spike-spring-docker
-    container_name: CivicLifeContainer
+    image: user-service-1.0
+    container_name: user-service-1.0
     ports:
       - "8080:8080"
     depends_on:
