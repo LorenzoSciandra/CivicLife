@@ -1,11 +1,19 @@
 package com.civiclife.userservice.model;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Entity
 @Table(name = "utente")
 public class Utente {
+
+    // create ArrayList of int
+    @ElementCollection
+    private List<Integer> idIniziativeCreate = new ArrayList<Integer>();
+    @ElementCollection
+    private List<Integer> idIniziativeSottoscritte = new ArrayList<Integer>();
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -145,6 +153,23 @@ public class Utente {
     public void setTelefono(long telefono) {
         this.telefono = telefono;
     }
+
+    public List<Integer> getIdIniziativeCreate() {
+        return idIniziativeCreate;
+    }
+
+    public void setIdIniziativeCreate(List<Integer> idIniziativeCreate) {
+        this.idIniziativeCreate = idIniziativeCreate;
+    }
+
+    public List<Integer> getIdIniziativeSottoscritte() {
+        return idIniziativeSottoscritte;
+    }
+
+public void setIdIniziativeSottoscritte(List<Integer> idIniziativeSottoscritte) {
+        this.idIniziativeSottoscritte = idIniziativeSottoscritte;
+    }
+
 
    @Override
     public String toString() {

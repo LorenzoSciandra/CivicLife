@@ -27,6 +27,30 @@ public class UtenteController {
         return utenteRepository.findById(id).orElse(null);
     }
 
+    @GetMapping("/utenti/{id}/iniziativecreate")
+    public List<Integer> getIniziativeCreate(@PathVariable(value = "id") long id) {
+        Utente utente = getUtente(id);
+        if(!utente.getIdIniziativeCreate().isEmpty()){
+            return utente.getIdIniziativeCreate();
+        }
+        else{
+            // TODO: chiama il servizio di iniziative per ottenere le iniziative create e memorizza
+            return null;
+        }
+    }
+
+    @GetMapping("/utenti/{id}/iniziativesottoscritte")
+    public List<Integer> getIniziativeSottoscritte(@PathVariable(value = "id") long id) {
+        Utente utente = getUtente(id);
+        if(!utente.getIdIniziativeSottoscritte().isEmpty()){
+            return utente.getIdIniziativeSottoscritte();
+        }
+        else{
+            // TODO: chiama il servizio di iniziative per ottenere le iniziative sottoscritte e memorizza
+            return null;
+        }
+    }
+
     @PostMapping("/utenti/create")
     public Utente createUtente(@RequestBody Utente utente) {
         return utenteRepository.save(utente);
