@@ -6,7 +6,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.sql.Timestamp;
 import java.util.List;
 
-@Document(collection = "initiatives")
+@Document(collection = "Initiative")
 public class Initiative {
 
     @Id
