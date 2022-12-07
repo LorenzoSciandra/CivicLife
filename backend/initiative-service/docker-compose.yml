@@ -4,8 +4,7 @@ services:
   mongodb:
     image: mongo:latest
     container_name: mongodb
-    networks:
-      - civiclife-network
+    restart: unless-stopped
     environment:
       #- MONGO_INITDB_DATABASE:Iniziative
       - MONGO_INITDB_ROOT_USERNAME=taass
@@ -15,21 +14,18 @@ services:
       - mongodb:/var/lib/mongodb/data
     ports:
       - "27017:27017"
-
+    networks:
+      - civiclife-network
   app:
     build: .
     image: initiative-service-1.0
     container_name: initiative-service-1.0
     ports:
       - "8080:8080"
-    depends_on:
-      - mongodb
-    environment:
-      - ME_CONFIG_MONGODB_ADMINUSERNAME=taass
-      - ME_CONFIG_MONGODB_ADMINPASSWORD=taass
-      - ME_CONFIG_MONGODB_URL=mongodb://taass:taass@mongodb:27017/Iniziative
     networks:
       - civiclife-network
+    depends_on:
+      - mongodb
 volumes:
   mongodb:
 networks:
