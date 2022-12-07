@@ -7,7 +7,7 @@ services:
     ports:
       - "5432"
     volumes:
-      - db-data:/var/lib/postgresql/data
+      - dbpostgresql:/var/lib/postgresql/data
     networks:
       - civiclife-network
     environment:
