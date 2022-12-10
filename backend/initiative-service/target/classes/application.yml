@@ -1,0 +1,6 @@
+spring:
+  data:
+    mongodb:
+      database: Initiative
+      host: initiativeMongoDB
+      port: 27017
