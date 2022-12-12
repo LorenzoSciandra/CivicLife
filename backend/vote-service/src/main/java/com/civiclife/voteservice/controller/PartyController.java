@@ -19,14 +19,6 @@ public class PartyController {
     @Autowired
     private PartyRepository partyRepository;
 
-    @Autowired
-    private ResultController resultController;
-
-    @Autowired
-    private final CandidateController candidateController = new CandidateController();
-
-    @Autowired
-    private final VotationController votationController = new VotationController();
 
     @GetMapping("/parties")
     public List<Party> getAllParties() {
@@ -50,7 +42,7 @@ public class PartyController {
     public boolean updateParty(@PathVariable String partyId, @RequestBody Party party) {
         Optional<Party> partyToUpdate = partyRepository.findById(partyId);
 
-        if(partyToUpdate.isPresent()) {
+        if (partyToUpdate.isPresent()) {
             partyToUpdate.get().setName(party.getName());
             partyToUpdate.get().setDescription(party.getDescription());
             partyToUpdate.get().setInfo(party.getInfo());
@@ -63,7 +55,7 @@ public class PartyController {
     @GetMapping("/party/delete/{partyId}")
     public boolean deleteParty(@PathVariable String partyId) {
         Optional<Party> party = partyRepository.findById(partyId);
-        if(party.isPresent()) {
+        if (party.isPresent()) {
             partyRepository.delete(party.get());
             return true;
         }
@@ -73,15 +65,15 @@ public class PartyController {
     @GetMapping("/party/addCandidate/{partyId}/{candidateId}")
     public boolean addCandidateToParty(@PathVariable String partyId, @PathVariable String candidateId) {
         Optional<Party> party = partyRepository.findById(partyId);
-        if(party.isPresent()) {
-            if(candidateController.getCandidateById(candidateId)!=null){
-                System.out.println("Sto aggiungendo il candidato " + candidateId + " alla lista " + partyId);
-                if(!party.get().getCandidateIdList().contains(candidateId)) {
-                    party.get().getCandidateIdList().add(candidateId);
-                    partyRepository.save(party.get());
-                    return true;
-                }
+        if (party.isPresent()) {
+
+            System.out.println("Sto aggiungendo il candidato " + candidateId + " alla lista " + partyId);
+            if (!party.get().getCandidateIdList().contains(candidateId)) {
+                party.get().getCandidateIdList().add(candidateId);
+                partyRepository.save(party.get());
+                return true;
             }
+
         }
         return false;
     }
@@ -89,15 +81,15 @@ public class PartyController {
     @GetMapping("/party/removeCandidate/{partyId}/{candidateId}")
     public boolean removeCandidateFromParty(@PathVariable String partyId, @PathVariable String candidateId) {
         Optional<Party> party = partyRepository.findById(partyId);
-        if(party.isPresent()) {
-            if(candidateController.getCandidateById(candidateId)!=null){
-                if(party.get().getCandidateIdList().contains(candidateId)){
-                    party.get().getCandidateIdList().remove(candidateId);
-                    partyRepository.save(party.get());
-                    return true;
-                }
+        if (party.isPresent()) {
+
+            if (party.get().getCandidateIdList().contains(candidateId)) {
+                party.get().getCandidateIdList().remove(candidateId);
+                partyRepository.save(party.get());
+                return true;
             }
         }
+
         return false;
     }
 
@@ -116,30 +108,17 @@ public class PartyController {
     @GetMapping("/party/setLeader/{partyId}/{candidateId}")
     public boolean setLeaderIdFromParty(@PathVariable String partyId, @PathVariable String candidateId) {
         Optional<Party> party = partyRepository.findById(partyId);
-        if(party.isPresent()) {
-            if(candidateController.getCandidateById(candidateId)!=null){
-                if( !party.get().getCandidateIdList().contains(candidateId)){
-                    party.get().getCandidateIdList().add(candidateId);
-                }
-                party.get().setLeaderId(candidateId);
-                partyRepository.save(party.get());
-                return true;
+        if (party.isPresent()) {
+
+            if (!party.get().getCandidateIdList().contains(candidateId)) {
+                party.get().getCandidateIdList().add(candidateId);
             }
+            party.get().setLeaderId(candidateId);
+            partyRepository.save(party.get());
+            return true;
+
         }
         return false;
-    }
-
-    @GetMapping("/party/results/{partyId}/{electionId}")
-    public Result getResultForPartyFromVotation(@PathVariable String partyId, @PathVariable String electionId) {
-        Optional<Party> party = partyRepository.findById(partyId);
-        if(party.isPresent()) {
-            if(votationController.getVotationById(electionId)!=null){
-                return resultController.getResultsByPartyVotationId(partyId, electionId);
-            }
-
-        }
-
-        return null;
     }
 
 }

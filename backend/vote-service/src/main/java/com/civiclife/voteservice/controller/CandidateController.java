@@ -17,8 +17,6 @@ public class CandidateController {
     @Autowired
     private CandidateRepository candidateRepository;
 
-    @Autowired
-    private PartyController partyController;
 
     @GetMapping("/candidates")
     public List<Candidate> getAllCandidates() {
@@ -58,12 +56,9 @@ public class CandidateController {
     public boolean updateCandidateParty(@PathVariable String candidateId, @PathVariable String partyId){
         Optional<Candidate> candidateOptional = candidateRepository.findById(candidateId);
         if(candidateOptional.isPresent()){
-            if(partyController.getPartyById(partyId) != null){
-                candidateOptional.get().setPartyId(partyId);
-                candidateRepository.save(candidateOptional.get());
-                return true;
-            }
-
+            candidateOptional.get().setPartyId(partyId);
+            candidateRepository.save(candidateOptional.get());
+            return true;
         }
         return false;
     }

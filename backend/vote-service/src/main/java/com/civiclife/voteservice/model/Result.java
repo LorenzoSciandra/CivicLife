@@ -4,6 +4,7 @@ import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.HashMap;
 import java.util.List;
 
 @Data
@@ -16,19 +17,18 @@ public class Result {
     private String votationId;
     private String partyId;
     private int votes;
-    private float percentage;
-    private List<String> candidateIdList;
-    private List<Integer> numberOfVotesPerCandidate;
+
+    private HashMap<String,Float> percentageByCandidateId;
+    private HashMap<String, Integer> numberOfVotesPerCandidate;
 
     public Result() {
     }
 
-    public Result(String votationId, String partyId, int votes, float percentage, List<String> candidateIdList, List<Integer> numberOfVotesPerCandidate) {
+    public Result(String votationId, String partyId, int votes, HashMap<String,Float> percentageByCandidateId,  HashMap<String, Integer> numberOfVotesPerCandidate) {
         this.votationId = votationId;
         this.partyId = partyId;
         this.votes = votes;
-        this.percentage = percentage;
-        this.candidateIdList = candidateIdList;
+        this.percentageByCandidateId = percentageByCandidateId;
         this.numberOfVotesPerCandidate = numberOfVotesPerCandidate;
     }
 
@@ -64,27 +64,19 @@ public class Result {
         this.votes = votes;
     }
 
-    public float getPercentage() {
-        return percentage;
+    public HashMap<String, Float> getPercentageByCandidateId() {
+        return percentageByCandidateId;
     }
 
-    public void setPercentage(float percentage) {
-        this.percentage = percentage;
+    public void setPercentageByCandidateId(HashMap<String, Float> percentageByCandidateId) {
+        this.percentageByCandidateId = percentageByCandidateId;
     }
 
-    public List<String> getcandidateIdList() {
-        return candidateIdList;
-    }
-
-    public void setcandidateIdList(List<String> candidateIdList) {
-        this.candidateIdList = candidateIdList;
-    }
-
-    public List<Integer> getNumberOfVotesPerCandidate() {
+    public HashMap<String, Integer> getNumberOfVotesPerCandidate() {
         return numberOfVotesPerCandidate;
     }
 
-    public void setNumberOfVotesPerCandidate(List<Integer> numberOfVotesPerCandidate) {
+    public void setNumberOfVotesPerCandidate(HashMap<String, Integer> numberOfVotesPerCandidate) {
         this.numberOfVotesPerCandidate = numberOfVotesPerCandidate;
     }
 
@@ -95,8 +87,7 @@ public class Result {
                 ", votationId='" + votationId + '\'' +
                 ", partyId='" + partyId + '\'' +
                 ", votes=" + votes +
-                ", percentage=" + percentage +
-                ", candidateIdList=" + candidateIdList +
+                ", percentage=" + percentageByCandidateId +
                 ", numberOfVotesPerCandidate=" + numberOfVotesPerCandidate +
                 '}';
     }

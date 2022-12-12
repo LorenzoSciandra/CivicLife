@@ -5,6 +5,7 @@ import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.HashMap;
 import java.util.List;
 
 @Data
@@ -18,23 +19,27 @@ public class Votation {
     private String description;
     private long startDate;
     private long endDate;
-    private List<String> partyIdList;
     private int status;
+
+    private int numberOfVotes;
     private List<String> votersIdList;
-    private List<String> resultIdList;
+    private HashMap<String, String> resultIdPerPartyId;
+
+    private HashMap<String, Float> percentagePerPartyId;
 
     public Votation() {
     }
 
-    public Votation(String title, String description, long startDate, long endDate, List<String> partyIdList, int status, List<String> votersIdList, List<String> resultIdList) {
+    public Votation(String title, String description, long startDate, long endDate, int status, int numberOfVotes, List<String> votersIdList, HashMap<String, String> resultIdPerPartyId, HashMap<String, Float> percentagePerPartyId) {
         this.title = title;
         this.description = description;
         this.startDate = startDate;
         this.endDate = endDate;
-        this.partyIdList = partyIdList;
         this.status = status;
         this.votersIdList = votersIdList;
-        this.resultIdList = resultIdList;
+        this.resultIdPerPartyId = resultIdPerPartyId;
+        this.numberOfVotes = numberOfVotes;
+        this.percentagePerPartyId = percentagePerPartyId;
     }
 
     public String getId() {
@@ -77,13 +82,6 @@ public class Votation {
         this.endDate = endDate;
     }
 
-    public List<String> getpartyIdList() {
-        return partyIdList;
-    }
-
-    public void setpartyIdList(List<String> partyIdList) {
-        this.partyIdList = partyIdList;
-    }
 
     public int getStatus() {
         return status;
@@ -93,20 +91,36 @@ public class Votation {
         this.status = status;
     }
 
-    public List<String> getvotersIdList() {
-        return votersIdList;
-    }
-
-    public void setvotersIdList(List<String> votersIdList) {
+    public void setVotersIdList(List<String> votersIdList) {
         this.votersIdList = votersIdList;
     }
 
-    public List<String> getresultIdList() {
-        return resultIdList;
+    public void setResultIdPerPartyId(HashMap<String, String> resultIdPerPartyId) {
+        this.resultIdPerPartyId = resultIdPerPartyId;
     }
 
-    public void setresultIdList(List<String> resultIdList) {
-        this.resultIdList = resultIdList;
+    public HashMap<String, Float> getPercentagePerPartyId() {
+        return percentagePerPartyId;
+    }
+
+    public void setPercentagePerPartyId(HashMap<String, Float> percentagePerPartyId) {
+        this.percentagePerPartyId = percentagePerPartyId;
+    }
+
+    public List<String> getVotersIdList() {
+        return votersIdList;
+    }
+
+    public HashMap<String, String> getResultIdPerPartyId() {
+        return resultIdPerPartyId;
+    }
+
+    public int getNumberOfVotes() {
+        return numberOfVotes;
+    }
+
+    public void setNumberOfVotes(int numberOfVotes) {
+        this.numberOfVotes = numberOfVotes;
     }
 
     @Override
@@ -117,10 +131,11 @@ public class Votation {
                 ", description='" + description + '\'' +
                 ", startDate=" + startDate +
                 ", endDate=" + endDate +
-                ", partyIdList=" + partyIdList +
                 ", status=" + status +
                 ", votersIdList=" + votersIdList +
-                ", resultIdList=" + resultIdList +
+                ", resultIdPerPartyId=" + resultIdPerPartyId +
+                ", numberOfVotes=" + numberOfVotes +
+                ", percentagePerPartyId=" + percentagePerPartyId +
                 '}';
     }
 }

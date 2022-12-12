@@ -42,8 +42,7 @@ public class ResultController {
             optionalResult.get().setVotationId(result.getVotationId());
             optionalResult.get().setPartyId(result.getPartyId());
             optionalResult.get().setVotes(result.getVotes());
-            optionalResult.get().setPercentage(result.getPercentage());
-            optionalResult.get().setcandidateIdList(result.getcandidateIdList());
+            optionalResult.get().setPercentageByCandidateId(result.getPercentageByCandidateId());
             optionalResult.get().setNumberOfVotesPerCandidate(result.getNumberOfVotesPerCandidate());
             resultRepository.save(optionalResult.get());
             return true;
@@ -75,28 +74,21 @@ public class ResultController {
         Optional<Result> optionalResult = resultRepository.findById(id);
         Result result = optionalResult.orElse(null);
         if (result != null) {
-            for(int i = 0; i < result.getcandidateIdList().size(); i++){
-                if(Objects.equals(result.getcandidateIdList().get(i), candidateId)){
-                    result.getNumberOfVotesPerCandidate().set(i, result.getNumberOfVotesPerCandidate().get(i) + 1);
-                }
-            }
+            result.setVotes(result.getVotes() + 1);
+            result.getNumberOfVotesPerCandidate().put(candidateId, result.getNumberOfVotesPerCandidate().get(candidateId) + 1);
             resultRepository.save(result);
             return true;
         }
         return false;
     }
 
-    public boolean finalizeResult(String id, int totalVotesVotation) {
+    public boolean finalizeResult(String id) {
         Optional<Result> optionalResult = resultRepository.findById(String.valueOf(id));
         Result result = optionalResult.orElse(null);
         if (result != null) {
-            int totalVotes = 0;
-            for (int i = 0; i < result.getNumberOfVotesPerCandidate().size(); i++) {
-                totalVotes += result.getNumberOfVotesPerCandidate().get(i);
+            for(String candidateId : result.getNumberOfVotesPerCandidate().keySet()) {
+                result.getPercentageByCandidateId().put(candidateId, (float) result.getNumberOfVotesPerCandidate().get(candidateId) / result.getVotes());
             }
-            result.setPercentage((float) totalVotes / totalVotesVotation);
-            result.setVotes(totalVotes);
-            resultRepository.save(result);
             return true;
         }
         else {
