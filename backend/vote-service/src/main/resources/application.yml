@@ -1,6 +1,0 @@
-spring:
-  data:
-    mongodb:
-      database: Vote
-      host: voteMongoDB
-      port: 27017
