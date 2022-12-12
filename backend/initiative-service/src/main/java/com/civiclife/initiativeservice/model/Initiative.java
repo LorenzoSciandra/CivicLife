@@ -21,9 +21,9 @@ public class Initiative {
     private String description;
     private String status;
     private String type;
-    private int idCreator;
-    private List<Integer> idOrganizers;
-    private List<Integer> idMembers;
+    private String idCreator;
+    private List<String> idOrganizers;
+    private List<String> idMembers;
     private long startDate;
     private long endDate;
     private String location;
@@ -31,7 +31,7 @@ public class Initiative {
     public Initiative() {
     }
 
-    public Initiative(String name, String description, String status, String type, int idCreator, List<Integer> idOrganizers, List<Integer> idMembers, long startDate, long endDate, String location) {
+    public Initiative(String name, String description, String status, String type, String idCreator, List<String> idOrganizers, List<String> idMembers, long startDate, long endDate, String location) {
         this.name = name;
         this.description = description;
         this.status = status;
@@ -84,27 +84,27 @@ public class Initiative {
         this.type = type;
     }
 
-    public int getIdCreator() {
+    public String getIdCreator() {
         return idCreator;
     }
 
-    public void setIdCreator(int idCreator) {
+    public void setIdCreator(String idCreator) {
         this.idCreator = idCreator;
     }
 
-    public List<Integer> getIdOrganizers() {
+    public List<String> getIdOrganizers() {
         return idOrganizers;
     }
 
-    public void setIdOrganizers(List<Integer> idOrganizers) {
+    public void setIdOrganizers(List<String> idOrganizers) {
         this.idOrganizers = idOrganizers;
     }
 
-    public List<Integer> getIdMembers() {
+    public List<String> getIdMembers() {
         return idMembers;
     }
 
-    public void setIdMembers(List<Integer> idMembers) {
+    public void setIdMembers(List<String> idMembers) {
         this.idMembers = idMembers;
     }
 

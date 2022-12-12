@@ -5,8 +5,10 @@ import com.civiclife.initiativeservice.repo.InitiativeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -25,7 +27,7 @@ public class InitiativeController {
         return initiativeRepository.findById(id);
     }
 
-    @GetMapping("/initiative/{id}/remove")
+    @GetMapping("/initiative/remove/{id}")
     //TODO: controllare che l'utente sia il creatore
     public boolean removeInitiative(@PathVariable(value = "id") String id) {
         System.out.println("Sto cancellando l'iniziativa: " + id);
@@ -40,7 +42,7 @@ public class InitiativeController {
         return true;
     }
 
-    @PostMapping("/initiative/{id}/modify")
+    @PostMapping("/initiative/modify/{id}")
     // TODO: controllare che l'utente sia un organizzatore
     public boolean modifyInitiative(@RequestBody Initiative updateInitiative, @PathVariable(value = "id") String id){
         Optional<Initiative> optionalOriginalInitiative = initiativeRepository.findById(id);
@@ -56,8 +58,8 @@ public class InitiativeController {
 
     }
 
-    @GetMapping("/initiative/{idInitiative}/subscribe/{idUser}")
-    public boolean subscribeInitiative(@PathVariable(value = "idInitiative") String idInitiative, @PathVariable(value = "idUser") int idUser){
+    @GetMapping("/initiative/{idInitiative}/subscribe")
+    public boolean subscribeInitiative(@PathVariable(value = "idInitiative") String idInitiative, @RequestBody String idUser){
         Optional<Initiative> initiative = initiativeRepository.findById(idInitiative);
         if(initiative.isPresent()){
             Initiative intiativeToModify = initiative.get();
@@ -72,14 +74,14 @@ public class InitiativeController {
 
     }
 
-    @GetMapping("/initiative/{idInitiative}/unsubscribe/{idUser}")
-    public boolean unsubscribeInitiative(@PathVariable(value = "idInitiative") String idInitiative, @PathVariable(value = "idUser") int idUser){
+    @GetMapping("/initiative/{idInitiative}/unsubscribe")
+    public boolean unsubscribeInitiative(@PathVariable(value = "idInitiative") String idInitiative, @RequestBody String idUser){
         Optional<Initiative> initiative = initiativeRepository.findById(idInitiative);
         if(initiative.isPresent()){
             Initiative initiativeToModify = initiative.get();
 
             if(initiativeToModify.getIdMembers().contains(idUser)){
-                initiativeToModify.getIdMembers().remove((Integer) idUser);
+                initiativeToModify.getIdMembers().remove(idUser);
                 initiativeRepository.save(initiativeToModify);
                 System.out.println("Sto disiscrivendo l'utente: " + idUser + " all'iniziativa: " + initiative.get().getName());
                 return true;
@@ -89,9 +91,9 @@ public class InitiativeController {
 
     }
 
-    @GetMapping("/initiative/{idInitiative}/addOrganizer/{idUser}")
+    @GetMapping("/initiative/{idInitiative}/addOrganizer")
     // TODO: controllo che l'utente sia il creatore dell'iniziativa
-    public boolean addOrganizerInitiative(@PathVariable(value = "idInitiative") String idInitiative, @PathVariable(value = "idUser") int idUser){
+    public boolean addOrganizerInitiative(@PathVariable(value = "idInitiative") String idInitiative, @RequestBody String idUser){
         Optional<Initiative> initiative = initiativeRepository.findById(idInitiative);
         if(initiative.isPresent()){
             Initiative intiativeToModify = initiative.get();
@@ -107,15 +109,15 @@ public class InitiativeController {
 
     }
 
-    @GetMapping("/initiative/{idInitiative}/removeOrganizer/{idUser}")
+    @GetMapping("/initiative/{idInitiative}/removeOrganizer")
     //TODO: controllare che l'utente sia creatore dell'iniziativa
-    public boolean removeOrganizerInitiative(@PathVariable(value = "idInitiative") String idInitiative, @PathVariable(value = "idUser") int idUser){
+    public boolean removeOrganizerInitiative(@PathVariable(value = "idInitiative") String idInitiative, @RequestBody String idUser){
         Optional<Initiative> initiative = initiativeRepository.findById(idInitiative);
         if(initiative.isPresent()){
             Initiative intiativeToModify = initiative.get();
 
             if(intiativeToModify.getIdOrganizers().contains(idUser)){
-                intiativeToModify.getIdOrganizers().remove((Integer) idUser);
+                intiativeToModify.getIdOrganizers().remove(idUser);
                 initiativeRepository.save(intiativeToModify);
                 System.out.println("Sto rimuovendo l'utente: " + idUser + " come organizzatore all'iniziativa: " + initiative.get().getName());
                 return true;
@@ -125,17 +127,17 @@ public class InitiativeController {
 
     }
 
-    @GetMapping("/initiative/{idUtente}/getMyInitiatives")
-    public List<Initiative> getMyInitiatives(@PathVariable(value = "idUtente") int idUtente){
+    @GetMapping("/initiative/getMyInitiatives/{idUtente}")
+    public List<Initiative> getMyInitiatives(@PathVariable(value = "idUtente") String idUtente){
         List<Initiative> initiatives = initiativeRepository.findAll();
-        List<Initiative> createInitives = new java.util.ArrayList<>(initiatives.stream().filter(initiative -> initiative.getIdCreator() == idUtente).toList());
+        List<Initiative> createInitives = initiatives.stream().filter(initiative -> initiative.getIdCreator().equals(idUtente)).collect(Collectors.toList());
         List<Initiative> organizerInitives = initiatives.stream().filter(initiative -> initiative.getIdOrganizers().contains(idUtente)).toList();
         createInitives.addAll(organizerInitives);
         return createInitives;
     }
 
-    @GetMapping("/initiative/{idUtente}/getMySubscribedInitiatives")
-    public List<Initiative> getMySubscribedInitiatives(@PathVariable(value = "idUtente") int idUtente){
+    @GetMapping("/initiative/getMySubscribedInitiatives/{idUtente}")
+    public List<Initiative> getMySubscribedInitiatives(@PathVariable(value = "idUtente") String idUtente){
         List<Initiative> initiatives = initiativeRepository.findAll();
         return initiatives.stream().filter(initiative -> initiative.getIdMembers().contains(idUtente)).toList();
     }
