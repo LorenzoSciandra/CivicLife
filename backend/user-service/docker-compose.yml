@@ -1,38 +1,28 @@
 version: '3'
 
 services:
-  dbpostgresql:
-    container_name: postgres-container
-    image: "postgres"
-    ports:
-      - "5432"
+  userMongoDB:
+    image: mongo:latest
+    container_name: "VoteMongoDB"
+    restart: unless-stopped
     volumes:
-      - dbpostgresql:/var/lib/postgresql/data
+      - mongodb:/var/lib/mongodb/data
+    ports:
+      - "27017:27017"
     networks:
       - civiclife-network
-    environment:
-      POSTGRES_DB: Progetto
-      POSTGRES_USER: taass
-      POSTGRES_PASSWORD: taass
-      restart: unless-stopped
-  app:
+  vote-service:
     build: .
     image: user-service-1.0
-    container_name: user-service-1.0
+    container_name: user-service
     ports:
       - "8080:8080"
-    depends_on:
-      - dbpostgresql
+    links:
+      - userMongoDB
     networks:
       - civiclife-network
-    environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-container:5432/Progetto
-      - SPRING_DATASOURCE_USERNAME=taass
-      - SPRING_DATASOURCE_PASSWORD=taass
-      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
 volumes:
-  dbpostgresql:
+  mongodb:
 networks:
   civiclife-network:
     driver: bridge
-# docker-compose build && docker-compose up
