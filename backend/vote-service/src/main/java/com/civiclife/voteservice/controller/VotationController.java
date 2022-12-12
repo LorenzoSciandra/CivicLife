@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.temporal.ChronoField;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 
@@ -19,9 +20,14 @@ public class VotationController {
     @Autowired
     private VotationRepository votationRepository;
 
+    @Autowired
     private ResultController resultController;
 
+    @Autowired
     private PartyController partyController;
+
+    @Autowired
+    private CandidateController candidateController;
 
     @GetMapping("/votations")
     public List<Votation> getAllVotations() {
@@ -30,36 +36,49 @@ public class VotationController {
 
     @GetMapping("/votations/{votationId}")
     public Votation getVotationById(@PathVariable String votationId) {
-        return votationRepository.findByVotationId(votationId);
+        Optional<Votation> votation = votationRepository.findVotationById(votationId);
+        return votation.orElse(null);
     }
 
     @PostMapping("/votation/create")
-    public Votation createVotation(@RequestBody Votation votation) {
-        return votationRepository.save(votation);
+    public boolean createVotation(@RequestBody Votation votation) {
+        votationRepository.save(votation);
+        return true;
     }
 
     @GetMapping("/votation/delete/{votationId}")
     public boolean deleteVotation(@PathVariable String votationId) {
-        votationRepository.delete(votationRepository.findByVotationId(votationId));
-        return true;
+        Optional<Votation> votation = votationRepository.findVotationById(votationId);
+        if(votation.isPresent()) {
+            votationRepository.delete(votation.get());
+            return true;
+        }
+        return false;
     }
 
     @GetMapping("/votation/vote/{votationId}/{partyId}/{candidateId}/{voterId}")
     public boolean voteCandidate(@PathVariable String votationId, @PathVariable String partyId, @PathVariable String candidateId, @PathVariable String voterId) {
-        Votation votation = votationRepository.findByVotationId(votationId);
-
-        if(!votation.getVotersList().contains(Long.parseLong(voterId)) && checkDate(votation)) {
-            for (Result result: votation.getResultList() ) {
-                if (result.getPartyId() == Long.parseLong(partyId)){
-                   int index = 0;
-                    for(Candidate candidate: result.getCandidateList()){
-                        if(candidate.getId() == Long.parseLong(candidateId)){
-                            result.getNumberOfVotesPerCandidate().set(index, result.getNumberOfVotesPerCandidate().get(index)+1);
-                            resultController.addVoteCandidate(result.getId(), candidate.getId());
-                            votationRepository.save(votation);
-                            return true;
+        Optional<Votation> votationOptional = votationRepository.findVotationById(votationId);
+        Votation votation = votationOptional.orElse(null);
+        if(votation!=null && partyController.getPartyById(partyId)!=null &&
+                candidateController.getCandidateById(candidateId)!=null) {
+            if(!votation.getvotersIdList().contains(voterId) && checkDate(votation)) {
+                for (String resultId: votation.getresultIdList() ) {
+                    Optional<Result> resultOptional = Optional.ofNullable(resultController.getResultById(resultId));
+                    if (resultOptional.isPresent()){
+                        Result result = resultOptional.get();
+                        if (Objects.equals(resultId, partyId)){
+                            int index = 0;
+                            for(String currentCandidateId: result.getcandidateIdList()){
+                                if(Objects.equals(currentCandidateId, candidateId)){
+                                    result.getNumberOfVotesPerCandidate().set(index, result.getNumberOfVotesPerCandidate().get(index)+1);
+                                    resultController.addVoteCandidate(result.getId(), currentCandidateId);
+                                    votationRepository.save(votation);
+                                    return true;
+                                }
+                                index++;
+                            }
                         }
-                        index++;
                     }
                 }
             }
@@ -69,27 +88,31 @@ public class VotationController {
 
     @GetMapping("/votation/vote/{votationId}/{partyId}/{voterId}")
     public boolean voteParty(@PathVariable String votationId, @PathVariable String partyId, @PathVariable String voterId) {
-        Votation votation = votationRepository.findByVotationId(votationId);
-        long voter = Long.parseLong(voterId);
-
-        if(!votation.getVotersList().contains(voter) && checkDate(votation)) {
-            for (Result result: votation.getResultList()) {
-                if(result.getPartyId()==Long.parseLong(partyId)){
-                    Party party = partyController.getPartyById(partyId);
-                    long leaderId = party.getLeader().getId();
-                    int index = 0;
-                    for (Candidate candidate: result.getCandidateList()) {
-                        if(candidate.getId() == leaderId){
-                            result.getNumberOfVotesPerCandidate().set(index, result.getNumberOfVotesPerCandidate().get(index) + 1);
-                            resultController.addVoteCandidate(result.getId(), leaderId);
-                            votationRepository.save(votation);
-                            return true;
+        Optional<Votation> votationOptional = votationRepository.findVotationById(votationId);
+        if(votationOptional.isPresent() && partyController.getPartyById(partyId)!=null) {
+            Votation votation = votationOptional.get();
+            if(!votation.getvotersIdList().contains(voterId) && checkDate(votation)) {
+                for (String resultId: votation.getresultIdList()) {
+                    Optional<Result> resultOptional = Optional.ofNullable(resultController.getResultById(resultId));
+                    if(resultOptional.isPresent()){
+                        Result result = resultOptional.get();
+                        if(Objects.equals(result.getPartyId(), partyId)){
+                            Party party = partyController.getPartyById(partyId);
+                            String leaderId = party.getLeaderId();
+                            int index = 0;
+                            for (String candidateId: result.getcandidateIdList()) {
+                                if(Objects.equals(candidateId, leaderId)){
+                                    result.getNumberOfVotesPerCandidate().set(index, result.getNumberOfVotesPerCandidate().get(index) + 1);
+                                    resultController.addVoteCandidate(result.getId(), leaderId);
+                                    votationRepository.save(votation);
+                                    return true;
+                                }
+                            }
                         }
                     }
                 }
             }
         }
-
         return false;
     }
 
@@ -100,21 +123,29 @@ public class VotationController {
     //TODO: controllo sia admin
     @GetMapping("/votation/status/{votationId}/{newStatus}")
     public boolean setStatus(@PathVariable String votationId, @PathVariable String newStatus) {
-        Votation votation = votationRepository.findByVotationId(votationId);
-        votation.setStatus(Integer.parseInt(newStatus));
-        votationRepository.save(votation);
-        return true;
+        Optional<Votation> votationOptional = votationRepository.findVotationById(votationId);
+        if(votationOptional.isPresent()) {
+            Votation votation = votationOptional.get();
+            votation.setStatus(Integer.parseInt(newStatus));
+            votationRepository.save(votation);
+            return true;
+        }
+        return false;
     }
 
     @GetMapping("/votation/finalize/{votationId}")
     public boolean finalizeVotation(@PathVariable String votationId) {
-        Votation votation = votationRepository.findByVotationId(votationId);
-        votation.setStatus(2);
-        for (Result result: votation.getResultList()) {
-            resultController.finalizeResult(result.getId(), votation.getVotersList().size());
+        Optional<Votation> votationOptional = votationRepository.findVotationById(votationId);
+        if(votationOptional.isPresent()) {
+            Votation votation = votationOptional.get();
+            votation.setStatus(2);
+            votationRepository.save(votation);
+            for (String resultId: votation.getresultIdList()) {
+                resultController.finalizeResult(resultId, votation.getvotersIdList().size());
+            }
+            return true;
         }
-        votationRepository.save(votation);
-        return true;
+        return false;
     }
 
 }

@@ -1,44 +1,47 @@
 package com.civiclife.voteservice.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
 
-@Document(collection = "Votation")
+@Data
+@AllArgsConstructor
+@Document(collection = "votations")
 public class Votation {
 
     @Id
-    private long id;
+    private String id;
     private String title;
     private String description;
     private long startDate;
     private long endDate;
-    private List<Party> partyList;
+    private List<String> partyIdList;
     private int status;
-    private List<Long> votersList;
-    private List<Result> resultList;
+    private List<String> votersIdList;
+    private List<String> resultIdList;
 
     public Votation() {
     }
 
-    public Votation(long id, String title, String description, long startDate, long endDate, List<Party> partyList, int status, List<Long> votersList, List<Result> resultList) {
-        this.id = id;
+    public Votation(String title, String description, long startDate, long endDate, List<String> partyIdList, int status, List<String> votersIdList, List<String> resultIdList) {
         this.title = title;
         this.description = description;
         this.startDate = startDate;
         this.endDate = endDate;
-        this.partyList = partyList;
+        this.partyIdList = partyIdList;
         this.status = status;
-        this.votersList = votersList;
-        this.resultList = resultList;
+        this.votersIdList = votersIdList;
+        this.resultIdList = resultIdList;
     }
 
-    public long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -74,12 +77,12 @@ public class Votation {
         this.endDate = endDate;
     }
 
-    public List<Party> getPartyList() {
-        return partyList;
+    public List<String> getpartyIdList() {
+        return partyIdList;
     }
 
-    public void setPartyList(List<Party> partyList) {
-        this.partyList = partyList;
+    public void setpartyIdList(List<String> partyIdList) {
+        this.partyIdList = partyIdList;
     }
 
     public int getStatus() {
@@ -90,20 +93,20 @@ public class Votation {
         this.status = status;
     }
 
-    public List<Long> getVotersList() {
-        return votersList;
+    public List<String> getvotersIdList() {
+        return votersIdList;
     }
 
-    public void setVotersList(List<Long> votersList) {
-        this.votersList = votersList;
+    public void setvotersIdList(List<String> votersIdList) {
+        this.votersIdList = votersIdList;
     }
 
-    public List<Result> getResultList() {
-        return resultList;
+    public List<String> getresultIdList() {
+        return resultIdList;
     }
 
-    public void setResultList(List<Result> resultList) {
-        this.resultList = resultList;
+    public void setresultIdList(List<String> resultIdList) {
+        this.resultIdList = resultIdList;
     }
 
     @Override
@@ -114,10 +117,10 @@ public class Votation {
                 ", description='" + description + '\'' +
                 ", startDate=" + startDate +
                 ", endDate=" + endDate +
-                ", partyList=" + partyList +
+                ", partyIdList=" + partyIdList +
                 ", status=" + status +
-                ", votersList=" + votersList +
-                ", resultList=" + resultList +
+                ", votersIdList=" + votersIdList +
+                ", resultIdList=" + resultIdList +
                 '}';
     }
 }

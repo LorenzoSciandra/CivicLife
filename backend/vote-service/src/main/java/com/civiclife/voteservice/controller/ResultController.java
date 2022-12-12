@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 
@@ -24,34 +25,45 @@ public class ResultController {
 
     @GetMapping("/results/{resultId}")
     public Result getResultById(@PathVariable String resultId) {
-        return resultRepository.findByResultId(resultId);
+        Optional<Result> optionalResult = resultRepository.findResultById(resultId);
+        return optionalResult.orElse(null);
     }
 
     @PostMapping("/result/create")
-    public Result createResult(@RequestBody Result result) {
-        return resultRepository.save(result);
+    public boolean createResult(@RequestBody Result result) {
+        resultRepository.save(result);
+        return true;
     }
 
     @PostMapping("/result/update/{resultId}")
-    public Result updateResult(@PathVariable String resultId, @RequestBody Result result) {
-        Result resultToUpdate = resultRepository.findByResultId(resultId);
-        resultToUpdate.setVotationId(result.getVotationId());
-        resultToUpdate.setPartyId(result.getPartyId());
-        resultToUpdate.setVotes(result.getVotes());
-        resultToUpdate.setPercentage(result.getPercentage());
-        resultToUpdate.setCandidateList(result.getCandidateList());
-        resultToUpdate.setNumberOfVotesPerCandidate(result.getNumberOfVotesPerCandidate());
-        return resultRepository.save(resultToUpdate);
+    public boolean updateResult(@PathVariable String resultId, @RequestBody Result result) {
+        Optional<Result> optionalResult = resultRepository.findResultById(resultId);
+        if(optionalResult.isPresent()) {
+            optionalResult.get().setVotationId(result.getVotationId());
+            optionalResult.get().setPartyId(result.getPartyId());
+            optionalResult.get().setVotes(result.getVotes());
+            optionalResult.get().setPercentage(result.getPercentage());
+            optionalResult.get().setcandidateIdList(result.getcandidateIdList());
+            optionalResult.get().setNumberOfVotesPerCandidate(result.getNumberOfVotesPerCandidate());
+            resultRepository.save(optionalResult.get());
+            return true;
+        }
+        return false;
     }
 
     @GetMapping("/result/delete/{resultId}")
-    public void deleteResult(@PathVariable String resultId) {
-        resultRepository.delete(resultRepository.findByResultId(resultId));
+    public boolean deleteResult(@PathVariable String resultId) {
+        Optional<Result> optionalResult = resultRepository.findResultById(resultId);
+        if(optionalResult.isPresent()) {
+            resultRepository.delete(optionalResult.get());
+            return true;
+        }
+        return false;
     }
-    public Result getResultsByPartyVotationId(long partyId, long votationId) {
+    public Result getResultsByPartyVotationId(String partyId, String votationId) {
         List<Result> results = resultRepository.findAll();
         for (Result result : results) {
-            if (result.getPartyId() == partyId && result.getVotationId() == votationId) {
+            if (Objects.equals(result.getPartyId(), partyId) && Objects.equals(result.getVotationId(), votationId)) {
                 return result;
             }
         }
@@ -59,26 +71,36 @@ public class ResultController {
     }
 
 
-    public void addVoteCandidate(long id, long candidateId) {
-        Result result = resultRepository.findByResultId(String.valueOf(id));
-
-        for(int i = 0; i < result.getCandidateList().size(); i++){
-            if(result.getCandidateList().get(i).getId() == candidateId){
-                result.getNumberOfVotesPerCandidate().set(i, result.getNumberOfVotesPerCandidate().get(i) + 1);
+    public boolean addVoteCandidate(String id, String candidateId) {
+        Optional<Result> optionalResult = resultRepository.findById(id);
+        Result result = optionalResult.orElse(null);
+        if (result != null) {
+            for(int i = 0; i < result.getcandidateIdList().size(); i++){
+                if(Objects.equals(result.getcandidateIdList().get(i), candidateId)){
+                    result.getNumberOfVotesPerCandidate().set(i, result.getNumberOfVotesPerCandidate().get(i) + 1);
+                }
             }
+            resultRepository.save(result);
+            return true;
         }
-
-        resultRepository.save(result);
+        return false;
     }
 
-    public void finalizeResult(long id, int totalVotesVotation) {
-        Result result = resultRepository.findByResultId(String.valueOf(id));
-        int totalVotes = 0;
-        for (int i = 0; i < result.getNumberOfVotesPerCandidate().size(); i++) {
-            totalVotes += result.getNumberOfVotesPerCandidate().get(i);
+    public boolean finalizeResult(String id, int totalVotesVotation) {
+        Optional<Result> optionalResult = resultRepository.findById(String.valueOf(id));
+        Result result = optionalResult.orElse(null);
+        if (result != null) {
+            int totalVotes = 0;
+            for (int i = 0; i < result.getNumberOfVotesPerCandidate().size(); i++) {
+                totalVotes += result.getNumberOfVotesPerCandidate().get(i);
+            }
+            result.setPercentage((float) totalVotes / totalVotesVotation);
+            result.setVotes(totalVotes);
+            resultRepository.save(result);
+            return true;
         }
-        result.setPercentage((float) totalVotes / totalVotesVotation);
-        result.setVotes(totalVotes);
-        resultRepository.save(result);
+        else {
+            return false;
+        }
     }
 }

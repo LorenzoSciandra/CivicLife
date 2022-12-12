@@ -1,55 +1,58 @@
 package com.civiclife.voteservice.model;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
 
-@Document(collection = "Result")
+@Data
+@AllArgsConstructor
+@Document(collection = "results")
 public class Result {
 
     @Id
-    private long id;
-    private long votationId;
-    private long partyId;
+    private String id;
+    private String votationId;
+    private String partyId;
     private int votes;
     private float percentage;
-    private List<Candidate> candidateList;
+    private List<String> candidateIdList;
     private List<Integer> numberOfVotesPerCandidate;
 
     public Result() {
     }
 
-    public Result(long id, long votationId, long partyId, int votes, float percentage, List<Candidate> candidateList, List<Integer> numberOfVotesPerCandidate) {
-        this.id = id;
+    public Result(String votationId, String partyId, int votes, float percentage, List<String> candidateIdList, List<Integer> numberOfVotesPerCandidate) {
         this.votationId = votationId;
         this.partyId = partyId;
         this.votes = votes;
         this.percentage = percentage;
-        this.candidateList = candidateList;
+        this.candidateIdList = candidateIdList;
         this.numberOfVotesPerCandidate = numberOfVotesPerCandidate;
     }
 
-    public long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
-    public long getVotationId() {
+    public String getVotationId() {
         return votationId;
     }
 
-    public void setVotationId(long votationId) {
+    public void setVotationId(String votationId) {
         this.votationId = votationId;
     }
 
-    public long getPartyId() {
+    public String getPartyId() {
         return partyId;
     }
 
-    public void setPartyId(long partyId) {
+    public void setPartyId(String partyId) {
         this.partyId = partyId;
     }
 
@@ -69,12 +72,12 @@ public class Result {
         this.percentage = percentage;
     }
 
-    public List<Candidate> getCandidateList() {
-        return candidateList;
+    public List<String> getcandidateIdList() {
+        return candidateIdList;
     }
 
-    public void setCandidateList(List<Candidate> candidateList) {
-        this.candidateList = candidateList;
+    public void setcandidateIdList(List<String> candidateIdList) {
+        this.candidateIdList = candidateIdList;
     }
 
     public List<Integer> getNumberOfVotesPerCandidate() {
@@ -93,7 +96,7 @@ public class Result {
                 ", partyId='" + partyId + '\'' +
                 ", votes=" + votes +
                 ", percentage=" + percentage +
-                ", candidateList=" + candidateList +
+                ", candidateIdList=" + candidateIdList +
                 ", numberOfVotesPerCandidate=" + numberOfVotesPerCandidate +
                 '}';
     }

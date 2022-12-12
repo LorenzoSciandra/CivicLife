@@ -1,38 +1,41 @@
 package com.civiclife.voteservice.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
 
-@Document(collection = "Party")
+@Data
+@AllArgsConstructor
+@Document(collection = "parties")
 public class Party {
 
     @Id
-    private long id;
+    private String id;
     private String name;
     private String description;
     private String info;
-    private List<Candidate> candidateList;
-    private Candidate leader;
+    private List<String> candidateIdList;
+    private String leaderId;
 
     public Party() {
     }
 
-    public Party(long id, String name, String description, String info, List<Candidate> candidateList, Candidate leader) {
-        this.id = id;
+    public Party(String name, String description, String info, List<String> candidateIdList, String leaderId) {
         this.name = name;
         this.description = description;
         this.info = info;
-        this.candidateList = candidateList;
-        this.leader = leader;
+        this.candidateIdList = candidateIdList;
+        this.leaderId = leaderId;
     }
 
-    public long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -60,20 +63,20 @@ public class Party {
         this.info = info;
     }
 
-    public List<Candidate> getCandidateList() {
-        return candidateList;
+    public List<String> getCandidateIdList() {
+        return candidateIdList;
     }
 
-    public void setCandidateList(List<Candidate> candidateList) {
-        this.candidateList = candidateList;
+    public void setcandidateIdList(List<String> candidateIdList) {
+        this.candidateIdList = candidateIdList;
     }
 
-    public Candidate getLeader() {
-        return leader;
+    public String getLeaderId() {
+        return leaderId;
     }
 
-    public void setLeader(Candidate leader) {
-        this.leader = leader;
+    public void setLeaderId(String leader) {
+        this.leaderId = leader;
     }
 
     @Override
@@ -83,8 +86,8 @@ public class Party {
                 "name='" + name + "', " +
                 "description='" + description + "', " +
                 "info='" + info + "', " +
-                "candidateList=" + candidateList +
-                ", leader=" + leader +
+                "candidateIdList=" + candidateIdList +
+                ", leader=" + leaderId +
                 "}";
     }
 }

@@ -1,6 +1,7 @@
 package com.civiclife.voteservice.controller;
 
 import com.civiclife.voteservice.model.Candidate;
+import com.civiclife.voteservice.model.Party;
 import com.civiclife.voteservice.repo.CandidateRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +17,9 @@ public class CandidateController {
     @Autowired
     private CandidateRepository candidateRepository;
 
+    @Autowired
+    private PartyController partyController;
+
     @GetMapping("/candidates")
     public List<Candidate> getAllCandidates() {
         return candidateRepository.findAll();
@@ -23,27 +27,55 @@ public class CandidateController {
 
     @GetMapping("/candidates/{candidateId}")
     public Candidate getCandidateById(@PathVariable String candidateId) {
-        return candidateRepository.findByCandidateId(candidateId);
+        Optional<Candidate> candidateOptional = candidateRepository.findById(candidateId);
+        return candidateOptional.orElse(null);
     }
 
     @PostMapping("/candidate/create")
-    public Candidate createCandidate(@RequestBody Candidate candidate) {
-        return candidateRepository.save(candidate);
+    public boolean createCandidate(@RequestBody Candidate candidate) {
+        candidateRepository.save(candidate);
+        return true;
     }
 
     @PostMapping("/candidate/update/{candidateId}")
-    public Candidate updateCandidate(@PathVariable String candidateId, @RequestBody Candidate candidate) {
-        Candidate candidateToUpdate = candidateRepository.findByCandidateId(candidateId);
-        candidateToUpdate.setName(candidate.getName());
-        candidateToUpdate.setSurname(candidate.getSurname());
-        candidateToUpdate.setDescription(candidate.getDescription());
-        candidateToUpdate.setInfo(candidate.getInfo());
-        candidateToUpdate.setPartyId(candidate.getPartyId());
-        return candidateRepository.save(candidateToUpdate);
+    public boolean updateCandidate(@PathVariable String candidateId, @RequestBody Candidate candidate) {
+        Optional<Candidate> candidateOptional = candidateRepository.findById(candidateId);
+
+        if(candidateOptional.isPresent()) {
+            candidateOptional.get().setName(candidate.getName());
+            candidateOptional.get().setDescription(candidate.getDescription());
+            candidateOptional.get().setInfo(candidate.getInfo());
+            candidateOptional.get().setPartyId(candidate.getPartyId());
+            candidateRepository.save(candidateOptional.get());
+            return true;
+        }
+        else{
+            return false;
+        }
     }
 
+    @GetMapping("/candidate/setParty/{candidateId}/{partyId}")
+    public boolean updateCandidateParty(@PathVariable String candidateId, @PathVariable String partyId){
+        Optional<Candidate> candidateOptional = candidateRepository.findById(candidateId);
+        if(candidateOptional.isPresent()){
+            if(partyController.getPartyById(partyId) != null){
+                candidateOptional.get().setPartyId(partyId);
+                candidateRepository.save(candidateOptional.get());
+                return true;
+            }
+
+        }
+        return false;
+    }
+
+
     @GetMapping("/candidate/delete/{candidateId}")
-    public void deleteCandidate(@PathVariable String candidateId) {
-        candidateRepository.delete(candidateRepository.findByCandidateId(candidateId));
+    public boolean deleteCandidate(@PathVariable String candidateId) {
+        Optional<Candidate> candidateOptional= candidateRepository.findCandidateById(candidateId);
+        if(candidateOptional.isPresent()) {
+            candidateRepository.delete(candidateOptional.get());
+            return true;
+        }
+        return false;
     }
 }
