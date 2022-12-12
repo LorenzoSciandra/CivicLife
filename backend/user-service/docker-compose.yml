@@ -3,7 +3,7 @@ version: '3'
 services:
   userMongoDB:
     image: mongo:latest
-    container_name: "VoteMongoDB"
+    container_name: "UserMongoDB"
     restart: unless-stopped
     volumes:
       - mongodb:/var/lib/mongodb/data
