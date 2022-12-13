@@ -2,5 +2,5 @@ spring:
   data:
     mongodb:
       database: Vote
-      host: voteMongoDB
+      host: vote-db
       port: 27017

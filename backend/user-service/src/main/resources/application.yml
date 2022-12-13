@@ -2,5 +2,5 @@ spring:
   data:
     mongodb:
       database: User
-      host: userMongoDB
+      host: user-db
       port: 27017

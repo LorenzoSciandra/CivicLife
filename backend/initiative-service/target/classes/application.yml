@@ -2,5 +2,5 @@ spring:
   data:
     mongodb:
       database: Initiative
-      host: initiativeMongoDB
+      host: initiative-db
       port: 27017

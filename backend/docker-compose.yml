@@ -1,0 +1,109 @@
+version: '3.7'
+services:
+  external-resources-service:
+    build: ./external-resources-service
+    image: external-resources-service
+    container_name: external-resources-service
+    depends_on:
+      - external-resources-db
+    networks:
+      - civiclife-network
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://external-resources-db:5432/ExternalResources
+      - SPRING_DATASOURCE_USERNAME=taass
+      - SPRING_DATASOURCE_PASSWORD=taass
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+
+  initiative-service:
+    build: ./initiative-service
+    image: initiative-service-1.0
+    container_name: initiative-service
+    links:
+      - initiative-db
+    depends_on:
+      - initiative-db
+    networks:
+      - civiclife-network
+
+  user-service:
+    build: ./user-service
+    image: user-service-1.0
+    container_name: user-service
+    links:
+      - user-db
+    depends_on:
+      - user-db
+    networks:
+      - civiclife-network
+
+  vote-service:
+    build: ./vote-service
+    image: vote-service-1.0
+    container_name: vote-service
+    links:
+      - vote-db
+    depends_on:
+      - vote-db
+    networks:
+      - civiclife-network
+
+  #  ----------------------------------------------
+  #  DATABASES
+
+  external-resources-db:
+    container_name: external-resources-db
+    image: postgres
+    ports:
+      - "5432"
+    volumes:
+      - external-resources-db:/var/lib/external-resourcesDB/data
+    networks:
+      - civiclife-network
+    environment:
+      POSTGRES_DB: ExternalResources
+      POSTGRES_USER: taass
+      POSTGRES_PASSWORD: taass
+      restart: unless-stopped
+
+  initiative-db:
+    image: mongo:latest
+    container_name: initiative-db
+    restart: unless-stopped
+    volumes:
+      - initiative-db:/var/lib/initiativeDB/data
+    ports:
+      - "27017:27017"
+    networks:
+      - civiclife-network
+
+  user-db:
+    image: mongo:latest
+    container_name: user-db
+    restart: unless-stopped
+    volumes:
+      - user-db:/var/lib/userDB/data
+    ports:
+      - "27018:27017"
+    networks:
+      - civiclife-network
+
+  vote-db:
+    image: mongo:latest
+    container_name: vote-db
+    restart: unless-stopped
+    volumes:
+      - vote-db:/var/lib/voteDB/data
+    ports:
+      - "27019:27017"
+    networks:
+      - civiclife-network
+
+volumes:
+  external-resources-db:
+  initiative-db:
+  user-db:
+  vote-db:
+networks:
+  civiclife-network:
+    driver: bridge
+
