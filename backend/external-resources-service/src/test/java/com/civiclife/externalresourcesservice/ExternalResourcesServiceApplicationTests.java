@@ -1,10 +1,10 @@
-package com.civiclife.backend;
+package com.civiclife.externalresourcesservice;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class BackendApplicationTests {
+class ExternalResourcesServiceApplicationTests {
 
     @Test
     void contextLoads() {
