@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/vaccinationAPI/v1")
 public class VaccinationController {
 
     private final VaccinationRepository vaccinationRepository;

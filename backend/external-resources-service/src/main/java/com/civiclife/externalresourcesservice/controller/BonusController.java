@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/bonusAPI/v1")
 public class BonusController {
 
     private final BonusRepository bonusRepository;

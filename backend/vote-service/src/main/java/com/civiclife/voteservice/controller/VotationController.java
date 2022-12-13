@@ -14,7 +14,7 @@ import java.util.Optional;
 
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/votationAPI/v1")
 public class VotationController {
 
     @Autowired

@@ -12,7 +12,7 @@ import java.util.Optional;
 
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/resultAPI/v1")
 public class ResultController {
 
     @Autowired
