@@ -1,7 +1,5 @@
 package com.civiclife.externalresourcesservice.model;
-
-import jakarta.persistence.*;
-
+import javax.persistence.*;
 @Entity
 @Table(name = "vaccination")
 public class Vaccination {
@@ -10,6 +8,8 @@ public class Vaccination {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    @Column(name ="id_owner")
+    private String id_owner;
     @Column(name = "type")
     private String type;
 
@@ -37,7 +37,11 @@ public class Vaccination {
     @Column(name="nurse")
     private String nurse;
 
-    public Vaccination(String type, Long date, String location, String description, String name, String vaccine, String manufacturer, String doctor, String nurse) {
+    public Vaccination() {
+    }
+
+    public Vaccination(String id_owner, String type, Long date, String location, String description, String name, String vaccine, String manufacturer, String doctor, String nurse) {
+        this.id_owner = id_owner;
         this.type = type;
         this.date = date;
         this.location = location;
@@ -49,15 +53,20 @@ public class Vaccination {
         this.nurse = nurse;
     }
 
-    public Vaccination() {
-    }
-
     public Long getId() {
         return id;
     }
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getId_owner() {
+        return id_owner;
+    }
+
+    public void setId_owner(String id_owner) {
+        this.id_owner = id_owner;
     }
 
     public String getType() {

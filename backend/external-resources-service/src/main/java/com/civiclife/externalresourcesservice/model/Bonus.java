@@ -1,7 +1,6 @@
 package com.civiclife.externalresourcesservice.model;
 
-import jakarta.persistence.*;
-
+import javax.persistence.*;
 @Entity
 @Table(name = "bonus")
 public class Bonus {
@@ -11,7 +10,7 @@ public class Bonus {
     private Long id;
 
     @Column(name ="id_owner")
-    private String idOwner;
+    private String id_owner;
 
     @Column(name = "name")
     private String name;
@@ -22,22 +21,18 @@ public class Bonus {
     @Column(name = "type")
     private String type;
 
-    @Column(name = "start_date")
-    private long startDate;
-
     @Column(name = "end_date")
-    private long endDate;
-
-    public Bonus(String idOwner, String name, String description, String type, long startDate, long endDate) {
-        this.name = name;
-        this.idOwner = idOwner;
-        this.description = description;
-        this.type = type;
-        this.startDate = startDate;
-        this.endDate = endDate;
-    }
+    private long end_date;
 
     public Bonus() {
+    }
+
+    public Bonus(String id_owner, String name, String description, String type, long end_date) {
+        this.id_owner = id_owner;
+        this.name = name;
+        this.description = description;
+        this.type = type;
+        this.end_date = end_date;
     }
 
     public Long getId() {
@@ -46,6 +41,14 @@ public class Bonus {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getId_owner() {
+        return id_owner;
+    }
+
+    public void setId_owner(String id_owner) {
+        this.id_owner = id_owner;
     }
 
     public String getName() {
@@ -72,39 +75,23 @@ public class Bonus {
         this.type = type;
     }
 
-    public long getStartDate() {
-        return startDate;
+    public long getEnd_date() {
+        return end_date;
     }
 
-    public void setStartDate(long startDate) {
-        this.startDate = startDate;
-    }
-
-    public long getEndDate() {
-        return endDate;
-    }
-
-    public void setEndDate(long endDate) {
-        this.endDate = endDate;
-    }
-
-    public String getIdOwner() {
-        return idOwner;
-    }
-
-    public void setIdOwner(String idOwner) {
-        this.idOwner = idOwner;
+    public void setEnd_date(long end_date) {
+        this.end_date = end_date;
     }
 
     @Override
     public String toString() {
         return "Bonus{" +
                 "id=" + id +
+                "id_owner=" + id_owner +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", type='" + type + '\'' +
-                ", startDate=" + startDate +
-                ", endDate=" + endDate +
+                ", endDate=" + end_date +
                 '}';
     }
 }

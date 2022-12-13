@@ -1,13 +1,13 @@
 version: '3'
 
 services:
-  externalResourcesPostgresql:
-    container_name: externalResourcesPostgresql
-    image: "postgres"
+  postgresDB:
+    container_name: postgresDB
+    image: postgres
     ports:
       - "5432"
     volumes:
-      - externalResourcesPostgresql:/var/lib/postgresql/data
+      - postgresDB:/var/lib/postgresql/data
     networks:
       - civiclife-network
     environment:
@@ -15,23 +15,24 @@ services:
       POSTGRES_USER: taass
       POSTGRES_PASSWORD: taass
       restart: unless-stopped
-  app:
+
+  external-resources-service:
     build: .
-    image: user-service-1.0
-    container_name: user-service
+    image: external-resources-service
+    container_name: external-resources-service
     ports:
       - "8080:8080"
     depends_on:
-      - externalResourcesPostgresql
+      - postgresDB
     networks:
       - civiclife-network
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:externalResourcesPostgresql://externalResourcesPostgresql:5432/ExternalResources
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgresDB:5432/ExternalResources
       - SPRING_DATASOURCE_USERNAME=taass
       - SPRING_DATASOURCE_PASSWORD=taass
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
 volumes:
-  externalResourcesPostgresql:
+  postgresDB:
 networks:
   civiclife-network:
     driver: bridge

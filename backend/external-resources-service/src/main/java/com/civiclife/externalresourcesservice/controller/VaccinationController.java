@@ -1,13 +1,8 @@
 package com.civiclife.externalresourcesservice.controller;
 
-import com.civiclife.externalresourcesservice.model.Bonus;
 import com.civiclife.externalresourcesservice.model.Vaccination;
-import com.civiclife.externalresourcesservice.repo.VaccinationRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.civiclife.externalresourcesservice.repository.VaccinationRepository;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,40 +11,42 @@ import java.util.Optional;
 @RequestMapping("/api/v1")
 public class VaccinationController {
 
-    @Autowired
-    VaccinationRepository vaccinationRepository;
+    private final VaccinationRepository vaccinationRepository;
 
+    public VaccinationController(VaccinationRepository vaccinationRepository) {
+        this.vaccinationRepository = vaccinationRepository;
+    }
 
     @GetMapping("/vaccinations")
     public List<Vaccination> getAllVaccinations() {
-        return vaccinationRepository.findAllVaccinations();
+        return vaccinationRepository.findAll();
     }
 
-    @GetMapping("/vaccinations/{id}")
-    public Vaccination getVaccinationsById(long id) {
+    @GetMapping("/vaccination/{id}")
+    public Vaccination getVaccinationsById(@PathVariable long id) {
         Optional<Vaccination> optionalVaccination = vaccinationRepository.findById(id);
         return optionalVaccination.orElse(null);
     }
 
     @PostMapping("/vaccination/create")
-    public boolean createVaccination(Vaccination vaccination) {
+    public boolean createVaccination(@RequestBody Vaccination vaccination) {
         vaccinationRepository.save(vaccination);
         return true;
     }
 
-    @GetMapping("/vaccinations/delete/{id}")
-    public boolean deleteBonus(Long id) {
+    @DeleteMapping("/vaccination/delete/{id}")
+    public boolean deleteVaccination(@PathVariable Long id) {
         vaccinationRepository.deleteById(id);
         return true;
     }
 
     @GetMapping("/vaccinations/{id_owner}")
-    public List<Vaccination> getBonusesByOwner(String idOwner) {
-        return vaccinationRepository.findAllVaccinationByIdUser(idOwner);
+    public List<Vaccination> getBVaccinationsByOwner(@PathVariable String id_owner) {
+        return vaccinationRepository.findAll().stream().filter(vaccination -> vaccination.getId_owner().equals(id_owner)).toList();
     }
 
-    @PostMapping("/vaccinations/update/{id}")
-    public boolean updateVaccination(Long id, Vaccination vaccination) {
+    @PostMapping("/vaccination/update/{id}")
+    public boolean updateVaccination(@PathVariable Long id, @RequestBody Vaccination vaccination) {
         Optional<Vaccination> optionalVaccination = vaccinationRepository.findById(id);
         if(optionalVaccination.isPresent()){
             Vaccination vaccinationToUpdate = optionalVaccination.get();
