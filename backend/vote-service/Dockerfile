@@ -1,4 +1,4 @@
 FROM openjdk:19
-ADD /target/vote-service.jar app.jar
+COPY /target/*.jar vote-service.jar
 EXPOSE 8084
-ENTRYPOINT ["java", "-jar", "app.jar"]
+CMD ["java", "-jar", "vote-service.jar"]

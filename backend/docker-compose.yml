@@ -1,20 +1,40 @@
 version: '3.7'
 services:
+  #  ARCHITECTURAL SERVICES
+  service-discovery:
+    container_name: service-discovery
+    image: service-discovery-1.0
+    build: service-discovery
+    ports:
+      - "8761:8761"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+
+  api-gateway:
+    container_name: api-gateway
+    image: api-gateway-1.0
+    build: api-gateway
+    ports:
+      - "8080:8080"
+    depends_on:
+      - service-discovery
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+  #  ----------------------------------------------
+  #  APPLICATION SERVICES
   external-resources-service:
     build: external-resources-service
-    image: external-resources-service
+    image: external-resources-service-1.0
     container_name: external-resources-service
     depends_on:
       - external-resources-db
+      - service-discovery
     ports:
       - "8081:8081"
     networks:
       - civiclife-network
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://external-resources-db:5432/ExternalResources
-      - SPRING_DATASOURCE_USERNAME=taass
-      - SPRING_DATASOURCE_PASSWORD=taass
-      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SPRING_PROFILES_ACTIVE=docker
 
   initiative-service:
     build: initiative-service
@@ -26,8 +46,11 @@ services:
       - "8082:8082"
     depends_on:
       - initiative-db
+      - service-discovery
     networks:
       - civiclife-network
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
 
   user-service:
     build: user-service
@@ -39,8 +62,11 @@ services:
       - user-db
     depends_on:
       - user-db
+      - service-discovery
     networks:
       - civiclife-network
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
 
   vote-service:
     build: vote-service
@@ -52,8 +78,11 @@ services:
       - vote-db
     depends_on:
       - vote-db
+      - service-discovery
     networks:
       - civiclife-network
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
 
   #  ----------------------------------------------
   #  DATABASES
@@ -114,4 +143,3 @@ volumes:
 networks:
   civiclife-network:
     driver: bridge
-

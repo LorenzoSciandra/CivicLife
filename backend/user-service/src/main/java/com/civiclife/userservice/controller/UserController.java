@@ -19,6 +19,7 @@ public class UserController {
 
     @GetMapping("/users")
     public List<User> getAllUtenti() {
+        System.out.println("IL CAZZONE E? QUI");
         return userRepository.findAll();
     }
 
@@ -27,28 +28,11 @@ public class UserController {
         return userRepository.findById(id).orElse(null);
     }
 
-    @GetMapping("/user/{id}/createdInitiatives")
-    public List<String> getIniziativeCreate(@PathVariable(value = "id") String id) {
-        User user = getUser(id);
-        if(!user.getInitiativesCreatedId().isEmpty()){
-            return user.getInitiativesCreatedId();
-        }
-        else{
-            // TODO: chiama il servizio di iniziative per ottenere le iniziative create e memorizza
-            return null;
-        }
-    }
 
-    @GetMapping("/user/{id}/subscribedInitiatives")
-    public List<String> getIniziativeSottoscritte(@PathVariable(value = "id") String id) {
-        User user = getUser(id);
-        if(!user.getInitiativeSubscribedId().isEmpty()){
-            return user.getInitiativeSubscribedId();
-        }
-        else{
-            // TODO: chiama il servizio di iniziative per ottenere le iniziative sottoscritte e memorizza
-            return null;
-        }
+    @DeleteMapping("/user/delete/{id}")
+    public boolean deleteUser(@PathVariable(value = "id") String id) {
+        userRepository.deleteById(id);
+        return true;
     }
 
     @PostMapping("/user/create")

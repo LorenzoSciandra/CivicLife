@@ -1,4 +1,4 @@
 FROM openjdk:19
-ADD /target/user-service.jar app.jar
+COPY /target/*.jar user-service.jar
 EXPOSE 8083
-ENTRYPOINT ["java", "-jar", "app.jar"]
+CMD ["java", "-jar", "user-service.jar"]

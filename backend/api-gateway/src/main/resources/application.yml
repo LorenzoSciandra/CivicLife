@@ -1,0 +1,57 @@
+spring:
+  cloud:
+    config:
+      import-check:
+        enabled : false
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+      routes:
+        - id: external-resources-service
+          uri: lb://external-resources-service
+          predicates:
+            - Path=/bonusAPI/v1**
+            - Path=/vaccinationAPI/v1**
+        - id: initiative-service
+          uri: lb://initiative-service
+          predicates:
+            - Path=/initiativeAPI/v1**
+        - id: user-service
+          uri: lb://user-service
+          predicates:
+            - Path=/userAPI/v1**
+        - id: vote-service
+          uri: lb://vote-service
+          predicates:
+            - Path=/candidateAPI/v1**
+            - Path=/partyAPI/v1**
+            - Path=/resultAPI/v1**
+            - Path=/votationAPI/v1**
+  application:
+    name: api-gateway
+
+server:
+  port: 8080
+
+eureka:
+  instance:
+    prefer-ip-address: true
+    hostname: api-gateway
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: ${EUREKA_URI:http://localhost:8761/eureka}
+
+---
+spring:
+  config:
+    activate:
+      on-profile: docker
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://discovery:8761/eureka

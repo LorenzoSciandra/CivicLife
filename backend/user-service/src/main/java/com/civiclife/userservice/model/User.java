@@ -26,17 +26,11 @@ public class User {
     private int status;
     private long telephonNumber;
 
-    private List <String> votationsId;
-    private List <String> initiativesCreatedId;
-    private List <String> initiativeSubscribedId;
-    private List <String> bonusId;
-    private List <String> vaccinationId;
-
     public User(){
 
     }
 
-    public User(boolean admin, String name, String surname, String email, String fiscalCode, String residence, String domicile, long birthDate, int status, long telephonNumber, List<String> votationsId, List<String> initiativesCreatedId, List<String> initiativeSubscribedId, List<String> bonusId, List<String> vaccinationId) {
+    public User(boolean admin, String name, String surname, String email, String fiscalCode, String residence, String domicile, long birthDate, int status, long telephonNumber) {
         this.admin = admin;
         this.name = name;
         this.surname = surname;
@@ -47,11 +41,6 @@ public class User {
         this.birthDate = birthDate;
         this.status = status;
         this.telephonNumber = telephonNumber;
-        this.votationsId = votationsId;
-        this.initiativesCreatedId = initiativesCreatedId;
-        this.initiativeSubscribedId = initiativeSubscribedId;
-        this.bonusId = bonusId;
-        this.vaccinationId = vaccinationId;
     }
 
     public boolean isAdmin() {
@@ -132,47 +121,6 @@ public class User {
 
     public void setTelephonNumber(long telephonNumber) {
         this.telephonNumber = telephonNumber;
-    }
-
-
-    public List<String> getVotationsId() {
-        return votationsId;
-    }
-
-    public void setVotationsId(List<String> votationsId) {
-        this.votationsId = votationsId;
-    }
-
-    public List<String> getInitiativesCreatedId() {
-        return initiativesCreatedId;
-    }
-
-    public void setInitiativesCreatedId(List<String> initiativesCreatedId) {
-        this.initiativesCreatedId = initiativesCreatedId;
-    }
-
-    public List<String> getInitiativeSubscribedId() {
-        return initiativeSubscribedId;
-    }
-
-    public void setInitiativeSubscribedId(List<String> initiativeSubscribedId) {
-        this.initiativeSubscribedId = initiativeSubscribedId;
-    }
-
-    public List<String> getBonusId() {
-        return bonusId;
-    }
-
-    public void setBonusId(List<String> bonusId) {
-        this.bonusId = bonusId;
-    }
-
-    public List<String> getVaccinationId() {
-        return vaccinationId;
-    }
-
-    public void setVaccinationId(List<String> vaccinationId) {
-        this.vaccinationId = vaccinationId;
     }
 
     @Override

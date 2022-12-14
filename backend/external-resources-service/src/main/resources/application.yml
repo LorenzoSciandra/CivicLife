@@ -1,0 +1,45 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: external-resources-service
+  datasource:
+    url: "jdbc:postgresql://localhost:5433/ExternalResources"
+    username: "taass"
+    password: "taass"
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQL95Dialect
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+          lob:
+            non_contextual-creation: true
+        dialect: org.hibernate.dialect.PostgreSQL95Dialect
+        current_session_context_class: thread
+        format_sql: true
+    show-sql: true
+
+eureka:
+  instance:
+    prefer-ip-address: true
+    hostname: external-resources-service
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: ${EUREKA_URI:http://localhost:8761/eureka}
+---
+spring:
+  config:
+    activate:
+      on-profile: docker
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://discovery:8761/eureka
