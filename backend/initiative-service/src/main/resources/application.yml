@@ -13,20 +13,8 @@ spring:
 eureka:
   instance:
     prefer-ip-address: true
-    hostname: initiative-service
   client:
     register-with-eureka: true
     fetch-registry: true
     service-url:
       defaultZone: ${EUREKA_URIhttp://localhost:8761/eureka}
-
----
-spring:
-  config:
-    activate:
-      on-profile: docker
-
-eureka:
-  client:
-    service-url:
-      defaultZone: :http://discovery:8761/eureka

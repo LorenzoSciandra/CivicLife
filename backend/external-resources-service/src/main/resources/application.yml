@@ -1,5 +1,8 @@
 server:
-  port: 8081
+  port: 8080
+  error:
+    include-message: always
+  forward-headers-strategy: framework
 
 spring:
   application:
@@ -15,31 +18,21 @@ spring:
       ddl-auto: update
     properties:
       hibernate:
+        temp:
+          use_jdbc_metadata_defaults: false
         jdbc:
-          time_zone: UTC
           lob:
-            non_contextual-creation: true
-        dialect: org.hibernate.dialect.PostgreSQL95Dialect
-        current_session_context_class: thread
-        format_sql: true
-    show-sql: true
+            non_contextual_creation: true
+          time_zone: UTC
 
 eureka:
   instance:
     prefer-ip-address: true
-    hostname: external-resources-service
   client:
     register-with-eureka: true
     fetch-registry: true
     service-url:
       defaultZone: ${EUREKA_URI:http://localhost:8761/eureka}
----
-spring:
-  config:
-    activate:
-      on-profile: docker
 
-eureka:
-  client:
-    service-url:
-      defaultZone: http://discovery:8761/eureka
+
+

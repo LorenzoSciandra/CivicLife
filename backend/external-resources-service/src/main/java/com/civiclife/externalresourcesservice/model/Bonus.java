@@ -1,7 +1,10 @@
 package com.civiclife.externalresourcesservice.model;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
+import lombok.Data;
+
 @Entity
+@Data
 @Table(name = "bonus")
 public class Bonus {
 

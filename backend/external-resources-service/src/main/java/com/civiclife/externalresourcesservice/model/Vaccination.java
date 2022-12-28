@@ -1,6 +1,9 @@
 package com.civiclife.externalresourcesservice.model;
-import javax.persistence.*;
+import lombok.Data;
+
+import jakarta.persistence.*;
 @Entity
+@Data
 @Table(name = "vaccination")
 public class Vaccination {
 

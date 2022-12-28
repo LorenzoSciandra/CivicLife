@@ -7,8 +7,6 @@ services:
     build: service-discovery
     ports:
       - "8761:8761"
-    environment:
-      - SPRING_PROFILES_ACTIVE=docker
 
   api-gateway:
     container_name: api-gateway
@@ -18,8 +16,10 @@ services:
       - "8080:8080"
     depends_on:
       - service-discovery
-    environment:
-      - SPRING_PROFILES_ACTIVE=docker
+      - external-resources-service
+      - initiative-service
+      - user-service
+      - vote-service
   #  ----------------------------------------------
   #  APPLICATION SERVICES
   external-resources-service:
@@ -33,8 +33,6 @@ services:
       - "8081:8081"
     networks:
       - civiclife-network
-    environment:
-      - SPRING_PROFILES_ACTIVE=docker
 
   initiative-service:
     build: initiative-service
@@ -49,8 +47,6 @@ services:
       - service-discovery
     networks:
       - civiclife-network
-    environment:
-      - SPRING_PROFILES_ACTIVE=docker
 
   user-service:
     build: user-service
@@ -65,8 +61,6 @@ services:
       - service-discovery
     networks:
       - civiclife-network
-    environment:
-      - SPRING_PROFILES_ACTIVE=docker
 
   vote-service:
     build: vote-service
@@ -81,8 +75,6 @@ services:
       - service-discovery
     networks:
       - civiclife-network
-    environment:
-      - SPRING_PROFILES_ACTIVE=docker
 
   #  ----------------------------------------------
   #  DATABASES
