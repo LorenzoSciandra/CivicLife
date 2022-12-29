@@ -1,30 +1,21 @@
 package com.civiclife.externalresourcesservice.model;
 
-import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-@Entity
 @Data
-@Table(name = "bonus")
+@AllArgsConstructor
+@Document(collection = "bonuses")
 public class Bonus {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
-
-    @Column(name ="id_owner")
+    private String id;
     private String id_owner;
-
-    @Column(name = "name")
     private String name;
-
-    @Column(name = "description")
     private String description;
-
-    @Column(name = "type")
     private String type;
-
-    @Column(name = "end_date")
     private long end_date;
 
     public Bonus() {
@@ -38,11 +29,11 @@ public class Bonus {
         this.end_date = end_date;
     }
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 

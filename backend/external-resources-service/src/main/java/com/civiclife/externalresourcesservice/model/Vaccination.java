@@ -1,43 +1,25 @@
 package com.civiclife.externalresourcesservice.model;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-import jakarta.persistence.*;
-@Entity
 @Data
-@Table(name = "vaccination")
+@AllArgsConstructor
+@Document(collection = "vaccinations")
 public class Vaccination {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
-
-    @Column(name ="id_owner")
+    private String id;
     private String id_owner;
-    @Column(name = "type")
     private String type;
-
-    @Column(name= "date")
     private Long date;
-
-    @Column(name = "location")
     private String location;
-
-    @Column(name = "description")
     private String description;
-
-    @Column(name = "name")
     private String name;
-
-    @Column(name = "vaccine")
     private String vaccine;
-
-    @Column(name = "manufacturer")
     private String manufacturer;
-
-    @Column(name = "doctor")
     private String doctor;
-
-    @Column(name="nurse")
     private String nurse;
 
     public Vaccination() {
@@ -56,11 +38,11 @@ public class Vaccination {
         this.nurse = nurse;
     }
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 

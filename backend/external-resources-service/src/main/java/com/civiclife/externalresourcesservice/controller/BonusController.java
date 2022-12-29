@@ -24,7 +24,7 @@ public class BonusController {
     }
 
     @GetMapping("/bonus/{id}")
-    public Bonus getBonusById(@PathVariable Long id) {
+    public Bonus getBonusById(@PathVariable String id) {
         Optional<Bonus> bonus = bonusRepository.findById(id);
         return bonus.orElse(null);
     }
@@ -36,7 +36,7 @@ public class BonusController {
     }
 
     @DeleteMapping("/bonus/delete/{id}")
-    public boolean deleteBonus(@PathVariable Long id) {
+    public boolean deleteBonus(@PathVariable String id) {
         bonusRepository.deleteById(id);
         return true;
     }
@@ -47,7 +47,7 @@ public class BonusController {
     }
 
     @PostMapping("/bonus/update/{id}")
-    public boolean updateBonus(@PathVariable Long id, @RequestBody  Bonus bonus) {
+    public boolean updateBonus(@PathVariable String id, @RequestBody  Bonus bonus) {
         Optional<Bonus> optionalBonus = bonusRepository.findById(id);
         if(optionalBonus.isPresent()){
             Bonus bonusToUpdate = optionalBonus.get();

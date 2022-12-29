@@ -23,7 +23,7 @@ public class VaccinationController {
     }
 
     @GetMapping("/vaccination/{id}")
-    public Vaccination getVaccinationsById(@PathVariable long id) {
+    public Vaccination getVaccinationsById(@PathVariable String id) {
         Optional<Vaccination> optionalVaccination = vaccinationRepository.findById(id);
         return optionalVaccination.orElse(null);
     }
@@ -35,7 +35,7 @@ public class VaccinationController {
     }
 
     @DeleteMapping("/vaccination/delete/{id}")
-    public boolean deleteVaccination(@PathVariable Long id) {
+    public boolean deleteVaccination(@PathVariable String id) {
         vaccinationRepository.deleteById(id);
         return true;
     }
@@ -46,7 +46,7 @@ public class VaccinationController {
     }
 
     @PostMapping("/vaccination/update/{id}")
-    public boolean updateVaccination(@PathVariable Long id, @RequestBody Vaccination vaccination) {
+    public boolean updateVaccination(@PathVariable String id, @RequestBody Vaccination vaccination) {
         Optional<Vaccination> optionalVaccination = vaccinationRepository.findById(id);
         if(optionalVaccination.isPresent()){
             Vaccination vaccinationToUpdate = optionalVaccination.get();

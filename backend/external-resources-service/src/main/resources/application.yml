@@ -1,38 +1,23 @@
 server:
-  port: 8080
+  port: 8081
   error:
     include-message: always
-  forward-headers-strategy: framework
 
 spring:
   application:
     name: external-resources-service
-  datasource:
-    url: "jdbc:postgresql://localhost:5433/ExternalResources"
-    username: "taass"
-    password: "taass"
-    driver-class-name: org.postgresql.Driver
-  jpa:
-    database-platform: org.hibernate.dialect.PostgreSQL95Dialect
-    hibernate:
-      ddl-auto: update
-    properties:
-      hibernate:
-        temp:
-          use_jdbc_metadata_defaults: false
-        jdbc:
-          lob:
-            non_contextual_creation: true
-          time_zone: UTC
+  data:
+    mongodb:
+      database: ExternalResources
+      host: localhost
+      port: 27017
 
 eureka:
   instance:
     prefer-ip-address: true
+    #hostname: external-resources-service
   client:
     register-with-eureka: true
     fetch-registry: true
     service-url:
       defaultZone: ${EUREKA_URI:http://localhost:8761/eureka}
-
-
-

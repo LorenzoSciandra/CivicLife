@@ -1,5 +1,4 @@
 spring:
-
   cloud:
     gateway:
       discovery:
@@ -31,12 +30,10 @@ spring:
 
 server:
   port: 8080
+  error:
+    include-message: always
 
 eureka:
-  instance:
-    prefer-ip-address: true
   client:
-    register-with-eureka: true
-    fetch-registry: true
-    service-url:
-      defaultZone: ${EUREKA_URI:http://localhost:8761/eureka}
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka
