@@ -1,41 +1,21 @@
-spring:
-  cloud:
-    gateway:
-      discovery:
-        locator:
-          enabled: true
-      routes:
-        - id: external-resources-service
-          uri: lb://external-resources-service
-          predicates:
-            - Path=/bonusAPI/v1**
-            - Path=/vaccinationAPI/v1**
-        - id: initiative-service
-          uri: lb://initiative-service
-          predicates:
-            - Path=/initiativeAPI/v1**
-        - id: user-service
-          uri: lb://user-service
-          predicates:
-            - Path=/userAPI/v1**
-        - id: vote-service
-          uri: lb://vote-service
-          predicates:
-            - Path=/candidateAPI/v1**
-            - Path=/partyAPI/v1**
-            - Path=/resultAPI/v1**
-            - Path=/votationAPI/v1**
-  application:
-    name: api-gateway
-
 server:
   port: 8080
   error:
     include-message: always
 
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
 eureka:
   instance:
-    hostname: api-gateway
+    prefer-ip-address: true
   client:
+    register-with-eureka: true
+    fetch-registry: true
     service-url:
-      default-zone: http://localhost:8761/eureka
+      defaultZone: ${EUREKA_URI:http://localhost:8761/eureka}
