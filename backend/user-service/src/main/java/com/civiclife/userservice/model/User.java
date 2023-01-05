@@ -1,6 +1,5 @@
 package com.civiclife.userservice.model;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -9,12 +8,10 @@ import java.util.List;
 
 
 @Data
-@AllArgsConstructor
 @Document(collection = "users")
 public class User {
 
     @Id
-    private String id;
     private String email;
     private boolean admin;
     private String name;
@@ -30,11 +27,11 @@ public class User {
 
     }
 
-    public User(boolean admin, String name, String surname, String email, String fiscalCode, String residence, String domicile, long birthDate, int status, long telephonNumber) {
+    public User(String email, boolean admin, String name, String surname, String fiscalCode, String residence, String domicile, long birthDate, int status, long telephonNumber) {
+        this.email = email;
         this.admin = admin;
         this.name = name;
         this.surname = surname;
-        this.email = email;
         this.fiscalCode = fiscalCode;
         this.residence = residence;
         this.domicile = domicile;
@@ -126,7 +123,6 @@ public class User {
     @Override
     public String toString() {
         return "User{" +
-                "id='" + id + '\'' +
                 ", admin=" + admin +
                 ", name='" + name + '\'' +
                 ", surname='" + surname + '\'' +

@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -38,15 +39,21 @@ public class AuthController {
             List<String> active_tokens = new ArrayList<>(tokenBean.getTokens().keySet().stream().toList());
             active_tokens.add(token);
             risultato.put(email, active_tokens);
+            tokens_time.put(token, Instant.now());
+            tokenRepository.save(tokenBean);
         }
         else{
-            // registrare ipoteticamente nuovo utente
-            tokens_time = new HashMap<>();
-            risultato.put(email, new ArrayList<>(Collections.singleton(token)));
-        }
+            String uri = "http://localhost:8080/userAPI/v1/user/createFromLogin/" + email + "/" + name + "/" + surname;
+            RestTemplate restTemplate = new RestTemplate();
+            boolean result = Boolean.TRUE.equals(restTemplate.getForObject(uri, boolean.class));
 
-        tokens_time.put(token, Instant.now());
-        tokenRepository.save(new Token(email,tokens_time));
+            if(result) {
+                tokens_time = new HashMap<>();
+                risultato.put(email, new ArrayList<>(Collections.singleton(token)));
+                tokens_time.put(token, Instant.now());
+                tokenRepository.save(new Token(email,tokens_time));
+            }
+        }
 
         return  risultato;
     }

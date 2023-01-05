@@ -1,4 +1,4 @@
-FROM openjdk:19
-COPY /target/*.jar eureka.jar
+FROM openjdk:19-alpine
+COPY /target/*.jar service-discovery.jar
 EXPOSE 8761
-CMD ["java", "-jar", "eureka.jar"]
+CMD ["java", "-jar", "service-discovery.jar"]

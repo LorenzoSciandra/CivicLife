@@ -1,4 +1,4 @@
-FROM openjdk:19
+FROM openjdk:19-alpine
 COPY /target/*.jar initiative-service.jar
 EXPOSE 8082
 CMD ["java", "-jar", "initiative-service.jar"]
