@@ -11,6 +11,8 @@ spring:
       port: 27017
 
 eureka:
+  instance:
+    hostname: user-service
   client:
-    serviceUrl:
-      defaultZone: http://localhost:8761/eureka
+    service-url:
+      default-zone: http://localhost:8761/eureka

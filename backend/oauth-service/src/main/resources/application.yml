@@ -1,4 +1,11 @@
 spring:
+  application:
+    name: auth-service
+  data:
+    mongodb:
+      database: Token
+      host: localhost
+      port: 27017
   security:
     oauth2:
       client:
@@ -9,7 +16,3 @@ spring:
           facebook:
             client-id: 477776624531560
             client-secret: 8e702b37860f7c35c7fcc4c46bcfc601
-
-
-jwt:
-  secret: taas
