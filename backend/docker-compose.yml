@@ -16,23 +16,20 @@ services:
       - "8080:8080"
     depends_on:
       - service-discovery
-      - external-resources-service
-      - initiative-service
-      - user-service
-      - vote-service
   #  ----------------------------------------------
   #  APPLICATION SERVICES
+
   external-resources-service:
     build: external-resources-service
     image: external-resources-service-1.0
     container_name: external-resources-service
+    links:
+      - external-resources-db
     depends_on:
       - external-resources-db
       - service-discovery
     ports:
       - "8081:8081"
-    networks:
-      - civiclife-network
 
   initiative-service:
     build: initiative-service
@@ -45,8 +42,6 @@ services:
     depends_on:
       - initiative-db
       - service-discovery
-    networks:
-      - civiclife-network
 
   user-service:
     build: user-service
@@ -59,8 +54,6 @@ services:
     depends_on:
       - user-db
       - service-discovery
-    networks:
-      - civiclife-network
 
   vote-service:
     build: vote-service
@@ -73,26 +66,21 @@ services:
     depends_on:
       - vote-db
       - service-discovery
-    networks:
-      - civiclife-network
+
+  oauth-service:
+    build: oauth-service
+    image: oaut-service-1.0
+    container_name: oauth-service
+    links:
+      - external-resources-db
+    depends_on:
+      - token-db
+      - service-discovery
+    ports:
+      - "8085:8085"
 
   #  ----------------------------------------------
   #  DATABASES
-
-  external-resources-db:
-    container_name: external-resources-db
-    image: postgres
-    ports:
-      - "5432"
-    volumes:
-      - external-resources-db:/var/lib/external-resourcesDB/data
-    networks:
-      - civiclife-network
-    environment:
-      POSTGRES_DB: ExternalResources
-      POSTGRES_USER: taass
-      POSTGRES_PASSWORD: taass
-      restart: unless-stopped
 
   initiative-db:
     image: mongo:latest
@@ -101,9 +89,7 @@ services:
     volumes:
       - initiative-db:/var/lib/initiativeDB/data
     ports:
-      - "27017:27017"
-    networks:
-      - civiclife-network
+      - "27018:27017"
 
   user-db:
     image: mongo:latest
@@ -112,9 +98,7 @@ services:
     volumes:
       - user-db:/var/lib/userDB/data
     ports:
-      - "27018:27017"
-    networks:
-      - civiclife-network
+      - "27019:27017"
 
   vote-db:
     image: mongo:latest
@@ -123,15 +107,29 @@ services:
     volumes:
       - vote-db:/var/lib/voteDB/data
     ports:
-      - "27019:27017"
-    networks:
-      - civiclife-network
+      - "27020:27017"
+
+  token-db:
+    image: mongo:latest
+    container_name: token-db
+    restart: unless-stopped
+    volumes:
+      - token-db:/var/lib/tokenDB/data
+    ports:
+      - "27021:2017"
+
+  external-resources-db:
+    image: mongo:latest
+    container_name: external-resources-db
+    restart: unless-stopped
+    volumes:
+      - external-resources-db:/var/lib/external-resourcesDB/data
+    ports:
+      - "27022:27017"
 
 volumes:
   external-resources-db:
   initiative-db:
   user-db:
   vote-db:
-networks:
-  civiclife-network:
-    driver: bridge
+  token-db:

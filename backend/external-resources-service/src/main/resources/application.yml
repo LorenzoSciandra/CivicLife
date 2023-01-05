@@ -9,15 +9,14 @@ spring:
   data:
     mongodb:
       database: ExternalResources
-      host: localhost
+      host: external-resources-db
       port: 27017
 
 eureka:
   instance:
     prefer-ip-address: true
-    #hostname: external-resources-service
   client:
     register-with-eureka: true
     fetch-registry: true
     service-url:
-      defaultZone: ${EUREKA_URI:http://localhost:8761/eureka}
+      defaultZone: http://service-discovery:8761/eureka

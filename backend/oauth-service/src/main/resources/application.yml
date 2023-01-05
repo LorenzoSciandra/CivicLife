@@ -1,10 +1,15 @@
+server:
+  port: 8085
+  error:
+    include-message: always
+
 spring:
   application:
-    name: auth-service
+    name: oauth-service
   data:
     mongodb:
       database: Token
-      host: localhost
+      host: token-db
       port: 27017
   security:
     oauth2:
@@ -16,3 +21,11 @@ spring:
           facebook:
             client-id: 477776624531560
             client-secret: 8e702b37860f7c35c7fcc4c46bcfc601
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://service-discovery:8761/eureka

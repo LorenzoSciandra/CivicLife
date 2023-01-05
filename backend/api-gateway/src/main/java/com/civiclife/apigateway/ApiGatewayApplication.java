@@ -13,8 +13,6 @@ public class ApiGatewayApplication {
         SpringApplication.run(ApiGatewayApplication.class, args);
     }
 
-
     @Autowired
     private DiscoveryClient discoveryClient;
-
 }
