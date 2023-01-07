@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface BonusRepository extends MongoRepository<Bonus, String> {
+
 }

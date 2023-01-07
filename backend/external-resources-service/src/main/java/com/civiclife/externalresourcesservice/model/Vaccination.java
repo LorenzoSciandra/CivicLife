@@ -5,13 +5,12 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Data
-@AllArgsConstructor
 @Document(collection = "vaccinations")
 public class Vaccination {
 
     @Id
     private String id;
-    private String id_owner;
+    private String email_owner;
     private String type;
     private Long date;
     private String location;
@@ -25,8 +24,9 @@ public class Vaccination {
     public Vaccination() {
     }
 
-    public Vaccination(String id_owner, String type, Long date, String location, String description, String name, String vaccine, String manufacturer, String doctor, String nurse) {
-        this.id_owner = id_owner;
+    public Vaccination(String id, String email_owner, String type, Long date, String location, String description, String name, String vaccine, String manufacturer, String doctor, String nurse) {
+        this.id = id;
+        this.email_owner = email_owner;
         this.type = type;
         this.date = date;
         this.location = location;
@@ -46,12 +46,12 @@ public class Vaccination {
         this.id = id;
     }
 
-    public String getId_owner() {
-        return id_owner;
+    public String getEmail_owner() {
+        return email_owner;
     }
 
-    public void setId_owner(String id_owner) {
-        this.id_owner = id_owner;
+    public void setEmail_owner(String email_owner) {
+        this.email_owner = email_owner;
     }
 
     public String getType() {
@@ -130,6 +130,7 @@ public class Vaccination {
     public String toString(){
         return "Vaccination= {" +
                 "id=" + id +
+                "owner = " + email_owner + '\'' +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", type='" + type + '\'' +

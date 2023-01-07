@@ -6,13 +6,12 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Data
-@AllArgsConstructor
 @Document(collection = "bonuses")
 public class Bonus {
 
     @Id
     private String id;
-    private String id_owner;
+    private String email_owner;
     private String name;
     private String description;
     private String type;
@@ -21,8 +20,9 @@ public class Bonus {
     public Bonus() {
     }
 
-    public Bonus(String id_owner, String name, String description, String type, long end_date) {
-        this.id_owner = id_owner;
+    public Bonus(String id, String email_owner, String name, String description, String type, long end_date) {
+        this.id = id;
+        this.email_owner = email_owner;
         this.name = name;
         this.description = description;
         this.type = type;
@@ -37,12 +37,12 @@ public class Bonus {
         this.id = id;
     }
 
-    public String getId_owner() {
-        return id_owner;
+    public String getEmail_owner() {
+        return email_owner;
     }
 
-    public void setId_owner(String id_owner) {
-        this.id_owner = id_owner;
+    public void setEmail_owner(String email_owner) {
+        this.email_owner = email_owner;
     }
 
     public String getName() {
@@ -81,7 +81,7 @@ public class Bonus {
     public String toString() {
         return "Bonus{" +
                 "id=" + id +
-                "id_owner=" + id_owner +
+                "emai_owner=" + email_owner +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", type='" + type + '\'' +

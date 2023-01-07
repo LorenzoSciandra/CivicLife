@@ -18,10 +18,4 @@ public class OauthServiceApplication {
         SpringApplication.run(OauthServiceApplication.class, args);
     }
 
-    @LoadBalanced
-    @Bean
-    public RestTemplate restTemplate() {
-        return new RestTemplate();
-    }
-
 }

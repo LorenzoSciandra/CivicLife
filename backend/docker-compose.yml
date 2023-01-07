@@ -19,30 +19,6 @@ services:
   #  ----------------------------------------------
   #  APPLICATION SERVICES
 
-  external-resources-service:
-    build: external-resources-service
-    image: external-resources-service-1.0
-    container_name: external-resources-service
-    links:
-      - external-resources-db
-    depends_on:
-      - external-resources-db
-      - service-discovery
-    ports:
-      - "8081:8081"
-
-  initiative-service:
-    build: initiative-service
-    image: initiative-service-1.0
-    container_name: initiative-service
-    links:
-      - initiative-db
-    ports:
-      - "8082:8082"
-    depends_on:
-      - initiative-db
-      - service-discovery
-
   user-service:
     build: user-service
     image: user-service-1.0
@@ -54,42 +30,27 @@ services:
     depends_on:
       - user-db
       - service-discovery
-
-  vote-service:
-    build: vote-service
-    image: vote-service-1.0
-    container_name: vote-service
-    ports:
-      - "8084:8084"
-    links:
-      - vote-db
-    depends_on:
-      - vote-db
-      - service-discovery
+    deploy:
+      restart_policy:
+        condition: on-failure
 
   oauth-service:
     build: oauth-service
     image: oaut-service-1.0
     container_name: oauth-service
     links:
-      - external-resources-db
+      - token-db
     depends_on:
       - token-db
       - service-discovery
     ports:
       - "8085:8085"
+    deploy:
+      restart_policy:
+        condition: on-failure
 
   #  ----------------------------------------------
   #  DATABASES
-
-  initiative-db:
-    image: mongo:latest
-    container_name: initiative-db
-    restart: unless-stopped
-    volumes:
-      - initiative-db:/var/lib/initiativeDB/data
-    ports:
-      - "27018:27017"
 
   user-db:
     image: mongo:latest
@@ -100,15 +61,6 @@ services:
     ports:
       - "27019:27017"
 
-  vote-db:
-    image: mongo:latest
-    container_name: vote-db
-    restart: unless-stopped
-    volumes:
-      - vote-db:/var/lib/voteDB/data
-    ports:
-      - "27020:27017"
-
   token-db:
     image: mongo:latest
     container_name: token-db
@@ -118,18 +70,6 @@ services:
     ports:
       - "27021:2017"
 
-  external-resources-db:
-    image: mongo:latest
-    container_name: external-resources-db
-    restart: unless-stopped
-    volumes:
-      - external-resources-db:/var/lib/external-resourcesDB/data
-    ports:
-      - "27022:27017"
-
 volumes:
-  external-resources-db:
-  initiative-db:
   user-db:
-  vote-db:
   token-db:

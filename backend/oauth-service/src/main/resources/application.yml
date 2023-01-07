@@ -2,6 +2,7 @@ server:
   port: 8085
   error:
     include-message: always
+  forward-headers-strategy: framework
 
 spring:
   application:
@@ -9,7 +10,7 @@ spring:
   data:
     mongodb:
       database: Token
-      host: token-db
+      host:  token-db
       port: 27017
   security:
     oauth2:
@@ -21,6 +22,10 @@ spring:
           facebook:
             client-id: 477776624531560
             client-secret: 8e702b37860f7c35c7fcc4c46bcfc601
+          github:
+            client-id: 3ae8c8b43b693811999c
+            client-secret: 0ae5a90e28b97d2ca815f86044c7cea1c48e34be
+
 eureka:
   instance:
     prefer-ip-address: true

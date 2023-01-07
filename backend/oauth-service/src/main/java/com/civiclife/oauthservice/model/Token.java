@@ -16,32 +16,50 @@ import java.util.Set;
 public class Token {
 
     @Id
-    private String email;
+    private TokenKey tokenKey;
+
     private HashMap<String, Instant> tokens;
 
     public Token(){
 
     }
-    public Token(String email, HashMap<String, Instant> tokens) {
-        this.email = email;
+
+    public Token(TokenKey tokenKey, HashMap<String, Instant> tokens) {
+        this.tokenKey = tokenKey;
         this.tokens = tokens;
     }
 
     public void removeExpired(){
+        Instant now = Instant.now();
         ArrayList<String> keys = tokens.keySet().stream().collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
         for(int i = 0; i < tokens.size(); i++){
-            if(ChronoUnit.HOURS.between(tokens.get(keys.get(i)), Instant.now()) >= 1){
+            if(ChronoUnit.HOURS.between(tokens.get(keys.get(i)), now) >= 1){
                 tokens.remove(keys.get(i));
             }
         }
     }
 
-    public String getEmail() {
-        return email;
+    public String getMostRecentToken(){
+        long min_time = Long.MAX_VALUE;
+        String token = "";
+        Instant now = Instant.now();
+        ArrayList<String> keys = tokens.keySet().stream().collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
+        for(int i = 0; i < tokens.size(); i++){
+            if(ChronoUnit.SECONDS.between(tokens.get(keys.get(i)), now) < min_time){
+                min_time = ChronoUnit.SECONDS.between(tokens.get(keys.get(i)), now);
+                token = keys.get(i);
+            }
+        }
+
+        return token;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public TokenKey getTokenKey() {
+        return tokenKey;
+    }
+
+    public void setTokenKey(TokenKey tokenKey) {
+        this.tokenKey = tokenKey;
     }
 
     public HashMap<String, Instant> getTokens() {

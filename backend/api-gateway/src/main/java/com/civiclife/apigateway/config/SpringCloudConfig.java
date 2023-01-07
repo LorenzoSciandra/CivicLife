@@ -19,11 +19,8 @@ public class SpringCloudConfig {
                         .uri("lb://USER-SERVICE"))
                 .route(r -> r.path("/candidateAPI/**", "/partyAPI/**", "/resultAPI/**", "/votationAPI/**")
                         .uri("lb://VOTE-SERVICE"))
-                .route(r -> r.path("/authAPI/**")
+                .route(r -> r.path("/authAPI/**", "/login", "/login/**", "/oauth2/**")
                         .uri("lb://OAUTH-SERVICE"))
-                .route(r -> r.path("/login").
-                        filters(f -> f.setPath("/authAPI/v1/getToken"))
-                        .uri("lb://OAUTH-SERVICE/"))
                 .build();
     }
 }

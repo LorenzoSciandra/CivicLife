@@ -1,11 +1,11 @@
 package com.civiclife.oauthservice.controller;
 
-import com.civiclife.oauthservice.ValidateCode;
+import com.civiclife.oauthservice.config.ValidateCode;
 import com.civiclife.oauthservice.model.Token;
+import com.civiclife.oauthservice.model.TokenKey;
 import com.civiclife.oauthservice.repo.TokenRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
@@ -20,47 +20,33 @@ public class AuthController {
     @Autowired
     TokenRepository tokenRepository;
 
-    @GetMapping("/getToken")
-    public HashMap<String, List<String>> getToken(OAuth2AuthenticationToken authentication) {
-        String attributes = authentication.getPrincipal().getAttributes().toString().replace("{","").replace("}","");
-        String name = attributes.split("given_name=")[1].split(",")[0];
-        String surname = attributes.split("family_name=")[1].split(",")[0];
-        String email = attributes.split("email=")[1];
-        String token = attributes.split("at_hash=")[1].split(",")[0];
-
-        HashMap<String, List<String>> risultato = new HashMap<>();
-        Optional<Token> optionalTokenBean = tokenRepository.findById(email);
-        HashMap<String, Instant> tokens_time;
-
-        if(optionalTokenBean.isPresent()){
-            Token tokenBean = optionalTokenBean.get();
-            tokenBean.removeExpired();
-            tokens_time = tokenBean.getTokens();
-            List<String> active_tokens = new ArrayList<>(tokenBean.getTokens().keySet().stream().toList());
-            active_tokens.add(token);
-            risultato.put(email, active_tokens);
-            tokens_time.put(token, Instant.now());
-            tokenRepository.save(tokenBean);
-        }
-        else{
-            String uri = "http://localhost:8080/userAPI/v1/user/createFromLogin/" + email + "/" + name + "/" + surname;
-            RestTemplate restTemplate = new RestTemplate();
-            boolean result = Boolean.TRUE.equals(restTemplate.getForObject(uri, boolean.class));
-
-            if(result) {
-                tokens_time = new HashMap<>();
-                risultato.put(email, new ArrayList<>(Collections.singleton(token)));
-                tokens_time.put(token, Instant.now());
-                tokenRepository.save(new Token(email,tokens_time));
-            }
-        }
-
-        return  risultato;
+    @GetMapping("/validationAuthorities")
+    public List<TokenKey.OauthProvider> getValidationAuthorities() {
+        return Arrays.asList(TokenKey.OauthProvider.values());
     }
 
-    @GetMapping("/validate/{email}/{token}")
-    public ValidateCode validate(@PathVariable(value = "email") String email, @PathVariable(value = "token") String token){
-        Optional<Token> optionalTokenBean = tokenRepository.findById(email);
+    @GetMapping("/token")
+    public String token(OAuth2AuthenticationToken token){
+        return token.getPrincipal().getAttributes().toString();
+    }
+
+
+    @GetMapping("/getToken/{email}/{provider}")
+    public String getToken(@PathVariable(value = "email") String email,
+                           @PathVariable(value = "provider") TokenKey.OauthProvider provider) {
+        String result = "";
+        Optional<Token> optionalTokenBean = tokenRepository.findById(new TokenKey(email, provider));
+        if (optionalTokenBean.isPresent()){
+            Token tokenBean = optionalTokenBean.get();
+            tokenBean.removeExpired();
+            result = tokenBean.getMostRecentToken();
+        }
+        return result;
+    }
+
+    @PostMapping("/validate/{token}")
+    public ValidateCode validate(@RequestBody TokenKey tokenKey, @PathVariable(value = "token") String token){
+        Optional<Token> optionalTokenBean = tokenRepository.findById(tokenKey);
         if (optionalTokenBean.isPresent()){
             Token tokenBean = optionalTokenBean.get();
             if(tokenBean.getTokens().containsKey(token)){
@@ -77,9 +63,9 @@ public class AuthController {
         return ValidateCode.INVALID_EMAIL;
     }
 
-    @DeleteMapping("/deleteToken/{email}/{token}")
-    public boolean deleteToken(@PathVariable(value = "email") String email, @PathVariable(value = "token") String token){
-        Optional<Token> optionalTokenBean = tokenRepository.findById(email);
+    @DeleteMapping("/deleteToken/{token}")
+    public boolean deleteToken(@RequestBody TokenKey tokenKey, @PathVariable(value = "token") String token){
+        Optional<Token> optionalTokenBean = tokenRepository.findById(tokenKey);
         if(optionalTokenBean.isPresent()){
             Token tokenBean = optionalTokenBean.get();
             if(tokenBean.getTokens().containsKey(token)){
@@ -91,10 +77,57 @@ public class AuthController {
         return false;
     }
 
+    /*
+
+        Map<String, Object> attributes = authentication.getPrincipal().getAttributes();
+        String name = (String) attributes.get("name");
+        String surname = (String) attributes.get("family_name");
+        String email = (String) attributes.get("email");
+        String token = (String) attributes.get("at_hash");
+        boolean verified = (boolean) attributes.get("email_verified");
+        HashMap<String, String> risultato = new HashMap<>();
+
+        if(verified) {
+            Optional<Token> optionalTokenBean = tokenRepository.findById(email);
+            HashMap<String, Instant> tokens_time;
+
+            if (optionalTokenBean.isPresent()) {
+                Token tokenBean = optionalTokenBean.get();
+                tokenBean.removeExpired();
+                tokens_time = tokenBean.getTokens();
+
+                if(!tokens_time.containsKey(token)){
+                    risultato.put(email, token);
+                    tokens_time.put(token, Instant.now());
+                    tokenBean.setTokens(tokens_time);
+                    tokenRepository.save(tokenBean);
+                }
+                else{
+                    String mostRecentToken = tokenBean.getMostRecentToken();
+                    risultato.put(email,mostRecentToken);
+                }
+
+            } else {
+                String uri = "http://localhost:8080/userAPI/v1/user/createFromLogin/" + email + "/" + name + "/" + surname;
+                RestTemplate restTemplate = new RestTemplate();
+                boolean result = Boolean.TRUE.equals(restTemplate.getForObject(uri, boolean.class));
+
+                if (result) {
+                    tokens_time = new HashMap<>();
+                    risultato.put(email, token);
+                    tokens_time.put(token, Instant.now());
+                    tokenRepository.save(new Token(email, tokens_time));
+                }
+            }
+        }
+        return risultato;
+
+
+
     @DeleteMapping("/deleteAllTokens/{email}")
     public boolean deleteAllTokens(@PathVariable(value = "email") String email){
         tokenRepository.deleteById(email);
         return true;
-    }
+    }*/
 
 }

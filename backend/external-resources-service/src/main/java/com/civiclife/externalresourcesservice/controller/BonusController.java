@@ -1,9 +1,12 @@
 package com.civiclife.externalresourcesservice.controller;
 
+import com.civiclife.externalresourcesservice.ValidateCode;
 import com.civiclife.externalresourcesservice.model.Bonus;
 import com.civiclife.externalresourcesservice.repository.BonusRepository;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -41,9 +44,17 @@ public class BonusController {
         return true;
     }
 
-    @GetMapping("/bonuses/{id_owner}")
-    public List<Bonus> getBonusesByOwner(@PathVariable String id_owner) {
-        return bonusRepository.findAll().stream().filter(bonus -> bonus.getId_owner().equals(id_owner)).toList();
+    @GetMapping("/bonuses/{email_owner}/{token}")
+    public List<Bonus> getBonusesByOwner(@PathVariable String email_owner, @PathVariable String token) {
+        String uri = "http://localhost:8080/authAPI/v1/validate/" + email_owner + "/" + token;
+        RestTemplate restTemplate = new RestTemplate();
+        ValidateCode result = restTemplate.getForObject(uri, ValidateCode.class);
+
+        if(result == ValidateCode.ACTIVE){
+            return bonusRepository.findAll().stream().filter(bonus -> bonus.getEmail_owner().equals(email_owner)).toList();
+
+        }
+        return new ArrayList<>();
     }
 
     @PostMapping("/bonus/update/{id}")
