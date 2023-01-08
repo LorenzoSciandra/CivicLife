@@ -5,24 +5,54 @@ import vote from "../imgs/vote.png"
 import personalData from "../imgs/personaldata.png"
 import iniziative from "../imgs/iniziative.png"
 import "@fontsource/ubuntu-mono";
+import {useLocation, useNavigate} from "react-router-dom";
 
 
-type MainPagePropsType = {
-    isAdmin: boolean
-    //user:any
-}
-const MainPage = (props: MainPagePropsType) => {
+const MainPage = () => {
+    const location= useLocation();
+    const isAdmin= location.state?.isAdmin;
+    const email= location.state?.email;
+    const token= location.state?.token;
+    const navigate = useNavigate();
+
+    const goToVotations = () => {
+        if(isAdmin){
+            navigate('/votationsAdmin', {state: {token: token, email: email, isAdmin: isAdmin}})
+        }
+        else {
+            navigate('/votations', {state: {token: token, email: email, isAdmin: isAdmin}})
+        }
+    }
+
+    const goToData = () => {
+        if(isAdmin){
+            navigate('/usersAdmin', {state: {token: token, email: email, isAdmin: isAdmin}})
+        }else{
+            navigate('/myData', {state: {token: token, email: email, isAdmin: isAdmin}})
+        }
+
+    }
+
+    const goToInitiatives = () => {
+        if(isAdmin){
+            navigate('/initiativesAdmin', {state: {token: token, email: email, isAdmin: isAdmin}})
+        }
+        else{
+            navigate('/initiatives', {state: {token: token, email: email, isAdmin: isAdmin}})
+        }
+
+    }
 
     return (
-
         <>
             <Grid container direction="row" spacing={3}>
                 <Grid item xs={12} display="flex" justifyContent="center" alignItems="center">
-                    <Typography style={{color: 'white', textAlign: 'center', fontSize: '3rem'}}>BENVENUTO
-                        USER</Typography>
+                    <Typography style={{color: 'white', textAlign: 'center', fontSize: '3rem'}}>BENVENUTO {email}</Typography>
                 </Grid>
                 <Grid item xs={6} display="flex" justifyContent="center" alignItems="center">
-                    <Card sx={{width: '60%'}}>
+                    <Card
+                        onClick={() => {goToData()}}
+                        sx={{width: '60%'}}>
                         <CardActionArea>
                             <Grid container direction="column">
                                 <Grid item display="flex" justifyContent="center" alignItems="center"
@@ -39,7 +69,7 @@ const MainPage = (props: MainPagePropsType) => {
                                 <Grid item display="flex" justifyContent="center" alignItems="center">
                                     <CardContent>
                                         <Typography gutterBottom variant="h5" component="div">
-                                            {props.isAdmin ? 'Modera utenti' : 'I tuoi Dati'}
+                                            {isAdmin ? 'Modera utenti' : 'I tuoi Dati'}
                                         </Typography>
                                     </CardContent>
                                 </Grid>
@@ -65,7 +95,7 @@ const MainPage = (props: MainPagePropsType) => {
                                 <Grid item display="flex" justifyContent="center" alignItems="center">
                                     <CardContent>
                                         <Typography gutterBottom variant="h5" component="div">
-                                            {props.isAdmin ? 'Gestisci iniziative' : 'Iniziative'}
+                                            {isAdmin ? 'Gestisci iniziative' : 'Iniziative'}
                                         </Typography>
                                     </CardContent>
                                 </Grid>
@@ -91,7 +121,7 @@ const MainPage = (props: MainPagePropsType) => {
                                 <Grid item display="flex" justifyContent="center" alignItems="center">
                                     <CardContent>
                                         <Typography gutterBottom variant="h5" component="div">
-                                            {props.isAdmin ? 'Inserisci Votazioni' : 'Votazioni'}
+                                            {isAdmin ? 'Inserisci Votazioni' : 'Votazioni'}
                                         </Typography>
                                     </CardContent>
                                 </Grid>

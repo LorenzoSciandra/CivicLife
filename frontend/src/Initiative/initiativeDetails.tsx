@@ -18,9 +18,6 @@ const InitiativeDetails=(props: InitiativeDetailspropsType)=>{
         setValue(event.target.value)
     }
 
-    console.log('inizio')
-    console.log('ciao')
-
     return (
             <Grid container className="App-header">
                 <Grid item xs={12} display="flex" sx={{width: '100%',

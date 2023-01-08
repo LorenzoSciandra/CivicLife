@@ -9,6 +9,8 @@ import CandidateDetails from "./Vote/CandidateDetails";
 import PartyDetails from "./Vote/PartyDetails";
 import Login from "./Login/Login";
 import MainPage from "./MainPage/MainPage";
+import {BrowserRouter} from "react-router-dom";
+import App from "./App";
 
 const root = ReactDOM.createRoot(
     document.getElementById('root') as HTMLElement
@@ -33,31 +35,31 @@ root.render(
     <React.StrictMode>
         <ThemeProvider theme={theme}>
             <Grid container className="App-header">
-                {/*<Login/>*/}
-                <MainPage isAdmin={true}/>
-                {/*<PartyDetails party={'partito1'}/>*/}
-                {/*<VotationDetails votation={'votazione1'}/>*/}
-                {/*<CandidateDetails candidate={'candidato1'}/>*/}
-                <Grid item display="flex" alignItems={'center'} sx={{
-                    width: '100%',
-                    margin: "auto",
-                    bottom: 0,
-                    right: 0
-                }}>
-                    <CardMedia
-                        component="img"
-                        image={logo_CivicLife}
-                        sx={{
-                            width: '6%',
-                        }}
-                        alt="Logo"
-                    />
-                    <Typography
-                        style={{color: '#feac0d', textAlign: 'center', fontSize: '1.5rem'}}>CivicLife</Typography>
-                    <ScrollToTop smooth/>
-                </Grid>
+               <BrowserRouter>
+                   <App/>
+               </BrowserRouter>
             </Grid>
         </ThemeProvider>
+
+
+        {/*<Grid item display="flex" alignItems={'center'} sx={{*/}
+        {/*    width: '100%',*/}
+        {/*    margin: "auto",*/}
+        {/*    bottom: 0,*/}
+        {/*    right: 0*/}
+        {/*}}>*/}
+        {/*    <CardMedia*/}
+        {/*        component="img"*/}
+        {/*        image={logo_CivicLife}*/}
+        {/*        sx={{*/}
+        {/*            width: '6%',*/}
+        {/*        }}*/}
+        {/*        alt="Logo"*/}
+        {/*    />*/}
+        {/*    <Typography*/}
+        {/*        style={{color: '#feac0d', textAlign: 'center', fontSize: '1.5rem'}}>CivicLife</Typography>*/}
+        {/*    <ScrollToTop smooth/>*/}
+        {/*</Grid>*/}
     </React.StrictMode>
 );
 
