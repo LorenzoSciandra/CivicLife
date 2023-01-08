@@ -6,13 +6,15 @@ import React, {useState} from "react";
 import Box from '@mui/material/Box';
 import basquiaPulito from "../imgs/logo_CivicLife.png"
 import {CssTextField} from "../Utils/CustomTextFields";
+import {threadId} from "worker_threads";
+import {useLocation} from "react-router-dom";
 
-type InitiativeDetailspropsType={
-    initiative:any,
-    handleClose: ()=> void,
-}
-const InitiativeDetails=(props: InitiativeDetailspropsType)=>{
-    const [value, setValue]= useState(props.initiative)
+
+const InitiativeDetails=()=>{
+    const location= useLocation()
+    const initiative= location.state?.initiative
+    const [value, setValue]= useState(initiative)
+
 
     const handleChange=(event:React.ChangeEvent<HTMLInputElement>)=>{
         setValue(event.target.value)
@@ -20,19 +22,19 @@ const InitiativeDetails=(props: InitiativeDetailspropsType)=>{
 
     return (
             <Grid container className="App-header">
-                <Grid item xs={12} display="flex" sx={{width: '100%',
-                    position: 'fixed',
-                    margin: "auto",
-                    top:0,
-                    right: 0}}>
-                    <IconButton><KeyboardBackspaceIcon sx={{fontSize: 60, color: '#ffffff'}} onClick={()=>props.handleClose()}/></IconButton>
-                </Grid>
+                {/*<Grid item xs={12} display="flex" sx={{width: '100%',*/}
+                {/*    position: 'fixed',*/}
+                {/*    margin: "auto",*/}
+                {/*    top:0,*/}
+                {/*    right: 0}}>*/}
+                {/*    <IconButton><KeyboardBackspaceIcon sx={{fontSize: 60, color: '#ffffff'}} onClick={()=>props.handleClose()}/></IconButton>*/}
+                {/*</Grid>*/}
                 <Grid item xs={12} display="flex" justifyContent="center" alignItems="center" sx={{width: '100%',
                     position: 'fixed',
                     margin: "auto",
                     top:65,
                     right: 0}}>
-                    <Typography style={{color: '#feac0d', textAlign: 'center', fontSize: '3rem'}}>{props.initiative}</Typography>
+                    <Typography style={{color: '#feac0d', textAlign: 'center', fontSize: '3rem'}}>{initiative}</Typography>
                 </Grid>
                     <Grid item xs={12} display="flex" justifyContent="center" alignItems="center" sx={{width: '100%',position: 'fixed',
                         margin: "auto",
@@ -44,6 +46,9 @@ const InitiativeDetails=(props: InitiativeDetailspropsType)=>{
                                 maxRows={15}
                                 onChange={handleChange}
                                 multiline
+                                InputProps={{
+                                    readOnly: true,
+                                }}
                             />
                         </Box>
 
@@ -62,25 +67,6 @@ const InitiativeDetails=(props: InitiativeDetailspropsType)=>{
                         CREA
                     </Button>
                 </Grid>
-                <Grid item display="flex" alignItems={'center'} sx={{width: '100%',
-                    position: 'fixed',
-                    margin: "auto",
-                    bottom:0,
-                    right: 0}}>
-                    <CardMedia
-                        component="img"
-                        image={basquiaPulito}
-                        sx={{
-                            width: '8%',
-                        }}
-                        alt="Logo"
-                    />
-                    <Typography
-                        style={{color: '#feac0d', textAlign: 'center', fontSize: '1.5rem'}}>CivicLife</Typography>
-
-                </Grid>
-
-
             </Grid>
     );
 }

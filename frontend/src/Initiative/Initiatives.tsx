@@ -1,4 +1,4 @@
-import {Button, Divider, Grid, Modal,} from "@mui/material";
+import {Button, Divider, Grid, ListItemSecondaryAction, ListItemText, Modal, Typography,} from "@mui/material";
 import '../App.css'
 import React, {useState} from "react";
 import Box from '@mui/material/Box';
@@ -6,11 +6,15 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from "@mui/material/ListItemButton";
 import UpperButtonMenu from "../Utils/UpperButtonMenu";
 import InitiativeDetails from "./initiativeDetails";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import List from "@mui/material/List";
+import {useLocation, useNavigate} from "react-router-dom";
 
 const Initiatives = () => {
-
+    const navigate= useNavigate()
+    const location= useLocation()
     const buttons = ['Tutte', 'Mie', 'Sottoscritte']
-    const [allInitiativesList, setAllInitiativesList] = useState<any[]>(['Iniziativa1', 'Iniziativa2', 'Iniziativa3', 'Iniziativa4', 'Iniziativa5', 'Iniziativa6', 'Iniziativa7'])
+    const [allInitiativesList, setAllInitiativesList] = useState<any[]>(['Iniziativa1', 'Iniziativa2', 'Iniziativa3', 'Iniziativa4', 'Iniziativa5', 'Iniziativa6', 'Iniziativa7','Iniziativa8','Iniziativa9','Iniziativa10', 'Iniziativa11', 'Iniziativa12' ])
     const [myInitiativesList, setMyInitiativesList] = useState<any[]>(['Mia Iniziativa1', 'Mia Iniziativa2', 'Mia Iniziativa3', 'Mia Iniziativa4'])
     const [subcribedInitiativesList, setSubscribedInitiativesList] = useState<any[]>(['sottoscritta1', 'sottoscritta2'])
     const [showingList, setShowingList] = useState<any[]>(allInitiativesList)
@@ -19,21 +23,22 @@ const Initiatives = () => {
     const [clickedInitiative, setClickedInitiative]= useState(null)
 
     const handleInitiativeDetailsOpen = (value: any) => {
-        setClickedInitiative(value)
-        setShowModal(true)
+        navigate('/initiativeDetails', {state: {token: location.state?.token, email: location.state?.email, isAdmin: location.state?.isAdmin, initiative:value}})
     }
-
-
     return (
         <>
-            <Grid container className="App-header">
                 <Grid container direction="row" spacing={2}>
                     <UpperButtonMenu first_label={buttons[0]} second_label={buttons[1]} third_label={buttons[2]}
                                      first_list={allInitiativesList} second_list={myInitiativesList}
                                      third_list={subcribedInitiativesList} listSetter={setShowingList}
                                      buttonSetter={setActiveButton}/>
                     <Grid item xs={12} display="flex" justifyContent="center" alignItems="center">
-                        <Box sx={{width: '70%', height: '100%'}}>
+                        <List sx={{
+                            width: '100%',
+                            position: 'relative',
+                            overflow: 'auto',
+                            maxHeight: 580
+                        }}>
                             {showingList.map((value, index) => {
                                 return (
                                     <><
@@ -45,27 +50,37 @@ const Initiatives = () => {
                                     </>
                                 );
                             })}
-                            <Grid item xs={12} display="flex" justifyContent='center' alignItems="right">
+                        </List>
+                    </Grid>
+                    <Grid item xs={12} display="flex" justifyContent='center' alignItems="right">
+                        {
+                            location.state?.isAdmin ?
                                 <Button style={{
                                     marginTop: '15px',
                                     borderRadius: 35,
-                                    backgroundColor: "#92d36e",
+                                    backgroundColor: "red",
                                     padding: "18px 36px",
                                     fontSize: "15px"
                                 }}
                                         variant="contained">
-                                    CREA
+                                    Elimina
                                 </Button>
-                            </Grid>
-                        </Box>
+                                :
+
+                            <Button style={{
+                            marginTop: '15px',
+                            borderRadius: 35,
+                            backgroundColor: "#92d36e",
+                            padding: "18px 36px",
+                            fontSize: "15px"
+                        }}
+                            variant="contained">
+                            CREA
+                            </Button>
+                        }
                     </Grid>
                 </Grid>
-            </Grid>
-            <Modal open={showModal}>
-                <InitiativeDetails initiative={clickedInitiative} handleClose={()=>setShowModal(false)}/>
-            </Modal>
         </>
-
     );
 }
 

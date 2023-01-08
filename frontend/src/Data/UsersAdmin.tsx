@@ -35,14 +35,13 @@ const UsersAdmin = () => {
                     width: '100%',
                     position: 'relative',
                     overflow: 'auto',
-                    maxHeight: 650
+                    maxHeight: 580
                 }}>
                     {usersList.map((value, index) => {
                         return (
                             <ListItem key={index} onClick={()=>handleUserClick(value)}>
-
+                                <AccountCircleIcon fontSize='large' sx={{color: selectedUser === value ? 'green' : 'white'}}/>
                                 <ListItemButton sx={{color: selectedUser === value ? 'green' : 'white'}}>
-                                    <AccountCircleIcon fontSize='large'/>
                                     <ListItemText primary={<Typography>  {value}</Typography>} secondary={<Typography> email di {value}</Typography>}/>
                                 </ListItemButton>
                                 <ListItemSecondaryAction>STATO</ListItemSecondaryAction>

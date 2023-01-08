@@ -78,7 +78,7 @@ const MainPage = () => {
                     </Card>
                 </Grid>
                 <Grid item xs={6} display="flex" justifyContent="center" alignItems="center">
-                    <Card sx={{width: '60%'}}>
+                    <Card sx={{width: '60%'}} onClick={goToInitiatives}>
                         <CardActionArea>
                             <Grid container direction="column">
                                 <Grid item display="flex" justifyContent="center" alignItems="center"

@@ -129,9 +129,6 @@ const Login = () => {
             </Grid>
         </Grid>
             <Grid item xs={12} alignItems={'center'} display="flex">
-                <Typography
-                    style={{color: '#feac0d', fontSize: '1.2rem', marginLeft: '15px', bottom: 0}}>CivicLife</Typography>
-
                 <Button
                     onClick={() => {
                         loginAsVisitor();
