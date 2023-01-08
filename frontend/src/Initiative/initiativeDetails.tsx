@@ -19,6 +19,7 @@ const InitiativeDetails=(props: InitiativeDetailspropsType)=>{
     }
 
     console.log('inizio')
+    console.log('ciao')
 
     return (
             <Grid container className="App-header">
