@@ -31,4 +31,12 @@ public class TokenKey {
     public void setProvider(OauthProvider provider) {
         this.provider = provider;
     }
+
+    @Override
+    public String toString() {
+        return "{" +
+                "email='" + email + '\'' + "," +
+                "provider=" + provider +
+                '}';
+    }
 }

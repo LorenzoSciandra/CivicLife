@@ -10,7 +10,7 @@ spring:
   data:
     mongodb:
       database: Token
-      host:  token-db
+      host: token-db
       port: 27017
   security:
     oauth2:

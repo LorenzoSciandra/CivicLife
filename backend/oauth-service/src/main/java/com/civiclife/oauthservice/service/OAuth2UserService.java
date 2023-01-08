@@ -58,7 +58,7 @@ public class OAuth2UserService {
         }
 
 
-        Optional<Token> loadedCredentials = tokenRepository.getOauthCredentialsByUserEmailAndProvider(oauth2UserEmail, oauth2Provider);
+        Optional<Token> loadedCredentials = tokenRepository.findById(new TokenKey(oauth2UserEmail, oauth2Provider));
 
         if (loadedCredentials.isPresent()) {
             Token tokenBean = loadedCredentials.get();

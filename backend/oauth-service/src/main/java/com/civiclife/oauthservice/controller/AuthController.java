@@ -25,21 +25,31 @@ public class AuthController {
         return Arrays.asList(TokenKey.OauthProvider.values());
     }
 
-    @GetMapping("/token")
-    public String token(OAuth2AuthenticationToken token){
-        return token.getPrincipal().getAttributes().toString();
+    @GetMapping("/getAllTokens/{email}")
+    public String getAllTokens(@PathVariable String email) {
+        ArrayList<Optional<Token>> tokens = tokenRepository.getOauthCredentialsByEmail(email);
+        StringBuilder result = new StringBuilder();
+        if(!tokens.isEmpty()){
+            for (Optional<Token> optionalToken : tokens) {
+                if(optionalToken.isPresent()){
+                    Token tokenBean = optionalToken.get();
+                    String token = tokenBean.getMostRecentToken();
+                    result.append(tokenBean.respose(token));
+                }
+            }
+        }
+        return result.toString();
     }
-
 
     @GetMapping("/getToken/{email}/{provider}")
     public String getToken(@PathVariable(value = "email") String email,
-                           @PathVariable(value = "provider") TokenKey.OauthProvider provider) {
+                                             @PathVariable(value = "provider") TokenKey.OauthProvider provider) {
         String result = "";
         Optional<Token> optionalTokenBean = tokenRepository.findById(new TokenKey(email, provider));
         if (optionalTokenBean.isPresent()){
             Token tokenBean = optionalTokenBean.get();
             tokenBean.removeExpired();
-            result = tokenBean.getMostRecentToken();
+            result = tokenBean.respose(tokenBean.getMostRecentToken());
         }
         return result;
     }

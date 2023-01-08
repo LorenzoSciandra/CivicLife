@@ -2,9 +2,12 @@ package com.civiclife.oauthservice.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.io.Serializable;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -68,5 +71,12 @@ public class Token {
 
     public void setTokens(HashMap<String, Instant> tokens) {
         this.tokens = tokens;
+    }
+
+    public String respose(String token) {
+        return "{" +
+                "tokenKey:" + tokenKey + "," +
+                "token: " + token +
+                '}';
     }
 }

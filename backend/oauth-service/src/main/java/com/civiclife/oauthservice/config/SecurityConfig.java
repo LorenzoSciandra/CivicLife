@@ -1,13 +1,12 @@
 package com.civiclife.oauthservice.config;
 
-import com.civiclife.oauthservice.service.OAuth2UserService;
+import com.civiclife.oauthservice.service.*;
 import lombok.AllArgsConstructor;
 import org.apache.hc.core5.http.HttpStatus;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.web.SecurityFilterChain;
@@ -59,7 +58,6 @@ public class SecurityConfig {
                 response.setStatus(HttpStatus.SC_OK);
             } catch (ResponseStatusException ex) {
                 //userService.logoutUser(request, response);
-                System.out.println("SONO QUI CAZZO");
                 throw ex;
             }
         };
@@ -68,7 +66,6 @@ public class SecurityConfig {
     @Bean
     AuthenticationFailureHandler basicLoginFailureHandler() {
         return (request, response, exception) -> {
-            System.out.println("SONO QUI CAZZO, MA 2");
             response.sendError(HttpStatus.SC_UNAUTHORIZED, exception.getMessage());
         };
     }
@@ -83,7 +80,6 @@ public class SecurityConfig {
                 );
                 response.sendRedirect(redirectLocation);
             } catch (ResponseStatusException ex) {
-                System.out.println("SONO QUI CAZZO, MA 3");
                 response.sendRedirect("http://localhost:8080/login?reason="+ex.getReason());
             }
         };
