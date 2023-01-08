@@ -26,8 +26,6 @@ const PersonalData = () => {
         }
     }
 
-
-
     return (
 
             <Grid container className="App-header">

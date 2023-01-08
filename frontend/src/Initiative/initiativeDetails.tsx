@@ -7,7 +7,6 @@ import Box from '@mui/material/Box';
 import basquiaPulito from "../imgs/logo_CivicLife.png"
 import {CssTextField} from "../Utils/CustomTextFields";
 
-
 type InitiativeDetailspropsType={
     initiative:any,
     handleClose: ()=> void,
@@ -18,6 +17,9 @@ const InitiativeDetails=(props: InitiativeDetailspropsType)=>{
     const handleChange=(event:React.ChangeEvent<HTMLInputElement>)=>{
         setValue(event.target.value)
     }
+
+    console.log('inizio')
+
     return (
             <Grid container className="App-header">
                 <Grid item xs={12} display="flex" sx={{width: '100%',
