@@ -1,0 +1,75 @@
+version: '3.7'
+services:
+  #  ARCHITECTURAL SERVICES
+  service-discovery:
+    container_name: service-discovery
+    image: service-discovery-1.0
+    build: service-discovery
+    ports:
+      - "8761:8761"
+
+  api-gateway:
+    container_name: api-gateway
+    image: api-gateway-1.0
+    build: api-gateway
+    ports:
+      - "8080:8080"
+    depends_on:
+      - service-discovery
+  #  ----------------------------------------------
+  #  APPLICATION SERVICES
+
+  user-service:
+    build: user-service
+    image: user-service-1.0
+    container_name: user-service
+    ports:
+      - "8083:8083"
+    links:
+      - user-db
+    depends_on:
+      - user-db
+      - service-discovery
+    deploy:
+      restart_policy:
+        condition: on-failure
+
+  oauth-service:
+    build: oauth-service
+    image: oaut-service-1.0
+    container_name: oauth-service
+    links:
+      - token-db
+    depends_on:
+      - token-db
+      - service-discovery
+    ports:
+      - "8085:8085"
+    deploy:
+      restart_policy:
+        condition: on-failure
+
+  #  ----------------------------------------------
+  #  DATABASES
+
+  user-db:
+    image: mongo:latest
+    container_name: user-db
+    restart: unless-stopped
+    volumes:
+      - user-db:/var/lib/userDB/data
+    ports:
+      - "27019:27017"
+
+  token-db:
+    image: mongo:latest
+    container_name: token-db
+    restart: unless-stopped
+    volumes:
+      - token-db:/var/lib/tokenDB/data
+    ports:
+      - "27021:2017"
+
+volumes:
+  user-db:
+  token-db:

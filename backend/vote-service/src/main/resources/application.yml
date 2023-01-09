@@ -1,0 +1,19 @@
+server:
+  port: 8083
+
+spring:
+  application:
+    name: vote-service
+  data:
+    mongodb:
+      database: Vote
+      host: vote-db
+      port: 27017
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://service-discovery:8761/eureka

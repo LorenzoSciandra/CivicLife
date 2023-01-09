@@ -1,0 +1,4 @@
+com/civiclife/initiativeservice/controller/InitiativeController.class
+com/civiclife/initiativeservice/model/Initiative.class
+com/civiclife/initiativeservice/InitiativeServiceApplication.class
+com/civiclife/initiativeservice/repo/InitiativeRepository.class

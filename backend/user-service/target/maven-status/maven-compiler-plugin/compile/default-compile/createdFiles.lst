@@ -1,0 +1,4 @@
+com/civiclife/userservice/model/User.class
+com/civiclife/userservice/repo/UserRepository.class
+com/civiclife/userservice/controller/UserController.class
+com/civiclife/userservice/UserServiceApplication.class
