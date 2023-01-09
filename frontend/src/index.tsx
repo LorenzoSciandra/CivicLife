@@ -3,13 +3,8 @@ import ReactDOM from 'react-dom/client';
 import './App.css';
 import {CardMedia, createTheme, Grid, ThemeProvider, Typography,} from "@mui/material";
 import logo_CivicLife from './imgs/logo_CivicLife.png'
-import VotationDetails from "./Vote/VotationDetails";
 import ScrollToTop from "react-scroll-to-top";
-import CandidateDetails from "./Vote/CandidateDetails";
-import PartyDetails from "./Vote/PartyDetails";
-import Login from "./Login/Login";
-import MainPage from "./MainPage/MainPage";
-import {BrowserRouter, useNavigate} from "react-router-dom";
+import {BrowserRouter} from "react-router-dom";
 import App from "./App";
 
 const root = ReactDOM.createRoot(

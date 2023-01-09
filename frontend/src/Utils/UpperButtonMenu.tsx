@@ -1,6 +1,5 @@
-import {Grid, IconButton, ToggleButton, ToggleButtonGroup} from "@mui/material";
+import {Grid, ToggleButton, ToggleButtonGroup} from "@mui/material";
 import React, {useState} from "react";
-import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 
 type UpperButtonsMenupropsType={
     first_label:string,

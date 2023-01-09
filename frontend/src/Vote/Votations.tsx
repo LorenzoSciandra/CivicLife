@@ -2,7 +2,6 @@ import {Divider, Grid} from "@mui/material";
 import UpperButtonMenu from "../Utils/UpperButtonMenu";
 import React, {useState} from "react";
 import '../App.css'
-import Box from "@mui/material/Box";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import List from "@mui/material/List";

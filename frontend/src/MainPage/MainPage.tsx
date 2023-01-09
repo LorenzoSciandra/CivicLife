@@ -13,6 +13,7 @@ const MainPage = () => {
     const isAdmin= location.state?.isAdmin;
     const email= location.state?.email;
     const token= location.state?.token;
+    const isVisitor = location.state?.isVisitor;
     const navigate = useNavigate();
 
     const goToVotations = () => {
@@ -20,7 +21,12 @@ const MainPage = () => {
             navigate('/votationsAdmin', {state: {token: token, email: email, isAdmin: isAdmin}})
         }
         else {
-            navigate('/votations', {state: {token: token, email: email, isAdmin: isAdmin}})
+            if(isVisitor){
+                navigate('/votations', {state: {isVisitor: isVisitor}})
+            }
+            else{
+                navigate('/votations', {state: {token: token, email: email, isAdmin: isAdmin}})
+            }
         }
     }
 
@@ -28,7 +34,12 @@ const MainPage = () => {
         if(isAdmin){
             navigate('/usersAdmin', {state: {token: token, email: email, isAdmin: isAdmin}})
         }else{
-            navigate('/myData', {state: {token: token, email: email, isAdmin: isAdmin}})
+            if(isVisitor){
+                navigate('/users', {state: {isVisitor: isVisitor}})
+            }
+            else {
+                navigate('/myData', {state: {token: token, email: email, isAdmin: isAdmin}})
+            }
         }
 
     }

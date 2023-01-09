@@ -7,7 +7,7 @@ import {useNavigate} from "react-router-dom";
 
 const Login = () => {
     const navigate = useNavigate();
-    const testAdmin = false
+    const testAdmin = true
     const loginWithFacebook = () => {
         console.log('click sul bottone FACEBOOK')
         const token = '123456'

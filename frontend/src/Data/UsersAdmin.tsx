@@ -21,7 +21,7 @@ const UsersAdmin = () => {
     return (
         <Grid container direction="row">
             <Grid item xs={12} display="flex" justifyContent="center" alignItems="center">
-                <Typography style={{color: '#feac0d', textAlign: 'center', fontSize: '3rem'}}>Moderazione utenti</Typography>
+                <Typography style={{color: '#feac0d', textAlign: 'center', fontSize: '3rem', position: "fixed", top:10}}>Moderazione utenti</Typography>
             </Grid>
             <Grid item xs={12} display="flex" justifyContent="center" alignItems="center">
                 <List sx={{

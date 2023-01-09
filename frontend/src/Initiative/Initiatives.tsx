@@ -46,18 +46,11 @@ const Initiatives = () => {
                                              first_list={allInitiativesList} second_list={myInitiativesList}
                                              third_list={subcribedInitiativesList} listSetter={setShowingList}
                                              buttonSetter={setActiveButton}/> :
-                    <Grid item xs={12} display="flex" justifyContent="center" alignItems="center" sx={{
-                        width: '100%',
-                        position: 'fixed',
-                        margin: "auto",
-                        top: 65,
-                        right: 0
-                    }}>
+                    <Grid item xs={12} display="flex" justifyContent="center" alignItems="center">
                         <Typography style={{
                             color: '#feac0d', textAlign: 'center', fontSize: '3rem', position: 'fixed',
                             margin: "auto",
-                            top: 65,
-                            right: 0
+                            top: 10,
                         }}>Amministrazione iniziative</Typography>
                     </Grid>}
 

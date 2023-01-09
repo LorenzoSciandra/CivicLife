@@ -1,15 +1,4 @@
-import {
-    Button,
-    Card,
-    CardActionArea,
-    CardActions,
-    CardContent,
-    CardMedia,
-    Grid,
-    IconButton,
-    Typography
-} from "@mui/material";
-import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
+import {Button, Card, CardActionArea, CardActions, CardContent, CardMedia, Grid, Typography} from "@mui/material";
 import Box from "@mui/material/Box";
 
 
@@ -25,9 +14,11 @@ const PartyDetails = () => {
     const location= useLocation()
     const navigate= useNavigate()
     const party= location.state?.party
+    const isAdmin= location.state?.isAdmin
 
     const handleCandidateDetailsOpen=(value:any)=>{
-        navigate('/votations/votationDetails/partyDetails/candidateDetails',{state:{state: {token: location.state?.token, email: location.state?.email, isAdmin: location.state?.isAdmin, votation:location.state?.votation, party:location.state?.party, candidate:value}}})
+        console.log(value)
+        navigate('/votations/votationDetails/partyDetails/candidateDetails',{state: {token: location.state?.token, email: location.state?.email, isAdmin: isAdmin, votation:location.state?.votation, party:location.state?.party, candidate:value}})
     }
 
     const partyCards = candidateList.map((value, index) => {
@@ -51,9 +42,11 @@ const PartyDetails = () => {
                             </Typography>
                         </CardContent>
                     </CardActionArea>
-                    <CardActions style={{alignItems: 'center'}}>
-                        <Button size="large" style={{color: '#ff3823', width: '100%'}}>Vota Candidato</Button>
-                    </CardActions>
+                    {
+                        isAdmin ? null : <CardActions style={{alignItems: 'center'}}>
+                            <Button size="large" style={{color: '#ff3823', width: '100%'}}>Vota Candidato</Button>
+                        </CardActions>
+                    }
                 </Card>
 
             </>
@@ -116,17 +109,20 @@ const PartyDetails = () => {
                 Interdum et malesuada fames ac ante ipsum primis in faucibus. Nunc molestie semper lorem et vulputate.
                 Aliquam convallis ex sit amet eleifend pellentesque.</Typography>
         </Grid>
-            <Grid item xs={12} display="flex" justifyContent='center' alignItems="right">
-                <Button style={{
-                    borderRadius: 35,
-                    backgroundColor: "#ff3823",
-                    padding: "10px 20px",
-                    fontSize: "18px"
-                }}
-                        variant="contained">
-                    VOTA Partito
-                </Button>
-            </Grid>
+            {
+                isAdmin? null : <Grid item xs={12} display="flex" justifyContent='center' alignItems="right">
+                    <Button style={{
+                        borderRadius: 35,
+                        backgroundColor: "#ff3823",
+                        padding: "10px 20px",
+                        fontSize: "18px"
+                    }}
+                            variant="contained">
+                        VOTA Partito
+                    </Button>
+                </Grid>
+            }
+
             <Grid item xs={12} display="flex" justifyContent="center" alignItems="center" sx={{
             width: '100%',
             margin: "auto",

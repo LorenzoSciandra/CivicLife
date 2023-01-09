@@ -1,6 +1,4 @@
-import {Button, CardMedia, Grid, IconButton, Typography,} from "@mui/material";
-
-import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
+import {Button, Grid, Typography,} from "@mui/material";
 import '../App.css'
 import React, {useState} from "react";
 import Box from '@mui/material/Box';

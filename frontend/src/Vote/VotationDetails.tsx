@@ -1,5 +1,4 @@
-import {Divider, Grid, IconButton, Typography} from "@mui/material";
-import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
+import {Divider, Grid, Typography} from "@mui/material";
 import Box from "@mui/material/Box";
 
 import React, {useState} from "react";
@@ -14,9 +13,10 @@ const VotationDetails=()=>{
     const location= useLocation()
     const navigate= useNavigate()
     const votation= location.state?.votation
+    const isAdmin= location.state?.isAdmin
 
     const handlePartyDetailsOpen = (value: any) => {
-        navigate('/votations/votationDetails/partyDetails', {state: {token: location.state?.token, email: location.state?.email, isAdmin: location.state?.isAdmin, votation:location.state?.votation, party:value}})
+        navigate('/votations/votationDetails/partyDetails', {state: {token: location.state?.token, email: location.state?.email, isAdmin: isAdmin, votation:location.state?.votation, party:value}})
     }
 
     return(
