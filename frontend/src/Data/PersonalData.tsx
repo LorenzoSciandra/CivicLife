@@ -15,7 +15,7 @@ import DialogContentText from "@mui/material/DialogContentText";
 const PersonalData = () => {
 
     const buttons = ['Dati', 'Vaccini', 'Bonus']
-    const [dataList, setDataList] = useState<any[]>(['dato1', 'dato2', 'dato3', 'dato4', 'dato5', 'dato6', 'dato7', 'dato8', 'dato9', 'dato10'])
+    const [dataList, setDataList] = useState<any[]>(['dato1', 'dato2', 'dato3', 'dato4', 'dato5', 'dato6', 'dato7', 'dato8', 'dato9'])
     const [vaxinesList, setvaxinesList] = useState<any[]>(['vaccino1', 'vaccino2', 'vaccino3', 'vaccino4'])
     const [bonusList, setBonusList] = useState<any[]>(['bonus1', 'bonus2'])
     const [showingList, setShowingList] = useState<any[]>(dataList)
@@ -57,17 +57,15 @@ const PersonalData = () => {
                 <List sx={{
                     width: '80%',
                     overflow: 'auto',
-                    maxHeight: 580,
+                    maxHeight: 595,
                     position:'fixed',
-                    top: 150,
+                    top: 90,
                     bottom: 100
                 }}>
                     {showingList.map((value, index) => {
                         return (
-                            <ListItem key={index}>
-                                {
                                     activeButton === buttons[0] ?
-                                        <CssTextField sx={{input: {color: 'white'}, style: {color: 'white'}}}
+                                        <CssTextField sx={{input: {color: 'white'}, style: {color: 'white'}, marginTop: '9px'}}
                                                       label={value + ' etichetta'} defaultValue={value + ' valore'}/>
                                         :
                                         // <ReadOnlyTextField
@@ -82,9 +80,9 @@ const PersonalData = () => {
                                             <ListItemButton onClick={() => handleDialogOpen(value)}>
                                                 <ListItemText primary={value}/>
                                             </ListItemButton>
+                                            <Divider color={'black'}/>
                                         </>
-                                }
-                            </ListItem>
+
                         );
                     })}
                 </List>

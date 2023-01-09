@@ -5,9 +5,11 @@ export const ReadOnlyTextField= styled(TextField)({
             color:'white',
         },
         '& label.Mui-focused': {
+            fontWeight: 'bold',
             color: '#feac0d',
         },
         '& .MuiInput-underline:after': {
+            fontWeight: 'bold',
             borderBottomColor: '#feac0d',
         },
         '& .MuiOutlinedInput-root': {
