@@ -34,13 +34,7 @@ const MainPage = () => {
     }
 
     const goToInitiatives = () => {
-        if(isAdmin){
-            navigate('/initiativesAdmin', {state: {token: token, email: email, isAdmin: isAdmin}})
-        }
-        else{
-            navigate('/initiatives', {state: {token: token, email: email, isAdmin: isAdmin}})
-        }
-
+        navigate('/initiatives', {state: {token: token, email: email, isAdmin: isAdmin}})
     }
 
     return (
@@ -104,7 +98,7 @@ const MainPage = () => {
                     </Card>
                 </Grid>
                 <Grid item xs={12} display="flex" justifyContent="center" alignItems="center">
-                    <Card sx={{width: '30%'}}>
+                    <Card sx={{width: '30%'}} onClick={goToVotations}>
                         <CardActionArea>
                             <Grid container direction="column">
                                 <Grid item display="flex" justifyContent="center" alignItems="center"

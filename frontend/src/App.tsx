@@ -5,6 +5,11 @@ import PersonalData from "./Data/PersonalData";
 import UsersAdmin from "./Data/UsersAdmin";
 import Initiatives from "./Initiative/Initiatives";
 import InitiativeDetails from "./Initiative/initiativeDetails";
+import Votations from "./Vote/Votations";
+import {Typography} from "@mui/material";
+import VotationDetails from "./Vote/VotationDetails";
+import PartyDetails from "./Vote/PartyDetails";
+import CandidateDetails from "./Vote/CandidateDetails";
 
 const App=()=>{
     return (
@@ -14,7 +19,12 @@ const App=()=>{
             <Route path="/usersAdmin" element={<UsersAdmin/>}/>
             <Route path='/initiatives' element={<Initiatives/>}/>
             <Route path='/initiativeDetails' element={<InitiativeDetails/>}/>
+            <Route path='/votations' element={<Votations/>}/>
+            <Route path='/votations/votationDetails' element={<VotationDetails/>}/>
+            <Route path='/votations/votationDetails/partyDetails' element={<PartyDetails/>}/>
+            <Route path='/votations/votationDetails/partyDetails/candidateDetails' element={<CandidateDetails/>}/>
             <Route path="/" element={<Login/>}/>
+            <Route path='*' element={<Typography>ERROR 404</Typography>} />
         </Routes>
     )
 }

@@ -6,14 +6,18 @@ import React, {useState} from "react";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import '../App.css'
+import {useLocation, useNavigate} from "react-router-dom";
 
 
-type VotationDetailsPropsType={
-    votation:any,
-}
-
-const VotationDetails=(props:VotationDetailsPropsType)=>{
+const VotationDetails=()=>{
     const [partyList, setPatyList ]=useState(['partito1', 'partito2', 'partito3', 'partito4','partito1', 'partito2', 'partito3', 'partito4','partito1', 'partito2', 'partito3', 'partito4','partito1', 'partito2', 'partito3', 'partito4'])
+    const location= useLocation()
+    const navigate= useNavigate()
+    const votation= location.state?.votation
+
+    const handlePartyDetailsOpen = (value: any) => {
+        navigate('/votations/votationDetails/partyDetails', {state: {token: location.state?.token, email: location.state?.email, isAdmin: location.state?.isAdmin, votation:location.state?.votation, party:value}})
+    }
 
     return(
         <Grid container direction='row' spacing={5}>
@@ -31,7 +35,7 @@ const VotationDetails=(props:VotationDetailsPropsType)=>{
             top: 150,
             right: 0
         }}>
-            <Typography style={{color: '#feac0d', textAlign: 'center', fontSize: '3rem'}}>{props.votation}</Typography>
+            <Typography style={{color: '#feac0d', textAlign: 'center', fontSize: '3rem'}}>{votation}</Typography>
         </Grid><Grid item xs={12} display="flex" justifyContent="center" alignItems="center" sx={{
             width: '100%',
 
@@ -72,7 +76,7 @@ const VotationDetails=(props:VotationDetailsPropsType)=>{
                     return (
                         <><
                             ListItem key={index}>
-                            <ListItemButton>{value}</ListItemButton>
+                            <ListItemButton onClick={()=>{handlePartyDetailsOpen(value)}}>{value}</ListItemButton>
                         </ListItem>
                             <Divider color='white'/>
                         </>

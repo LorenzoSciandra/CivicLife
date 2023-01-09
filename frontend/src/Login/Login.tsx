@@ -92,7 +92,6 @@ const Login = () => {
                     onClick={() => {
                         loginWithTwitter();
                     }}
-
                     style={{
                         borderRadius: 35,
                         backgroundColor: "#e7b928",

@@ -21,6 +21,7 @@ const Initiatives = () => {
     const [showModal, setShowModal] = useState(false)
     const [activeButton, setActiveButton] = useState(buttons[0]);
     const [clickedInitiative, setClickedInitiative]= useState(null)
+    const isAdmin= location.state?.isAdmin
 
     const handleInitiativeDetailsOpen = (value: any) => {
         navigate('/initiativeDetails', {state: {token: location.state?.token, email: location.state?.email, isAdmin: location.state?.isAdmin, initiative:value}})
@@ -28,13 +29,19 @@ const Initiatives = () => {
     return (
         <>
                 <Grid container direction="row" spacing={2}>
-                    <UpperButtonMenu first_label={buttons[0]} second_label={buttons[1]} third_label={buttons[2]}
-                                     first_list={allInitiativesList} second_list={myInitiativesList}
-                                     third_list={subcribedInitiativesList} listSetter={setShowingList}
-                                     buttonSetter={setActiveButton}/>
+                    {!isAdmin? <UpperButtonMenu first_label={buttons[0]} second_label={buttons[1]} third_label={buttons[2]}
+                                                first_list={allInitiativesList} second_list={myInitiativesList}
+                                                third_list={subcribedInitiativesList} listSetter={setShowingList}
+                                                buttonSetter={setActiveButton}/> :
+                        <Grid item xs={12} display="flex" justifyContent="center" alignItems="center" sx={{
+                        width: '100%',
+                    }}>
+                        <Typography style={{color: '#feac0d', textAlign: 'center', fontSize: '3rem'}}>Amministrazione iniziative</Typography>
+                    </Grid>}
+
                     <Grid item xs={12} display="flex" justifyContent="center" alignItems="center">
                         <List sx={{
-                            width: '100%',
+                            width: '90%',
                             position: 'relative',
                             overflow: 'auto',
                             maxHeight: 580

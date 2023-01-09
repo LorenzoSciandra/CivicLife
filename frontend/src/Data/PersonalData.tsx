@@ -55,7 +55,7 @@ const PersonalData = () => {
                              listSetter={setShowingList} buttonSetter={setActiveButton}/>
             <Grid item xs={12} display="flex" justifyContent="center" alignItems="center">
                 <List sx={{
-                    width: '100%',
+                    width: '90%',
                     position: 'relative',
                     overflow: 'auto',
                     maxHeight: 580
@@ -66,7 +66,7 @@ const PersonalData = () => {
                                 {
                                     activeButton === buttons[0] ?
                                         <CssTextField sx={{input: {color: 'white'}, style: {color: 'white'}}}
-                                                      label={value+ ' etichetta'} defaultValue={value+' valore'}/>
+                                                      label={value + ' etichetta'} defaultValue={value + ' valore'}/>
                                         :
                                         // <ReadOnlyTextField
                                         //     sx={{input: {color: 'white'}, style: {color: 'white'}}}
@@ -76,9 +76,11 @@ const PersonalData = () => {
                                         //         readOnly: true,
                                         //     }}
                                         // />
-                                        <ListItemButton onClick={() => handleDialogOpen(value)}>
-                                            <ListItemText primary={value}/>
-                                        </ListItemButton>
+                                        <>
+                                            <ListItemButton onClick={() => handleDialogOpen(value)}>
+                                                <ListItemText primary={value}/>
+                                            </ListItemButton>
+                                        </>
                                 }
                             </ListItem>
                         );

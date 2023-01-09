@@ -17,21 +17,24 @@ import React, {useState} from "react";
 
 import '../App.css'
 import personalData from "../imgs/personaldata.png"
+import {useLocation, useNavigate} from "react-router-dom";
 
-
-type PartyDetailsPropsType = {
-    party: any,
-}
-
-const PartyDetails = (props: PartyDetailsPropsType) => {
+const PartyDetails = () => {
 
     const [candidateList, setCandidateList] = useState(['candidato1', 'candidato2', 'candidato3', 'candidato4', 'candidato1', 'candidato2', 'candidato3', 'candidato4', 'candidato1', 'candidato2', 'candidato3', 'candidato4', 'candidato1', 'candidato2', 'candidato3', 'candidato4'])
+    const location= useLocation()
+    const navigate= useNavigate()
+    const party= location.state?.party
+
+    const handleCandidateDetailsOpen=(value:any)=>{
+        navigate('/votations/votationDetails/partyDetails/candidateDetails',{state:{state: {token: location.state?.token, email: location.state?.email, isAdmin: location.state?.isAdmin, votation:location.state?.votation, party:location.state?.party, candidate:value}}})
+    }
 
     const partyCards = candidateList.map((value, index) => {
         return (
             <>
                 <Card sx={{maxWidth: 345, margin: '20px'}}>
-                    <CardActionArea>
+                    <CardActionArea onClick={()=>{handleCandidateDetailsOpen(value)}}>
                         <CardMedia
                             component="img"
                             height="140"
@@ -43,7 +46,8 @@ const PartyDetails = (props: PartyDetailsPropsType) => {
                                 {value}
                             </Typography>
                             <Typography variant="body2" color="text.secondary">
-                                descrizione fast kdoafoikmsklfnmskienfmiuesnfdciusenfdmcoiasnfdciuwkanfscisdnvd
+                                Descrizione breve del candidato
+                                Impegnato nel sociale e attivo nella comunità
                             </Typography>
                         </CardContent>
                     </CardActionArea>
@@ -61,23 +65,23 @@ const PartyDetails = (props: PartyDetailsPropsType) => {
     };
     return (
         <Grid container direction='row' spacing={5}>
-            <Grid item xs={12} display="flex" sx={{
-                width: '100%',
-                margin: "auto",
-                top: 0,
-                right: 0
-            }}>
-                <IconButton><KeyboardBackspaceIcon sx={{fontSize: 60, color: '#ffffff'}}/></IconButton>
-            </Grid><Grid item xs={12} display="flex" justifyContent="center" alignItems="center" sx={{
+            {/*<Grid item xs={12} display="flex" sx={{*/}
+            {/*    width: '100%',*/}
+            {/*    margin: "auto",*/}
+            {/*    top: 0,*/}
+            {/*    right: 0*/}
+            {/*}}>*/}
+            {/*    <IconButton><KeyboardBackspaceIcon sx={{fontSize: 60, color: '#ffffff'}}/></IconButton>*/}
+            {/*</Grid>*/}
+            <Grid item xs={12} display="flex" justifyContent="center" alignItems="center" sx={{
             width: '100%',
             margin: "auto",
             top: 150,
             right: 0
         }}>
-            <Typography style={{color: '#feac0d', textAlign: 'center', fontSize: '3rem'}}>{props.party}</Typography>
+            <Typography style={{color: '#feac0d', textAlign: 'center', fontSize: '3rem'}}>{party}</Typography>
         </Grid><Grid item xs={12} display="flex" justifyContent="center" alignItems="center" sx={{
             width: '100%',
-
             margin: "auto",
             top: 65,
             right: 0
@@ -111,7 +115,19 @@ const PartyDetails = (props: PartyDetailsPropsType) => {
                 imperdiet fermentum scelerisque. Nam tristique tincidunt ipsum, eget pharetra orci hendrerit sed.
                 Interdum et malesuada fames ac ante ipsum primis in faucibus. Nunc molestie semper lorem et vulputate.
                 Aliquam convallis ex sit amet eleifend pellentesque.</Typography>
-        </Grid><Grid item xs={12} display="flex" justifyContent="center" alignItems="center" sx={{
+        </Grid>
+            <Grid item xs={12} display="flex" justifyContent='center' alignItems="right">
+                <Button style={{
+                    borderRadius: 35,
+                    backgroundColor: "#ff3823",
+                    padding: "10px 20px",
+                    fontSize: "18px"
+                }}
+                        variant="contained">
+                    VOTA Partito
+                </Button>
+            </Grid>
+            <Grid item xs={12} display="flex" justifyContent="center" alignItems="center" sx={{
             width: '100%',
             margin: "auto",
             top: 280, right: 0
@@ -130,18 +146,6 @@ const PartyDetails = (props: PartyDetailsPropsType) => {
                 </Box>
             </Grid>
         </Grid>
-            <Grid item xs={12} display="flex" justifyContent='center' alignItems="right">
-                <Button style={{
-                    marginTop: '15px',
-                    borderRadius: 35,
-                    backgroundColor: "#ff3823",
-                    padding: "18px 36px",
-                    fontSize: "15px"
-                }}
-                        variant="contained">
-                    VOTA Partito
-                </Button>
-            </Grid>
         </Grid>
     );
 }

@@ -27,12 +27,11 @@ const UsersAdmin = () => {
     return (
         <Grid container direction="row">
             <Grid item xs={12} display="flex" justifyContent="center" alignItems="center">
-                <Typography
-                    style={{color: '#feac0d', textAlign: 'center', fontSize: '3rem'}}>Moderazione utenti</Typography>
+                <Typography style={{color: '#feac0d', textAlign: 'center', fontSize: '3rem'}}>Moderazione utenti</Typography>
             </Grid>
             <Grid item xs={12} display="flex" justifyContent="center" alignItems="center">
                 <List sx={{
-                    width: '100%',
+                    width: '90%',
                     position: 'relative',
                     overflow: 'auto',
                     maxHeight: 580
@@ -48,11 +47,9 @@ const UsersAdmin = () => {
                             </ListItem>
                         );
                     })}
-
-
                 </List>
-
             </Grid>
+
             <Grid item xs={6} display="flex" justifyContent='center' alignItems="right">
                 <Button style={{
                     borderRadius: 35,

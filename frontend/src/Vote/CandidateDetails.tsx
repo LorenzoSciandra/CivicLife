@@ -12,11 +12,12 @@ import {
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import React from "react";
 import personalData from "../imgs/personaldata.png";
+import {useLocation} from "react-router-dom";
 
-type CandidateDetailsPropsType = {
-    candidate: any
-}
-const CandidateDetails = (props: CandidateDetailsPropsType) => {
+const CandidateDetails = () => {
+    const location= useLocation()
+    const candidate= location.state?.candidate
+
     return (
         <Grid container direction='row' spacing={5}>
             {/*<Grid item xs={12} display="flex" sx={{*/}
@@ -30,14 +31,14 @@ const CandidateDetails = (props: CandidateDetailsPropsType) => {
             <Grid item xs={12} display="flex" justifyContent="center" alignItems="center"
                   sx={{width: '100%', margin: "auto", top: 150, right: 0}}>
                 <Typography
-                    style={{color: '#feac0d', textAlign: 'center', fontSize: '3rem'}}>{props.candidate}</Typography>
+                    style={{color: '#feac0d', textAlign: 'center', fontSize: '3rem'}}>{candidate}</Typography>
             </Grid>
             <Grid item xs={3} display="flex" alignItems="center" justifyContent="center" sx={{marginLeft:'120px'}}>
                 <Card >
                         <CardMedia
                             component="img"
                             image={personalData}
-                            alt={props.candidate}
+                            alt={candidate}
                         />
                 </Card>
             </Grid>
