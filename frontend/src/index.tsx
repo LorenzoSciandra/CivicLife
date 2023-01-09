@@ -43,19 +43,18 @@ root.render(
                     position: 'fixed',
                     width: '100%',
                     margin: "auto",
-                    bottom: 0,
-                    right: 0
+                    bottom:0
                 }}>
                     <CardMedia
                         component="img"
                         image={logo_CivicLife}
                         sx={{
-                            width: '4%',
+                            width: '3%',
                         }}
                         alt="Logo"
                     />
                     <Typography
-                        style={{color: '#feac0d', textAlign: 'center', fontSize: '1.5rem'}}>CivicLife</Typography>
+                        style={{color: '#feac0d', textAlign: 'center', fontSize: '1rem'}}>CivicLife</Typography>
                     <ScrollToTop smooth/>
                 </Grid>
             </Grid>

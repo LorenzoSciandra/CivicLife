@@ -32,10 +32,12 @@ const Votations = () => {
 
             <Grid item xs={12} display="flex" justifyContent="center" alignItems="center">
                 <List sx={{
-                    width: '90%',
-                    position: 'relative',
+                    width: '80%',
                     overflow: 'auto',
-                    maxHeight: 580
+                    maxHeight: 580,
+                    position:'fixed',
+                    top: 150,
+                    bottom: 100
                 }}>
                     {showingList.map((value, index) => {
                             return (

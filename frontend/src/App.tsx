@@ -10,6 +10,7 @@ import {Typography} from "@mui/material";
 import VotationDetails from "./Vote/VotationDetails";
 import PartyDetails from "./Vote/PartyDetails";
 import CandidateDetails from "./Vote/CandidateDetails";
+import InitiativeCreateForm from "./Initiative/InitiativeCreateForm";
 
 const App=()=>{
     return (
@@ -19,6 +20,7 @@ const App=()=>{
             <Route path="/usersAdmin" element={<UsersAdmin/>}/>
             <Route path='/initiatives' element={<Initiatives/>}/>
             <Route path='/initiativeDetails' element={<InitiativeDetails/>}/>
+            <Route path='/createInitiative' element={<InitiativeCreateForm/>}/>
             <Route path='/votations' element={<Votations/>}/>
             <Route path='/votations/votationDetails' element={<VotationDetails/>}/>
             <Route path='/votations/votationDetails/partyDetails' element={<PartyDetails/>}/>

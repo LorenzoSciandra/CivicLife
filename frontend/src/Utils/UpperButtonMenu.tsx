@@ -62,7 +62,7 @@ const UpperButtonMenu = (props: UpperButtonsMenupropsType) => {
             {/*    right: 0}}>*/}
             {/*    <IconButton><KeyboardBackspaceIcon sx={{fontSize: 60, color: '#ffffff'}}/></IconButton>*/}
             {/*</Grid>*/}
-            <Grid item xs={12} display="flex" justifyContent="center" alignItems="center" sx={{width: '100%'}}>
+            <Grid item xs={12} display="flex" justifyContent="center" alignItems="center" sx={{width: '100%', position:'fixed', top:10}}>
                 <ToggleButtonGroup value={activeButton} exclusive onChange={handleChange} aria-label="Platform">
                     <ToggleButton style={{
                         backgroundColor: firstButton.background,
@@ -86,7 +86,6 @@ const UpperButtonMenu = (props: UpperButtonsMenupropsType) => {
                             :
                             null
                     }
-
                 </ToggleButtonGroup>
             </Grid>
         </>
