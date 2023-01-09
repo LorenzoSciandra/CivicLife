@@ -2,6 +2,14 @@ server:
   port: 8083
 
 spring:
+  rabbitmq:
+    host: user-service
+    username: guest
+    password: guest
+    port: 15672
+    template:
+      exchange: oauth-exchange
+      routing-key: oauth-key
   application:
     name: user-service
   data:

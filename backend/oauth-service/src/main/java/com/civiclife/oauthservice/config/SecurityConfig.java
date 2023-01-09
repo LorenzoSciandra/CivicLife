@@ -43,7 +43,8 @@ public class SecurityConfig {
                                                                             "/resources/**",
                                                                             "/login/**",
                                                                             "/login",
-                                                                            "/oauth2/**")
+                                                                            "/oauth2/**",
+                                                                            "/validate/**")
                                                 .permitAll()
                                                 .anyRequest()
                                                 .authenticated())

@@ -4,11 +4,18 @@ import com.civiclife.oauthservice.config.ValidateCode;
 import com.civiclife.oauthservice.model.Token;
 import com.civiclife.oauthservice.model.TokenKey;
 import com.civiclife.oauthservice.repo.TokenRepository;
+//import com.civiclife.oauthservice.service.PublisherRabbit;
+import com.nimbusds.oauth2.sdk.ResponseType;
+import org.apache.hc.client5.http.classic.HttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
+
+import java.net.URI;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -19,6 +26,7 @@ public class AuthController {
 
     @Autowired
     TokenRepository tokenRepository;
+
 
     @GetMapping("/validationAuthorities")
     public List<TokenKey.OauthProvider> getValidationAuthorities() {
@@ -43,7 +51,7 @@ public class AuthController {
 
     @GetMapping("/getToken/{email}/{provider}")
     public String getToken(@PathVariable(value = "email") String email,
-                                             @PathVariable(value = "provider") TokenKey.OauthProvider provider) {
+                           @PathVariable(value = "provider") TokenKey.OauthProvider provider) {
         String result = "";
         Optional<Token> optionalTokenBean = tokenRepository.findById(new TokenKey(email, provider));
         if (optionalTokenBean.isPresent()){
@@ -54,9 +62,12 @@ public class AuthController {
         return result;
     }
 
-    @PostMapping("/validate/{token}")
-    public ValidateCode validate(@RequestBody TokenKey tokenKey, @PathVariable(value = "token") String token){
-        Optional<Token> optionalTokenBean = tokenRepository.findById(tokenKey);
+    @GetMapping("/validate/{email}/{token}/{provider}")
+    public ValidateCode validate(@PathVariable(value = "email") String email,
+                                 @PathVariable(value = "token") String token,
+                                 @PathVariable(value = "provider") TokenKey.OauthProvider provider) {
+        //System.out.println("SONO QUI PER VALIDARE");
+        Optional<Token> optionalTokenBean = tokenRepository.findById(new TokenKey(email, provider));
         if (optionalTokenBean.isPresent()){
             Token tokenBean = optionalTokenBean.get();
             if(tokenBean.getTokens().containsKey(token)){

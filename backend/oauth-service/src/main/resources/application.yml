@@ -5,6 +5,15 @@ server:
   forward-headers-strategy: framework
 
 spring:
+  rabbitmq:
+    host: oauth-service
+    username: guest
+    password: guest
+    port: 15672
+    template:
+      exchange: oauth-exchange
+      routing-key: oauth-key
+
   application:
     name: oauth-service
   data:

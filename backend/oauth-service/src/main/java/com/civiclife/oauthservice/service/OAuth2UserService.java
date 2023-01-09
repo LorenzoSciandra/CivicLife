@@ -1,15 +1,15 @@
 package com.civiclife.oauthservice.service;
 
+import com.civiclife.oauthservice.component.UserComponent;
 import com.civiclife.oauthservice.model.Token;
 import com.civiclife.oauthservice.model.TokenKey;
 import com.civiclife.oauthservice.repo.TokenRepository;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang.StringUtils;
-import org.springframework.http.HttpStatus;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Instant;
@@ -22,6 +22,14 @@ import java.util.Optional;
 public class OAuth2UserService {
 
     private TokenRepository tokenRepository;
+
+    private ProducerService producerService;
+
+    @Autowired
+    public OAuth2UserService(ProducerService producerService, TokenRepository tokenRepository) {
+        this.producerService = producerService;
+        this.tokenRepository = tokenRepository;
+    }
 
     public String processOauthPostLogin(OAuth2AuthenticationToken authData) throws ResponseStatusException {
 
@@ -71,9 +79,24 @@ public class OAuth2UserService {
             }
             tokenRepository.save(tokenBean);
 
-            return "http://localhost:8080/authAPI/v1/getToken/" + oauth2UserEmail + "/" + oauth2Provider;
         } else {
-            /*
+
+            UserComponent userComponent = new UserComponent();
+            userComponent.setMail(oauth2UserEmail);
+            userComponent.setName(oauth2UserName);
+            userComponent.setSurname(oauth2UserSurname);
+            producerService.sendMessage(userComponent);
+
+            /*HashMap<String, Instant> tokens_time = new HashMap<>();
+            tokens_time.put(token, Instant.now());
+            tokenRepository.save(new Token(new TokenKey(oauth2UserEmail, oauth2Provider), tokens_time));*/
+        }
+        return "http://localhost:8080/authAPI/v1/getToken/" + oauth2UserEmail + "/" + oauth2Provider;
+    }
+}
+
+
+/*
             String uri = "http://localhost:8080/userAPI/v1/user/createFromLogin/" + oauth2UserEmail + "/" + oauth2UserName + "/" + oauth2UserSurname;
             RestTemplate restTemplate = new RestTemplate();
             boolean result = Boolean.TRUE.equals(restTemplate.getForObject(uri, boolean.class));
@@ -90,11 +113,7 @@ public class OAuth2UserService {
                         String.format("%s non è un provider Oauth2 autorizzato per questo account.",
                                 oauth2ProviderName)
                 );
-            }*/
+            }
             HashMap<String, Instant> tokens_time = new HashMap<>();
             tokens_time.put(token, Instant.now());
-            tokenRepository.save(new Token(new TokenKey(oauth2UserEmail, oauth2Provider), tokens_time));
-            return "http://localhost:8080/authAPI/v1/getToken/" + oauth2UserEmail + "/" + oauth2Provider;
-        }
-    }
-}
+            tokenRepository.save(new Token(new TokenKey(oauth2UserEmail, oauth2Provider), tokens_time));*/

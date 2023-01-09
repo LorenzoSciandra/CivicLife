@@ -8,6 +8,13 @@ services:
     ports:
       - "8761:8761"
 
+  rabbitmq:
+    image: rabbitmq:management-alpine
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
   api-gateway:
     container_name: api-gateway
     image: api-gateway-1.0
@@ -16,6 +23,8 @@ services:
       - "8080:8080"
     depends_on:
       - service-discovery
+
+
   #  ----------------------------------------------
   #  APPLICATION SERVICES
 
@@ -48,6 +57,7 @@ services:
     deploy:
       restart_policy:
         condition: on-failure
+
 
   #  ----------------------------------------------
   #  DATABASES
