@@ -5,6 +5,7 @@ import com.civiclife.oauthservice.model.Token;
 import com.civiclife.oauthservice.model.TokenKey;
 import com.civiclife.oauthservice.repo.TokenRepository;
 //import com.civiclife.oauthservice.service.PublisherRabbit;
+import com.civiclife.oauthservice.service.OAuth2UserService;
 import com.nimbusds.oauth2.sdk.ResponseType;
 import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
@@ -26,6 +27,11 @@ public class AuthController {
 
     @Autowired
     TokenRepository tokenRepository;
+
+    @GetMapping("/token")
+    public OAuth2AuthenticationToken token(OAuth2AuthenticationToken token){
+        return token;
+    }
 
 
     @GetMapping("/validationAuthorities")

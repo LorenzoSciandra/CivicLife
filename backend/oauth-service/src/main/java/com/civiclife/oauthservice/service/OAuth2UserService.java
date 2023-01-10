@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.Optional;
@@ -40,6 +41,7 @@ public class OAuth2UserService {
         String oauth2UserName;
         String oauth2UserSurname;
         String token;
+        String details;
 
         System.out.println("oauth2ProviderName: " + oauth2ProviderName);
         System.out.println(principal.getAttributes().toString());
@@ -53,9 +55,27 @@ public class OAuth2UserService {
                 break;
             case Github:
                 oauth2UserEmail = principal.getAttribute("email");
-                oauth2UserName = ((String) Objects.requireNonNull(principal.getAttribute("name"))).split(" ")[0];
-                oauth2UserSurname = ((String) Objects.requireNonNull(principal.getAttribute("name"))).split(" ")[1];
-                token = principal.getAttribute("node_id");
+                oauth2UserName =  Objects.requireNonNull(principal.getAttribute("name"));
+                oauth2UserSurname = "";
+                details  = authData.getDetails().toString();
+                //System.out.println("values: " + details);
+                token= details.substring(details.indexOf("SessionId="))
+                        .replaceAll("]", "")
+                        .replaceAll(",", "")
+                        .replaceAll("SessionId=", "");
+
+                break;
+            case Facebook:
+                oauth2UserName =  Objects.requireNonNull(principal.getAttribute("name"));
+                oauth2UserSurname = "";
+                oauth2UserEmail = principal.getAttribute("email");
+                token = "";
+                details  = authData.getDetails().toString();
+                //System.out.println("values: " + details);
+                token= details.substring(details.indexOf("SessionId="))
+                        .replaceAll("]", "")
+                        .replaceAll(",", "")
+                        .replaceAll("SessionId=", "");
                 break;
             default:
                 oauth2UserEmail = "";
@@ -87,9 +107,9 @@ public class OAuth2UserService {
             userComponent.setSurname(oauth2UserSurname);
             producerService.sendMessage(userComponent);
 
-            /*HashMap<String, Instant> tokens_time = new HashMap<>();
+            HashMap<String, Instant> tokens_time = new HashMap<>();
             tokens_time.put(token, Instant.now());
-            tokenRepository.save(new Token(new TokenKey(oauth2UserEmail, oauth2Provider), tokens_time));*/
+            tokenRepository.save(new Token(new TokenKey(oauth2UserEmail, oauth2Provider), tokens_time));
         }
         return "http://localhost:8080/authAPI/v1/getToken/" + oauth2UserEmail + "/" + oauth2Provider;
     }
