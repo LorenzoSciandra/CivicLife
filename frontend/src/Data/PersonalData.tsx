@@ -9,22 +9,72 @@ import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContentText from "@mui/material/DialogContentText";
+import {useLocation} from "react-router-dom";
+import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs";
+import {DatePicker, LocalizationProvider} from "@mui/x-date-pickers";
+import {StatusType, updateUser, UserType} from "../APIs/UsersAPI";
 
 
 const PersonalData = () => {
+    const location= useLocation()
+    const user= location.state.user
+    const tokenData= location.state.token
 
     const buttons = ['Dati', 'Vaccini', 'Bonus']
-    const [dataList, setDataList] = useState<any[]>(['dato1', 'dato2', 'dato3', 'dato4', 'dato5', 'dato6', 'dato7', 'dato8', 'dato9'])
+    const [dataList, setDataList] = useState<any[]>([user.name, user.surname, user.email, user.birthDate, user.residence, user.domicile, user.telephoneNumber, user.status])
     const [vaxinesList, setvaxinesList] = useState<any[]>(['vaccino1', 'vaccino2', 'vaccino3', 'vaccino4'])
     const [bonusList, setBonusList] = useState<any[]>(['bonus1', 'bonus2'])
     const [showingList, setShowingList] = useState<any[]>(dataList)
     const [activeButton, setActiveButton] = useState(buttons[0]);
     const [clickedVaxine, setClickedVaxine] = useState(null)
     const [clickedBonus, setClickedBonus] = useState(null)
+    const [name, setName] = useState(user.name)
+    const [surname, setSurname] = useState(user.surname)
+    const [birthDate, setBirthDate] = useState<Date| null>(user.birthDate===0 ? null : new Date(user.birthDate))
+    const email = user.email
+    const [residence, setResidence] = useState(user.residence)
+    const [domicile, setDomicile] = useState(user.domicile)
+    const [telephonNumber, setTelephonNumber] = useState(user.telephonNumber)
+    const [fiscalCode, setFiscalCode] = useState(user.fiscalCode)
+
+    const handleNameChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setName(event.target.value);
+    }
+    const handleSurnameChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setSurname(event.target.value);
+    }
+    const handleBirthDateChanged = (newValue: Date | null) => {
+        setBirthDate(newValue);
+    }
+    const handleResidenceChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setResidence(event.target.value);
+    }
+    const handleDomicileChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setDomicile(event.target.value);
+    }
+    const handleTelephoneNumberChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setTelephonNumber(parseInt(event.target.value));
+    }
+    const handleFiscalCodeChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setFiscalCode(event.target.value);
+    }
 
     const handleOperation = () => {
         if (activeButton === buttons[0]) {
             console.log('MODIFICO I DATI')
+            const newUser: UserType = {
+                email: email,
+                name: name,
+                surname: surname,
+                admin: user.admin,
+                fiscalCode:fiscalCode,
+                residence:residence,
+                birthDate:birthDate ? birthDate.getTime():0,
+                domicile:domicile,
+                status: user.status,
+                telephonNumber: Number(telephonNumber)
+            }
+            updateUser(tokenData, newUser)
         } else if (activeButton === buttons[1]) {
             console.log('PRENDO I VACCINI')
         } else if (activeButton === buttons[2]) {
@@ -61,27 +111,50 @@ const PersonalData = () => {
                     top: 90,
                     bottom: 100
                 }}>
-                    {showingList.map((value, index) => {
-                        return (
-                                    activeButton === buttons[0] ?
-                                        <CssTextField sx={{input: {color: 'white'}, style: {color: 'white'}, marginTop: '9px'}}
-                                                      label={value + ' etichetta'} defaultValue={value + ' valore'}/>
-                                        :
-                                        // <ReadOnlyTextField
-                                        //     sx={{input: {color: 'white'}, style: {color: 'white'}}}
-                                        //     label={value}
-                                        //     defaultValue={value}
-                                        //     InputProps={{
-                                        //         readOnly: true,
-                                        //     }}
-                                        // />
+                    {
+                        activeButton === buttons[0] ?
+                            <>
+                                <CssTextField sx={{input: {color: 'white'}, style: {color: 'white'}, marginTop: '9px'}}
+                                              label={'Nome'} defaultValue={name}/>
+                                <CssTextField sx={{input: {color: 'white'}, style: {color: 'white'}, marginTop: '9px'}}
+                                              label={'Cognome'} defaultValue={surname} onChange={handleSurnameChanged}/>
+                                <CssTextField sx={{input: {color: 'white'}, style: {color: 'white'}, marginTop: '9px'}}
+                                              label={'Email'} defaultValue={email} InputProps={{readOnly: true}}/>
+                                <CssTextField sx={{input: {color: 'white'}, style: {color: 'white'}, marginTop: '9px'}}
+                                              label={'Numero di telefono'} defaultValue={telephonNumber} onChange={handleTelephoneNumberChanged}/>
+                                <CssTextField sx={{input: {color: 'white'}, style: {color: 'white'}, marginTop: '9px'}}
+                                              label={'Codice fiscale'} defaultValue={fiscalCode} onChange={handleFiscalCodeChanged}/>
+                                <CssTextField sx={{input: {color: 'white'}, style: {color: 'white'}, marginTop: '9px'}}
+                                              label={'Residenza'} defaultValue={residence} onChange={handleResidenceChanged}/>
+                                <CssTextField sx={{input: {color: 'white'}, style: {color: 'white'}, marginTop: '9px'}}
+                                              label={'Domicilio'} defaultValue={domicile} onChange={handleDomicileChanged}/>
+                                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                    <DatePicker
+                                        inputFormat="DD/MM/YYYY"
+                                        label="Data inizio"
+                                        value={birthDate}
+                                        renderInput={(params) => <CssTextField {...params} sx={{input: {color: 'white'}, style: {color: 'white'}, marginTop: '9px'}}/>}
+                                     onChange={(newValue) => {
+                                         handleBirthDateChanged(newValue);
+                                     }}/>
+                                </LocalizationProvider>
+                                <CssTextField sx={{input: {color: 'white'}, style: {color: 'white'}, marginTop: '9px'}}
+                                              label={'Stato'} defaultValue={user.status} InputProps={{
+                                    readOnly: true,
+                                }}/>
+
+
+
+                            </>
+                        :
+                        showingList.map((value, index) => {
+                            return (
                                         <>
                                             <ListItemButton onClick={() => handleDialogOpen(value)}>
                                                 <ListItemText primary={value}/>
                                             </ListItemButton>
                                             <Divider color={'black'}/>
                                         </>
-
                         );
                     })}
                 </List>
@@ -109,7 +182,7 @@ const PersonalData = () => {
                 <DialogContent>
                     <DialogContentText>
                         <ListItemText sx={{input: {color: 'white'}, style: {color: 'white'}}}
-                                      primary={'Nome Vaccino'} secondary={'something'}/>
+                                      primary={'Nome Vaccino'} secondary={'something'} onChange={handleNameChanged}/>
                         <Divider/>
                         <ListItemText sx={{input: {color: 'white'}, style: {color: 'white'}}}
                                       primary={'Tipo Vaccino'} secondary={'something'}/>

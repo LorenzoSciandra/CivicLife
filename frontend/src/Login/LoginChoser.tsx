@@ -1,14 +1,19 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import '../App.css';
 import {Button, Grid, Typography} from "@mui/material";
 import basquiaPulito from "../imgs/logo_CivicLife.png"
 import {useNavigate} from "react-router-dom";
 
-const Login = () => {
+type LoginChoserPropsType = {
+    isMobile: boolean
+}
+
+const LoginChoser = (props: LoginChoserPropsType) => {
     const navigate = useNavigate();
     const loginWithService = () => {
-        navigate('/login')
+        window.location.assign('http://localhost:8080/login')
     }
+
 
     const loginAsVisitor = () => {
         navigate('/home', {state: {isVisitor: true}})
@@ -57,5 +62,5 @@ const Login = () => {
     );
 }
 
-export default Login;
+export default LoginChoser;
 
