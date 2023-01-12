@@ -6,8 +6,9 @@ import personalData from "../imgs/personaldata.png"
 import iniziative from "../imgs/iniziative.png"
 import "@fontsource/ubuntu-mono";
 import {useLocation, useNavigate} from "react-router-dom";
-import {exchangeToken, TokenData} from "../APIs/oauthAPI";
-import {getLoggedUser, UserType} from "../APIs/UsersAPI";
+import {exchangeToken, TokenData} from "../APIs/OauthAPI";
+import {getLoggedUser} from "../APIs/UsersAPI";
+import type {User} from "../APIs/UsersAPI";
 
 const MainPage = () => {
 
@@ -20,7 +21,7 @@ const MainPage = () => {
 
     const [tokenData, setTokenData] = useState<TokenData | null>(null);
     const [firstLoad, setFirstLoad] =useState(true);
-    const [user, setUser] = useState<UserType| null>(null);
+    const [user, setUser] = useState<User| null>(null);
 
     const getTokenData = async (token_cifrato: string) => {
         const tokenData = await exchangeToken(token_cifrato);
@@ -35,6 +36,7 @@ const MainPage = () => {
                     const token_cifrato = window.location.href.split("token=")[1].toString()
                     if (token_cifrato !== "") {
                         getTokenData(token_cifrato)
+
                     }
                 } else {
                     console.log("token non presente")
