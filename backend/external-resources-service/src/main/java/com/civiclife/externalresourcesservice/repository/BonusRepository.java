@@ -10,8 +10,8 @@ import java.util.List;
 
 @Repository
 public interface BonusRepository extends MongoRepository<Bonus, String> {
-    @Query("{ 'email' : ?0 }")
+    @Query("{ 'email_owner' : ?0 }")
     List<Bonus> getBonusesByEmail(
-            @Param("email") String email
+            @Param("email_owner") String email_owner
     );
 }

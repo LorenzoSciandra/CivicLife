@@ -12,9 +12,9 @@ import java.util.List;
 public interface VaccinationRepository extends MongoRepository<Vaccination, String> {
 
 
-    @Query("{ 'email' : ?0 }")
+    @Query("{ 'email_owner' : ?0 }")
     List<Vaccination> getVaccinationByEmail(
-            @Param("email") String email
+            @Param("email_owner") String email_owner
     );
 
 }
