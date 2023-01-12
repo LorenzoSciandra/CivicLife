@@ -1,10 +1,9 @@
 package com.civiclife.externalresourcesservice.controller;
 
-import com.civiclife.externalresourcesservice.ValidateCode;
 import com.civiclife.externalresourcesservice.model.Vaccination;
 import com.civiclife.externalresourcesservice.repository.VaccinationRepository;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +19,7 @@ public class VaccinationController {
         this.vaccinationRepository = vaccinationRepository;
     }
 
-    @GetMapping("/vaccinations")
+    @GetMapping("/vaccination/all")
     public List<Vaccination> getAllVaccinations() {
         return vaccinationRepository.findAll();
     }
@@ -43,17 +42,14 @@ public class VaccinationController {
         return true;
     }
 
-    @GetMapping("/vaccinations/{email_owner}/{token}")
-    public List<Vaccination> getBVaccinationsByOwner(@PathVariable String email_owner, @PathVariable String token) {
+    @CrossOrigin(origins = "http://localhost:3000", maxAge = 600)
+    @GetMapping(value = "/vaccinations/{email_owner}/{email_richiedente}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<Vaccination> getBVaccinationsByOwner(@PathVariable(value = "email_owner") String email_owner,
+                                                     @PathVariable(value = "email_richiedente") String email_richiedente) {
 
-        String uri = "http://localhost:8080/authAPI/v1/validate/" + email_owner + "/" + token;
-        RestTemplate restTemplate = new RestTemplate();
-        ValidateCode result = restTemplate.getForObject(uri, ValidateCode.class);
-
-        if(result == ValidateCode.ACTIVE){
-            return vaccinationRepository.findAll().stream().filter(vaccination -> vaccination.getEmail_owner().equals(email_owner)).toList();
-        }
-
+       if(email_owner.equals(email_richiedente)){
+           return vaccinationRepository.getVaccinationByEmail(email_owner);
+       }
         return new ArrayList<>();
     }
 

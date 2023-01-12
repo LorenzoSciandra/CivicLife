@@ -20,11 +20,4 @@ public class ExternalResourcesServiceApplication {
         SpringApplication.run(ExternalResourcesServiceApplication.class, args);
     }
 
-    
-    @LoadBalanced
-    @Bean
-    public RestTemplate restTemplate() {
-        return new RestTemplate();
-    }
-
 }

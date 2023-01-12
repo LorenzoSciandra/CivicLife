@@ -3,16 +3,18 @@ package com.civiclife.apigateway.component;
 import com.civiclife.apigateway.config.ValidateCode;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
-import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
-import java.sql.SQLOutput;
-import java.util.Objects;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Base64;
 
 import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.GATEWAY_REQUEST_URL_ATTR;
 
@@ -21,43 +23,65 @@ import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.G
 public class AuthFilter implements GatewayFilter {
 
     private final String AUTH_URL = "http://localhost:8080/authAPI/v1/validate/";
+    private final String ERROR_URL = "http://localhost:3000/error?errorReason=";
 
     public enum OauthProvider {
         Google,
         Facebook,
         Github
     }
-
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         try {
+            String path = exchange.getRequest().getURI().toString();
+            System.out.println("########################################################");
+            System.out.println("Url iniziale: " + path );
+            System.out.println("Params: "+ exchange.getRequest().getQueryParams().toString());
 
-            System.out.println(exchange.getRequest().getHeaders().toString());
-            String email = exchange.getRequest().getHeaders().get("Email").get(0);
-            String token = exchange.getRequest().getHeaders().get("Token").get(0);
-            OauthProvider provider = OauthProvider.valueOf(exchange.getRequest().getHeaders().get("Provider").get(0));
+            MultiValueMap<String, String> params = exchange.getRequest().getQueryParams();
+            String final_url = "";
 
-            if(email != null && token != null) {
+            String token = new String(Base64.getDecoder().decode(params.get("token").get(0)));
+            String providerString = new String(Base64.getDecoder().decode(params.get("provider").get(0)));
+            String email = new String(Base64.getDecoder().decode(params.get("email").get(0)));
+            OauthProvider provider = OauthProvider.valueOf(providerString);
+
+            if(!email.equals("") && !token.equals("") && !providerString.equals("")){
+                String url = path.split("\\?")[0];
                 System.out.println("I find: " + email + " " + token + " " + provider);
 
                 String validateUrl = AUTH_URL + email + "/" + token + "/" + provider;
                 ValidateCode validateCode =  new RestTemplate().getForObject(validateUrl, ValidateCode.class);
 
-                if(validateCode == ValidateCode.ACTIVE){
-                    String url = exchange.getRequest().getPath().toString();
-                    int lastIndex = url.lastIndexOf("/");
-                    String final_url = url.substring(0,lastIndex) + "/" + email;
-                    System.out.println("Final url: " + final_url);
-                    exchange.transformUrl(final_url);
-                    ServerHttpRequest request = exchange.getRequest().mutate().path(final_url).build();
-                    exchange.getAttributes().put(GATEWAY_REQUEST_URL_ATTR, request.getURI());
+                System.out.println(validateCode);
 
-                    return chain.filter(exchange.mutate().request(request).build());
+                if(validateCode == ValidateCode.ACTIVE){
+                    final_url = url + "/" + email;
+                }
+                else{
+                    assert validateCode != null;
+                    final_url = ERROR_URL +  validateCode.toString();
                 }
 
-                System.out.println(validateCode);
             }
-            return Mono.empty();
+
+            else{
+                final_url = ERROR_URL + "ValuesToAuthenticateNotFound";
+            }
+
+            exchange.transformUrl(final_url);
+            ServerHttpRequest request = exchange.getRequest().mutate().uri(URI.create(final_url)).build();
+            exchange.getAttributes().put(GATEWAY_REQUEST_URL_ATTR, request.getURI());
+
+            System.out.println("-------------------------------------------------------");
+
+            System.out.println("Final url: " + final_url);
+            System.out.println("Headers: "+ exchange.getRequest().getHeaders().toString());
+            System.out.println("#####################################################");
+
+
+            return chain.filter(exchange.mutate().request(request).build());
+
 
         } catch (NullPointerException e) {
             exchange.getResponse().getHeaders().set("status", "401");

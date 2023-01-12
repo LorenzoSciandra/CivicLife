@@ -1,11 +1,16 @@
 package com.civiclife.userservice.controller;
 
+import com.civiclife.userservice.model.StatusType;
 import com.civiclife.userservice.model.User;
 import com.civiclife.userservice.repo.UserRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Base64;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Optional;
@@ -13,27 +18,67 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/userAPI/v1")
+@CrossOrigin(origins = "http://localhost:3000", maxAge = 600)
 public class UserController {
 
     @Autowired
     UserRepository userRepository;
 
-    @GetMapping("/users")
-    public List<User> getAllUtenti() {
-        return userRepository.findAll();
+    ObjectMapper objectMapper;
+
+    //only for testing from postman
+    @GetMapping("/postman/setAdmin/{email}")
+    public boolean setAdmin(@PathVariable String email){
+        Optional<User> optionalUser = userRepository.findById(email);
+        if(optionalUser.isPresent()){
+            User user = optionalUser.get();
+            user.setAdmin(true);
+            userRepository.save(user);
+            return true;
+        }
+        return false;
     }
 
-    @GetMapping("/user/{email}")
-    public User getUser(@PathVariable(value = "email") String email) {
-        return userRepository.findById(email).orElse(null);
+    @GetMapping("/users/{email}/{emailRichiedente}")
+    public List<User> getAllUtenti(@PathVariable(value = "email") String email,
+                                   @PathVariable(value = "emailRichiedente") String emailRichiedente) {
+
+        Optional<User> optionalUser = userRepository.findById(email);
+        if(optionalUser.isPresent() && emailRichiedente.equals(email)){
+            User user = optionalUser.get();
+            if(user.isAdmin()){
+                return userRepository.findAll();
+            }
+        }
+        return new ArrayList<>();
     }
 
+    @GetMapping(value = "/user/get/{email}/{emailRichiedente}",
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public User getUser(@PathVariable(value = "email") String email,
+                        @PathVariable(value = "emailRichiedente") String emailRichiedente) {
 
-    @DeleteMapping("/user/delete/{emailUser}/{emailRichiedente}")
-    public boolean deleteUser(@PathVariable(value = "emailUser") String emailUser,
+        Optional<User> optionalUser = userRepository.findById(email);
+        Optional<User> possiblyAdmin = userRepository.findById(emailRichiedente);
+        if(optionalUser.isPresent()){
+            User user = optionalUser.get();
+            if(possiblyAdmin.isPresent()){
+                User admin = possiblyAdmin.get();
+                if(admin.isAdmin() || email.equals(emailRichiedente)){
+                    return user;
+                }
+            }
+        }
+        return null;
+    }
+
+    @DeleteMapping("/user/delete/{email}/{emailUser}/{emailRichiedente}")
+    public boolean deleteUser(@PathVariable(value = "email") String email,
+                              @PathVariable(value = "emailUser") String emailUser,
                               @PathVariable(value = "emailRichiedente") String emailRichiedente) {
-        Optional<User> optionalAdmin = userRepository.findById(emailRichiedente);
-        if (optionalAdmin.isPresent()) {
+        Optional<User> optionalAdmin = userRepository.findById(email);
+
+        if (optionalAdmin.isPresent() && email.equals(emailRichiedente)) {
             User admin = optionalAdmin.get();
             if (admin.isAdmin()) {
                 Optional<User> optionalUser = userRepository.findById(emailUser);
@@ -46,125 +91,120 @@ public class UserController {
         return false;
     }
 
-    @PostMapping("/user/create")
+    //only for testing with postman
+    @PostMapping("/postman/create")
     public boolean createUser(@RequestBody User user) {
         userRepository.save(user);
         return true;
     }
 
+    public boolean updateUser(User user) {
+        System.out.println("Modifico utente come: " + user);
+        Optional<User> optionalUser = userRepository.findById(user.getEmail());
+        if(optionalUser.isPresent()){
+            User userToUpdate = optionalUser.get();
+            userToUpdate.setName(user.getName());
+            userToUpdate.setSurname(user.getSurname());
+            userToUpdate.setDomicile(user.getDomicile());
+            userToUpdate.setResidence(user.getResidence());
+            userToUpdate.setTelephonNumber(user.getTelephonNumber());
+            userToUpdate.setFiscalCode(user.getFiscalCode());
+            userToUpdate.setBirthDate(user.getBirthDate());
+            userToUpdate.setAuthorizeVaxine(user.isAuthorizeVaxine());
+            userToUpdate.setAuthorizeBonus(user.isAuthorizeBonus());
+            userRepository.save(userToUpdate);
+            return true;
+        }
+        return false;
+    }
 
-    @PostMapping("/user/update/status/{emailUser}/{emailRichiedente}")
-    public boolean updateStatus(@PathVariable(value = "emailUser") String emailUser,
-                                @PathVariable(value = "emailRichiedente") String emailRichiedente,
-                                @RequestBody int new_status) {
+    @PostMapping(value = "/user/update/{email}/{emailRichiedente}",
+            consumes = MediaType.TEXT_PLAIN_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public boolean updateUser(@PathVariable(value = "email") String email,
+                              @PathVariable(value = "emailRichiedente") String emailRichiedente,
+                              @RequestBody String user){
 
+        System.out.println(user);
+        if(email.equals(emailRichiedente)){
 
-        Optional<User> optionalAdmin = userRepository.findById(emailRichiedente);
-        if (optionalAdmin.isPresent()) {
-            User admin = optionalAdmin.get();
-            if (admin.isAdmin()) {
-                Optional<User> optionalUser = userRepository.findById(emailUser);
-                if (optionalUser.isPresent()) {
-                    if (new_status == 2) {
-                        userRepository.deleteById(emailUser);
-                    } else {
-                        User user = optionalUser.get();
-                        user.setStatus(new_status);
-                        userRepository.save(user);
+            User new_user = parseUser(user.replace("{", "").replace("}","").replace("\"", ""));
+            return updateUser(new_user);
+        }
+        return false;
+    }
+
+    private User parseUser(String new_user){
+        User user = new User();
+        String [] campi = new_user.split(",");
+        for (String campo: campi){
+            String [] coppia = campo.split(":");
+            String key = campo.split(":")[0];
+            String value = "";
+
+            if(coppia.length == 2){
+                value = campo.split(":")[1];
+            }
+
+            switch (key) {
+                case "email" -> user.setEmail(value);
+                case "name" -> user.setName(value);
+                case "surname" -> user.setSurname(value);
+                case "admin" -> {
+                    if (value.equals("")){
+                        user.setAdmin(false);
                     }
-                    return true;
+                    else {
+                        user.setAdmin(Boolean.parseBoolean(value));
+                    }
+                }
+                case "fiscalCode" -> user.setFiscalCode(value);
+                case "residence" -> user.setResidence(value);
+                case "domicile" -> user.setDomicile(value);
+                case "birthDate" -> {
+                    if(value.equals("")){
+                        user.setBirthDate(0);
+                    }
+                    else {
+                        user.setBirthDate(Long.parseLong(value));
+                    }
+                }
+                case "status" -> {
+                    if(value.equals("")){
+                        user.setStatus(StatusType.ACTIVE);
+                    }
+                    else {
+                        user.setStatus(StatusType.valueOf(value));
+                    }
+                }
+                case "telephonNumber" -> {
+                    if(value.equals("")){
+                        user.setTelephonNumber(0);
+                    }
+                    else {
+                        user.setTelephonNumber(Long.parseLong(value));
+                    }
+                }
+                case "authorizeBonus" -> {
+                    if(value.equals("")){
+                        user.setAuthorizeBonus(false);
+                    }
+                    else {
+                        user.setAuthorizeBonus(Boolean.parseBoolean(value));
+                    }
+                }
+                case "authorizeVaxine" -> {
+                    if(value.equals("")){
+                        user.setAuthorizeVaxine(false);
+                    }
+                    else {
+                        user.setAuthorizeVaxine(Boolean.parseBoolean(value));
+                    }
                 }
             }
         }
-
-
-        return false;
+        return user;
     }
 
-    @PostMapping("/user/update/residence/{email}/{emailRichiedente}")
-    public boolean updateResidenza(@PathVariable(value = "email") String email,
-                                   @PathVariable(value = "emailRichiedente") String emailRichiedente,
-                                   @RequestBody String residence) {
 
-
-        Optional<User> optionalUser = userRepository.findById(email);
-        //System.out.println("Mi hanno chiesto di cambiare email: " + email + "con richiedente: " + emailRichiedente);
-
-        if (optionalUser.isPresent() && email.equals(emailRichiedente)) {
-            User user = optionalUser.get();
-            user.setResidence(residence);
-            userRepository.save(user);
-            return true;
-        }
-        return false;
-    }
-
-    @PostMapping("/user/update/domicile/{email}/{emailRichiedente}")
-    public boolean updateDomicilio(@PathVariable(value = "email") String email,
-                                   @PathVariable(value = "emailRichiedente") String emailRichiedente,
-                                   @RequestBody String domicile) {
-
-
-        Optional<User> optionalUser = userRepository.findById(email);
-
-        if (optionalUser.isPresent() && email.equals(emailRichiedente)) {
-            User user = optionalUser.get();
-            user.setDomicile(domicile);
-            userRepository.save(user);
-            return true;
-        }
-        return false;
-    }
-
-    @PostMapping("/user/update/telephoneNumber/{email}/{emailRichiedente}")
-    public boolean updateTelefono(@PathVariable(value = "email") String email,
-                                  @PathVariable(value = "emailRichiedente") String emailRichiedente,
-                                  @RequestBody long telephoneNumber) {
-
-
-        Optional<User> optionalUser = userRepository.findById(email);
-
-        if (optionalUser.isPresent() && email.equals(emailRichiedente)) {
-            User user = optionalUser.get();
-            user.setTelephonNumber(telephoneNumber);
-            userRepository.save(user);
-            return true;
-        }
-        return false;
-
-    }
-
-    @PostMapping("/user/update/birthDayDate/{email}/{emailRichiedente}")
-    public boolean updateBirthDayDate(@PathVariable(value = "email") String email,
-                                      @PathVariable(value = "emailRichiedente") String emailRichiedente,
-                                      @RequestBody long birthDayDate) {
-
-
-        Optional<User> optionalUser = userRepository.findById(email);
-
-        if (optionalUser.isPresent() && email.equals(emailRichiedente)) {
-            User user = optionalUser.get();
-            user.setBirthDate(birthDayDate);
-            userRepository.save(user);
-            return true;
-        }
-        return false;
-    }
-
-    @PostMapping("/user/update/fiscalCode/{email}/{emailRichiedente}")
-    public boolean updateFiscalCode(@PathVariable(value = "email") String email,
-                                    @PathVariable(value = "emailRichiedente") String emailRichiedente,
-                                    @RequestBody String fiscalCode) {
-
-
-        Optional<User> optionalUser = userRepository.findById(email);
-
-        if (optionalUser.isPresent() && email.equals(emailRichiedente)) {
-            User user = optionalUser.get();
-            user.setFiscalCode(fiscalCode);
-            userRepository.save(user);
-            return true;
-        }
-        return false;
-    }
 }

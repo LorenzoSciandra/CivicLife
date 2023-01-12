@@ -1,10 +1,9 @@
 package com.civiclife.externalresourcesservice.controller;
 
-import com.civiclife.externalresourcesservice.ValidateCode;
 import com.civiclife.externalresourcesservice.model.Bonus;
 import com.civiclife.externalresourcesservice.repository.BonusRepository;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.http.MediaType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,11 +19,12 @@ public class BonusController {
         this.bonusRepository = bonusRepository;
     }
 
-    @GetMapping("/bonuses")
+    @GetMapping("/bonus/all")
     public List<Bonus> getAllBonuses() {
         System.out.println("Get all Bonuses...");
         return bonusRepository.findAll();
     }
+
 
     @GetMapping("/bonus/{id}")
     public Bonus getBonusById(@PathVariable String id) {
@@ -44,15 +44,13 @@ public class BonusController {
         return true;
     }
 
-    @GetMapping("/bonuses/{email_owner}/{token}")
-    public List<Bonus> getBonusesByOwner(@PathVariable String email_owner, @PathVariable String token) {
-        String uri = "http://localhost:8080/authAPI/v1/validate/" + email_owner + "/" + token;
-        RestTemplate restTemplate = new RestTemplate();
-        ValidateCode result = restTemplate.getForObject(uri, ValidateCode.class);
+    @CrossOrigin(origins = "http://localhost:3000", maxAge = 600)
+    @GetMapping(value = "/bonuses/{email_owner}/{email_richiedente}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<Bonus> getBonusesByOwner(@PathVariable(value = "email_owner") String email_owner,
+                                         @PathVariable(value = "email_richiedente") String email_richiedente) {
 
-        if(result == ValidateCode.ACTIVE){
-            return bonusRepository.findAll().stream().filter(bonus -> bonus.getEmail_owner().equals(email_owner)).toList();
-
+        if(email_owner.equals(email_richiedente)){
+            return bonusRepository.getBonusesByEmail(email_owner);
         }
         return new ArrayList<>();
     }

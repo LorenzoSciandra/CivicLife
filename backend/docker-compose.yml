@@ -70,6 +70,20 @@ services:
       restart_policy:
         condition: on-failure
 
+  external-resources-service:
+    build: external-resources-service
+    image: external-resources-service-1.0
+    container_name: external-resources-service
+    links:
+      - external-resources-db
+    depends_on:
+      - external-resources-db
+      - service-discovery
+    ports:
+      - "8081:8081"
+    deploy:
+      restart_policy:
+        condition: on-failure
 
   #  ----------------------------------------------
   #  DATABASES
@@ -98,6 +112,16 @@ services:
       restart_policy:
         condition: on-failure
 
+  external-resources-db:
+    image: mongo:latest
+    container_name: external-resources-db
+    restart: unless-stopped
+    volumes:
+      - external-resources-db:/var/lib/external-resourcesDB/data
+    ports:
+      - "27022:27017"
+
 volumes:
+  external-resources-db:
   user-db:
   token-db:

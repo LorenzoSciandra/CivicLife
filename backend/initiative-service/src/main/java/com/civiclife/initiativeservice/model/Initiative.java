@@ -8,9 +8,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Set;
 
 @Data
-@AllArgsConstructor
 @Document(collection = "initiatives")
 public class Initiative {
 
@@ -22,8 +22,8 @@ public class Initiative {
     private String status;
     private String type;
     private String idCreator;
-    private List<String> idOrganizers;
-    private List<String> idMembers;
+    private Set<String> idOrganizers;
+    private Set<String> idMembers;
     private long startDate;
     private long endDate;
     private String location;
@@ -31,7 +31,8 @@ public class Initiative {
     public Initiative() {
     }
 
-    public Initiative(String name, String description, String status, String type, String idCreator, List<String> idOrganizers, List<String> idMembers, long startDate, long endDate, String location) {
+    public Initiative(String id, String name, String description, String status, String type, String idCreator, Set<String> idOrganizers, Set<String> idMembers, long startDate, long endDate, String location) {
+        this.id = id;
         this.name = name;
         this.description = description;
         this.status = status;
@@ -92,19 +93,19 @@ public class Initiative {
         this.idCreator = idCreator;
     }
 
-    public List<String> getIdOrganizers() {
+    public Set<String> getIdOrganizers() {
         return idOrganizers;
     }
 
-    public void setIdOrganizers(List<String> idOrganizers) {
+    public void setIdOrganizers(Set<String> idOrganizers) {
         this.idOrganizers = idOrganizers;
     }
 
-    public List<String> getIdMembers() {
+    public Set<String> getIdMembers() {
         return idMembers;
     }
 
-    public void setIdMembers(List<String> idMembers) {
+    public void setIdMembers(Set<String> idMembers) {
         this.idMembers = idMembers;
     }
 

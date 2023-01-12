@@ -1,6 +1,7 @@
 com/civiclife/userservice/model/User.class
 com/civiclife/userservice/repo/UserRepository.class
 com/civiclife/userservice/controller/UserController.class
+com/civiclife/userservice/model/StatusType.class
 com/civiclife/userservice/UserServiceApplication.class
 com/civiclife/userservice/config/RabbitConfig.class
 com/civiclife/userservice/component/UserComponent.class

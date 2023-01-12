@@ -1,20 +1,22 @@
 package com.civiclife.oauthservice.config;
 
 import com.civiclife.oauthservice.service.*;
+import com.civiclife.oauthservice.utils.AES;
 import lombok.AllArgsConstructor;
 import org.apache.hc.core5.http.HttpStatus;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.web.server.ResponseStatusException;
 
-import static org.springframework.security.config.Customizer.withDefaults;
+import java.util.Base64;
+import java.util.Objects;
+
 
 @Configuration
 @EnableWebSecurity
@@ -23,11 +25,14 @@ public class SecurityConfig {
 
     private OAuth2UserService oAuth2UserService;
 
+    private final String secret = "!CivicLifeSecret2023!";
+
+
     // definire il Bean per la configurazione della sicurezza
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
-                .csrf().disable()
+                .cors().and().csrf().disable()
                 .formLogin(form -> form.loginPage("/login")
                             .permitAll()
                             .failureHandler(basicLoginFailureHandler())
@@ -40,7 +45,7 @@ public class SecurityConfig {
                 .and()*/
                 .authorizeRequests(requests -> requests
                                                 .requestMatchers(  "/authAPI/**",
-                                                                            "/resources/**",
+                                                                            "/resources/templates/**",
                                                                             "/login/**",
                                                                             "/login",
                                                                             "/oauth2/**",
@@ -76,12 +81,17 @@ public class SecurityConfig {
     AuthenticationSuccessHandler oauth2SuccessHandler() {
         return (request, response, authentication) -> {
             try {
-                String redirectLocation = oAuth2UserService.processOauthPostLogin(
+                String tokenData = oAuth2UserService.processOauthPostLogin(
                         ((OAuth2AuthenticationToken) authentication)
                 );
-                response.sendRedirect(redirectLocation);
+
+                String encryptedToken = AES.encrypt(tokenData, secret);
+                String base64Token = Base64.getEncoder().encodeToString(Objects.requireNonNull(encryptedToken).getBytes());
+                System.out.println("HO CIFRATO CAZZO: " + encryptedToken);
+                System.out.println("HO CIFRATO IL CAZZO IN BASE64: " + base64Token);
+                response.sendRedirect("http://localhost:3000/home?token=" + base64Token);
             } catch (ResponseStatusException ex) {
-                response.sendRedirect("http://localhost:8080/login?reason="+ex.getReason());
+                response.sendRedirect("http://localhost:3000/error?errorReason="+ex.getReason());
             }
         };
     }

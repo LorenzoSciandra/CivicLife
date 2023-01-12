@@ -58,7 +58,7 @@ public class OAuth2UserService {
                 oauth2UserName =  Objects.requireNonNull(principal.getAttribute("name"));
                 oauth2UserSurname = "";
                 details  = authData.getDetails().toString();
-                //System.out.println("values: " + details);
+                System.out.println("values: " + details);
                 token= details.substring(details.indexOf("SessionId="))
                         .replaceAll("]", "")
                         .replaceAll(",", "")
@@ -71,7 +71,7 @@ public class OAuth2UserService {
                 oauth2UserEmail = principal.getAttribute("email");
                 token = "";
                 details  = authData.getDetails().toString();
-                //System.out.println("values: " + details);
+                System.out.println("values: " + details);
                 token= details.substring(details.indexOf("SessionId="))
                         .replaceAll("]", "")
                         .replaceAll(",", "")
@@ -111,7 +111,7 @@ public class OAuth2UserService {
             tokens_time.put(token, Instant.now());
             tokenRepository.save(new Token(new TokenKey(oauth2UserEmail, oauth2Provider), tokens_time));
         }
-        return "http://localhost:8080/authAPI/v1/getToken/" + oauth2UserEmail + "/" + oauth2Provider;
+        return "email: " + oauth2UserEmail + ",provider: " + oauth2ProviderName + ",token: " + token;
     }
 }
 

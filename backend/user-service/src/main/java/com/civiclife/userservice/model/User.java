@@ -3,6 +3,7 @@ package com.civiclife.userservice.model;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import com.civiclife.userservice.model.StatusType;
 
 import java.util.List;
 
@@ -20,14 +21,16 @@ public class User {
     private String residence;
     private String domicile;
     private long birthDate;
-    private int status;
+    private StatusType status;
     private long telephonNumber;
+    private boolean authorizeBonus;
+    private boolean authorizeVaxine;
 
     public User(){
 
     }
 
-    public User(String email, boolean admin, String name, String surname, String fiscalCode, String residence, String domicile, long birthDate, int status, long telephonNumber) {
+    public User(String email, boolean admin, String name, String surname, String fiscalCode, String residence, String domicile, long birthDate, com.civiclife.userservice.model.StatusType status, long telephonNumber, boolean authorizeBonus, boolean authorizeVaxine) {
         this.email = email;
         this.admin = admin;
         this.name = name;
@@ -38,6 +41,8 @@ public class User {
         this.birthDate = birthDate;
         this.status = status;
         this.telephonNumber = telephonNumber;
+        this.authorizeBonus = authorizeBonus;
+        this.authorizeVaxine = authorizeVaxine;
     }
 
     public boolean isAdmin() {
@@ -104,11 +109,11 @@ public class User {
         this.birthDate = birthDate;
     }
 
-    public int getStatus() {
+    public StatusType getStatus() {
         return status;
     }
 
-    public void setStatus(int status) {
+    public void setStatus(StatusType status) {
         this.status = status;
     }
 
@@ -118,6 +123,22 @@ public class User {
 
     public void setTelephonNumber(long telephonNumber) {
         this.telephonNumber = telephonNumber;
+    }
+
+    public boolean isAuthorizeBonus() {
+        return authorizeBonus;
+    }
+
+    public void setAuthorizeBonus(boolean authorizeBonus) {
+        this.authorizeBonus = authorizeBonus;
+    }
+
+    public boolean isAuthorizeVaxine() {
+        return authorizeVaxine;
+    }
+
+    public void setAuthorizeVaxine(boolean authorizeVaxine) {
+        this.authorizeVaxine = authorizeVaxine;
     }
 
     @Override

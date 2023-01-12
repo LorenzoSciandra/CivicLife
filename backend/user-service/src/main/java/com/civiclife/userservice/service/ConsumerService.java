@@ -1,6 +1,7 @@
 package com.civiclife.userservice.service;
 
 import com.civiclife.userservice.component.UserComponent;
+import com.civiclife.userservice.model.StatusType;
 import com.civiclife.userservice.model.User;
 import com.civiclife.userservice.repo.UserRepository;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
@@ -26,7 +27,7 @@ public class ConsumerService {
             user.setDomicile("");
             user.setFiscalCode("");
             user.setResidence("");
-            user.setStatus(0);
+            user.setStatus(StatusType.ACTIVE);
             user.setTelephonNumber(0);
             userRepository.save(user);
             return true;
@@ -34,7 +35,7 @@ public class ConsumerService {
         return false;
     }
 
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
     @Autowired
     public ConsumerService(UserRepository userRepository) {
@@ -43,11 +44,11 @@ public class ConsumerService {
 
     @RabbitListener(queues = "oauth-queue")
     public void receivedMessage(UserComponent userComponent) {
-        System.out.println("Messaggio ricevuto");
+        System.out.println("Messaggio ricevuto dalla coda Rabbit");
         if(createFromLogin(userComponent.getMail(), userComponent.getName(), userComponent.getSurname()))
-            System.out.println("Utente creato");
+            System.out.println("Utente creato: " + userComponent.getMail());
         else
-            System.out.println("Utente già esistente");
+            System.out.println("Utente già esistente: " + userComponent.getMail());
     }
 }
 

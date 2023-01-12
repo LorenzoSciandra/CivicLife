@@ -1,36 +1,35 @@
 package com.civiclife.oauthservice.controller;
 
-import com.civiclife.oauthservice.config.ValidateCode;
+import com.civiclife.oauthservice.utils.AES;
+import com.civiclife.oauthservice.utils.ValidateCode;
 import com.civiclife.oauthservice.model.Token;
 import com.civiclife.oauthservice.model.TokenKey;
 import com.civiclife.oauthservice.repo.TokenRepository;
-//import com.civiclife.oauthservice.service.PublisherRabbit;
-import com.civiclife.oauthservice.service.OAuth2UserService;
-import com.nimbusds.oauth2.sdk.ResponseType;
-import org.apache.hc.client5.http.classic.HttpClient;
-import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpMethod;
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 
 
-import java.net.URI;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 @RequestMapping("/authAPI/v1")
 @RestController
+@CrossOrigin(origins = "http://localhost:3000", maxAge = 600)
 public class AuthController {
 
     @Autowired
     TokenRepository tokenRepository;
+    private final String secret = "!CivicLifeSecret2023!";
 
-    @GetMapping("/token")
-    public OAuth2AuthenticationToken token(OAuth2AuthenticationToken token){
-        return token;
+    @GetMapping("/token/{encrypToken}")
+    public String token(@PathVariable(value = "encrypToken") String encrypToken){
+        // Base64 to utf8
+        String encrypTokenUTF8 = new String(Base64.getDecoder().decode(encrypToken));
+        System.out.println("IL coglione vuole decifrare: " + encrypTokenUTF8);
+        String token = AES.decrypt(encrypTokenUTF8, secret);
+        System.out.println("IL coglione ha decifrato: " + token);
+        return Base64.getEncoder().encodeToString(token.getBytes());
     }
 
 
@@ -40,7 +39,7 @@ public class AuthController {
     }
 
     @GetMapping("/getAllTokens/{email}")
-    public String getAllTokens(@PathVariable String email) {
+    public String getAllTokens(@PathVariable(value = "email") String email) {
         ArrayList<Optional<Token>> tokens = tokenRepository.getOauthCredentialsByEmail(email);
         StringBuilder result = new StringBuilder();
         if(!tokens.isEmpty()){
@@ -103,58 +102,4 @@ public class AuthController {
         }
         return false;
     }
-
-    /*
-
-        Map<String, Object> attributes = authentication.getPrincipal().getAttributes();
-        String name = (String) attributes.get("name");
-        String surname = (String) attributes.get("family_name");
-        String email = (String) attributes.get("email");
-        String token = (String) attributes.get("at_hash");
-        boolean verified = (boolean) attributes.get("email_verified");
-        HashMap<String, String> risultato = new HashMap<>();
-
-        if(verified) {
-            Optional<Token> optionalTokenBean = tokenRepository.findById(email);
-            HashMap<String, Instant> tokens_time;
-
-            if (optionalTokenBean.isPresent()) {
-                Token tokenBean = optionalTokenBean.get();
-                tokenBean.removeExpired();
-                tokens_time = tokenBean.getTokens();
-
-                if(!tokens_time.containsKey(token)){
-                    risultato.put(email, token);
-                    tokens_time.put(token, Instant.now());
-                    tokenBean.setTokens(tokens_time);
-                    tokenRepository.save(tokenBean);
-                }
-                else{
-                    String mostRecentToken = tokenBean.getMostRecentToken();
-                    risultato.put(email,mostRecentToken);
-                }
-
-            } else {
-                String uri = "http://localhost:8080/userAPI/v1/user/createFromLogin/" + email + "/" + name + "/" + surname;
-                RestTemplate restTemplate = new RestTemplate();
-                boolean result = Boolean.TRUE.equals(restTemplate.getForObject(uri, boolean.class));
-
-                if (result) {
-                    tokens_time = new HashMap<>();
-                    risultato.put(email, token);
-                    tokens_time.put(token, Instant.now());
-                    tokenRepository.save(new Token(email, tokens_time));
-                }
-            }
-        }
-        return risultato;
-
-
-
-    @DeleteMapping("/deleteAllTokens/{email}")
-    public boolean deleteAllTokens(@PathVariable(value = "email") String email){
-        tokenRepository.deleteById(email);
-        return true;
-    }*/
-
 }
