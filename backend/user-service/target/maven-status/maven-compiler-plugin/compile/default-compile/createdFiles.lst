@@ -4,5 +4,7 @@ com/civiclife/userservice/controller/UserController.class
 com/civiclife/userservice/model/StatusType.class
 com/civiclife/userservice/UserServiceApplication.class
 com/civiclife/userservice/config/RabbitConfig.class
+com/civiclife/userservice/utils/ValidateCode.class
 com/civiclife/userservice/component/UserComponent.class
+com/civiclife/userservice/utils/ErrorMessage.class
 com/civiclife/userservice/service/ConsumerService.class

@@ -1,11 +1,12 @@
 package com.civiclife.oauthservice.controller;
 
-import com.civiclife.oauthservice.utils.AES;
-import com.civiclife.oauthservice.utils.ValidateCode;
+import com.civiclife.oauthservice.utility.AES;
+import com.civiclife.oauthservice.utility.ValidateCode;
 import com.civiclife.oauthservice.model.Token;
 import com.civiclife.oauthservice.model.TokenKey;
 import com.civiclife.oauthservice.repo.TokenRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -22,13 +23,12 @@ public class AuthController {
     TokenRepository tokenRepository;
     private final String secret = "!CivicLifeSecret2023!";
 
-    @GetMapping("/token/{encrypToken}")
+    @GetMapping(value = "/token/{encrypToken}",
+            produces = MediaType.TEXT_PLAIN_VALUE)
     public String token(@PathVariable(value = "encrypToken") String encrypToken){
         // Base64 to utf8
         String encrypTokenUTF8 = new String(Base64.getDecoder().decode(encrypToken));
-        System.out.println("IL coglione vuole decifrare: " + encrypTokenUTF8);
         String token = AES.decrypt(encrypTokenUTF8, secret);
-        System.out.println("IL coglione ha decifrato: " + token);
         return Base64.getEncoder().encodeToString(token.getBytes());
     }
 
@@ -67,7 +67,8 @@ public class AuthController {
         return result;
     }
 
-    @GetMapping("/validate/{email}/{token}/{provider}")
+    @GetMapping(value = "/validate/{email}/{token}/{provider}",
+            produces = MediaType.APPLICATION_JSON_VALUE)
     public ValidateCode validate(@PathVariable(value = "email") String email,
                                  @PathVariable(value = "token") String token,
                                  @PathVariable(value = "provider") TokenKey.OauthProvider provider) {
@@ -86,7 +87,12 @@ public class AuthController {
             }
             return ValidateCode.INVALID_TOKEN;
         }
-        return ValidateCode.INVALID_EMAIL;
+
+        ArrayList<Optional<Token>> tokensByEmail = tokenRepository.getOauthCredentialsByEmail(email);
+        if (tokensByEmail.isEmpty()){
+            return ValidateCode.INVALID_EMAIL;
+        }
+        return ValidateCode.INVALID_PROVIDER;
     }
 
     @DeleteMapping("/deleteToken/{token}")

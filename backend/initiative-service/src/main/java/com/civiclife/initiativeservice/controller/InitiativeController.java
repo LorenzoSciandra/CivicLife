@@ -2,6 +2,8 @@ package com.civiclife.initiativeservice.controller;
 
 import com.civiclife.initiativeservice.model.Initiative;
 import com.civiclife.initiativeservice.repo.InitiativeRepository;
+import com.civiclife.initiativeservice.utils.ErrorMessage;
+import com.civiclife.initiativeservice.utils.ValidateCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +27,14 @@ public class InitiativeController {
     @GetMapping(value = "/initiative/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public Initiative getInitiativeById(@PathVariable (value = "id") String id){
         return initiativeRepository.findById(id).orElse(null);
+    }
+
+    @GetMapping(value = "/error/{code}/{path}/{method}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ErrorMessage error(@PathVariable(value = "code") ValidateCode code,
+                              @PathVariable(value = "path") String path,
+                              @PathVariable(value = "method") String method) {
+        String pathUrl = new String(Base64.getDecoder().decode(path));
+        return new ErrorMessage(code, pathUrl, method);
     }
 
     @DeleteMapping(value = "/initiative/remove/{id}/{email_creator}/{emailRichiedente}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -124,15 +134,14 @@ public class InitiativeController {
 
     }
 
-    @GetMapping(value = "/initiative/getMyInitiatives/{email_user}/{emailRichiedente}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Initiative> getMyInitiatives(@PathVariable(value = "email_user") String email_user,
+    @GetMapping(value = "/initiative/getOrganizedInitiatives/{email_user}/{emailRichiedente}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<Initiative> getOrganizedInitiatives(@PathVariable(value = "email_user") String email_user,
                                              @PathVariable(value = "emailRichiedente") String emailRichiedente){
 
         if(email_user.equals(emailRichiedente)){
-            List<Initiative> initiatives = initiativeRepository.findAll();
-            return initiatives.stream().filter(initiative -> initiative.getIdOrganizers().contains(email_user)).toList();
+            return initiativeRepository.findInitiativesByOrganizer(email_user);
         }
-        return new ArrayList<>();
+        return new ArrayList<Initiative>();
     }
 
     @GetMapping(value = "/initiative/getCreatedInitiatives/{email_user}/{emailRichiedente}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -140,10 +149,9 @@ public class InitiativeController {
                                                   @PathVariable(value = "emailRichiedente") String emailRichiedente){
 
         if(email_user.equals(emailRichiedente)){
-            List<Initiative> initiatives = initiativeRepository.findAll();
-            return initiatives.stream().filter(initiative -> initiative.getIdCreator().equals(email_user)).toList();
+           return initiativeRepository.findInitiativesByCreator(email_user);
         }
-        return new ArrayList<>();
+        return new ArrayList<Initiative>();
     }
 
     @GetMapping(value = "/initiative/getMySubscribedInitiatives/{email_user}/{emailRichiedente}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -151,11 +159,10 @@ public class InitiativeController {
                                                        @PathVariable(value = "emailRichiedente") String emailRichiedente){
 
         if(email_user.equals(emailRichiedente)){
-            List<Initiative> initiatives = initiativeRepository.findAll();
-            return initiatives.stream().filter(initiative -> initiative.getIdMembers().contains(email_user)).toList();
+            return initiativeRepository.findInitiativeByMember(email_user);
         }
 
-        return new ArrayList<>();
+        return new ArrayList<Initiative>();
     }
 
     @PostMapping(value = "/initiative/create/{email_creator}/{token}/{emailRichiedente}",
@@ -164,13 +171,14 @@ public class InitiativeController {
     public boolean createInitiative(@PathVariable(value = "email_creator") String email_creator,
                                     @PathVariable(value = "token") String token,
                                     @PathVariable(value = "emailRichiedente") String emailRichiedente,
-                                    @RequestBody Initiative initiative) {
+                                    @RequestBody String initiative) {
 
         if (email_creator.equals(emailRichiedente)) {
-            initiative.setIdCreator(email_creator);
-            initiative.setIdMembers(new HashSet<>(Collections.singleton(email_creator)));
-            initiative.setIdOrganizers(new HashSet<>(Collections.singleton(email_creator)));
-            initiativeRepository.save(initiative);
+            Initiative realInitiative = parseInitiative(initiative.replace("{", "").replace("}","").replace("\"", ""));
+            realInitiative.setIdCreator(email_creator);
+            realInitiative.setIdMembers(new HashSet<>(Collections.singleton(email_creator)));
+            realInitiative.setIdOrganizers(new HashSet<>(Collections.singleton(email_creator)));
+            initiativeRepository.save(realInitiative);
             return true;
         }
         return false;
@@ -179,7 +187,7 @@ public class InitiativeController {
     @PostMapping(value = "/initiative/modify/{id}/{email_org}/{emailRichiedente}",
             consumes = MediaType.TEXT_PLAIN_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public boolean modifyInitiative(@RequestBody Initiative updateInitiative,
+    public boolean modifyInitiative(@RequestBody String updateInitiative,
                                     @PathVariable(value = "id") String id,
                                     @PathVariable(value = "email_org") String email_org,
                                     @PathVariable(value = "emailRichiedente") String emailRichiedente) {
@@ -187,12 +195,11 @@ public class InitiativeController {
 
         if (emailRichiedente.equals(email_org)) {
             Optional<Initiative> optionalOriginalInitiative = initiativeRepository.findById(id);
-
             if(optionalOriginalInitiative.isPresent()){
                 Initiative originalInitiative = optionalOriginalInitiative.get();
-
                 if(originalInitiative.getIdOrganizers().contains(email_org)) {
-                    modifyInitiative(updateInitiative, originalInitiative);
+                    Initiative realInitiative = parseInitiative(updateInitiative.replace("{", "").replace("}","").replace("\"", ""));
+                    modifyInitiative(realInitiative, originalInitiative);
                     initiativeRepository.save(originalInitiative);
                     return true;
                 }
@@ -203,7 +210,7 @@ public class InitiativeController {
     }
 
 
-    public void modifyInitiative(Initiative toCopy, Initiative modified){
+    private void modifyInitiative(Initiative toCopy, Initiative modified){
         modified.setDescription(toCopy.getDescription());
         modified.setStartDate(toCopy.getStartDate());
         modified.setEndDate(toCopy.getEndDate());
@@ -214,5 +221,82 @@ public class InitiativeController {
         modified.setIdOrganizers(toCopy.getIdOrganizers());
         modified.setStatus(toCopy.getStatus());
     }
+
+    private Initiative parseInitiative(String initiative){
+        Initiative parsedInitiative = new Initiative();
+        String [] campi = initiative.split(",");
+
+        for(String campo: campi){
+            String [] coppia = campo.split(":");
+            String key = campo.split(":")[0];
+            String value = "";
+
+            if(coppia.length == 2){
+                value = campo.split(":")[1];
+            }
+
+            switch (key){
+                case "id":
+                    parsedInitiative.setId(value);
+                    break;
+                case "name":
+                    parsedInitiative.setName(value);
+                    break;
+                case "description":
+                    parsedInitiative.setDescription(value);
+                    break;
+                case "startDate":
+                    if(!value.equals("")){
+                        parsedInitiative.setStartDate(Long.parseLong(value));
+                    }
+                    else{
+                        parsedInitiative.setStartDate(0);
+                    }
+                    break;
+                case "endDate":
+                    if(!value.equals("")){
+                        parsedInitiative.setEndDate(Long.parseLong(value));
+                    }
+                    else{
+                        parsedInitiative.setEndDate(0);
+                    }
+                    break;
+                case "location":
+                    parsedInitiative.setLocation(value);
+                    break;
+                case "type":
+                    parsedInitiative.setType(value);
+                    break;
+                case "idMembers":
+
+                    if(value.equals("")){
+                        parsedInitiative.setIdMembers(new HashSet<>());
+                    }
+                    else{
+                        String [] members = value.split(",");
+                        parsedInitiative.setIdMembers(new HashSet<>(Arrays.asList(members)));
+                    }
+                    break;
+                case "idOrganizers":
+                    if(value.equals("")){
+                        parsedInitiative.setIdOrganizers(new HashSet<>());
+                    }
+                    else{
+                        String [] members = value.split(",");
+                        parsedInitiative.setIdOrganizers(new HashSet<>(Arrays.asList(members)));
+                    }
+                    break;
+                case "idCreator":
+                    parsedInitiative.setIdCreator(value);
+                    break;
+                case "status":
+                    parsedInitiative.setStatus(value);
+                    break;
+
+            }
+        }
+        return parsedInitiative;
+    }
+
 
 }

@@ -20,10 +20,4 @@ public class InitiativeServiceApplication {
         SpringApplication.run(InitiativeServiceApplication.class, args);
         System.out.println("PROVA");
     }
-
-    @LoadBalanced
-    @Bean
-    public RestTemplate restTemplate() {
-        return new RestTemplate();
-    }
 }

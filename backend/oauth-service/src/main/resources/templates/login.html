@@ -16,6 +16,10 @@
     <script src="https://kit.fontawesome.com/fa699f6366.js" crossorigin="anonymous"></script>
     <title tiles:fragment="title">Login with OAuth2.0</title>
     <style type="text/css" media="screen">
+        body{
+            font-family: "Ubuntu Mono";
+            background-color: #282c34;
+        }
         .divider:after,
         .divider:before {
             content: "";
@@ -26,7 +30,13 @@
         .h-custom {
             height: calc(100% - 73px);
         }
-        @media (max-width: 450px) {
+        @media (max-width: 991px) {
+            .col-md-9.col-lg-6.col-xl-4{
+                display: none;
+            }
+            .center{
+                min-width: 40%;
+            }
             .h-custom {
                 height: 100%;
             }
@@ -37,31 +47,35 @@
 <section class="vh-100">
     <div class="container-fluid h-custom">
         <div class="row d-flex justify-content-center align-items-center h-100">
-            <div class="col-md-9 col-lg-6 col-xl-5">
-                <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/draw2.webp"
-                     class="img-fluid" alt="Sample image">
+            <div class="col-md-9 col-lg-6 col-xl-4">
+                <img src="https://pathwayport.com/saasland/images/login@4x.png"
+                     class="img-fluid" alt="Login Image" style="max-width: 100%">
             </div>
-            <div class="col-md-8 col-lg-6 col-xl-4 offset-xl-1">
+            <div class="col-md-8 col-lg-6 col-xl-4 offset-xl-1" style="text-align: center">
+                <div class="logoImage">
+                    <img src="https://www.lorenzosciandra.com/assets/images/logofinale.png"
+                     class="center" alt="Logo" style="width: 30%" >
+                </div>
                 <form name="f" th:action="@{/login}" method="get">
                     <fieldset>
-                        <legend>Choose your account</legend>
-                    <div class="d-flex flex-row align-items-center justify-content-center justify-content-lg-start">
-                        <ul class="list-group list-group-flush">
-                            <li class="list-group-item">
+                        <legend style="color: #eeeeee">Choose your account</legend>
+                    <div class="d-flex flex-row align-items-center justify-content-center justify-content">
+                        <ul class="list-group list-group-flush" style="display: flex; justify-content: center;">
+                            <li class="list-group-item" style="background-color: #282c34">
                                 <a class="btn btn-outline-danger" href="/oauth2/authorization/google" role="button" style="text-transform:none">
                                     <img width="20px" style="margin-bottom:3px; margin-right:5px" alt="Google sign-in" src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/512px-Google_%22G%22_Logo.svg.png" />
                                     Login with Google
                                 </a>
 
                             </li>
-                            <li class="list-group-item">
+                            <li class="list-group-item" style="background-color: #282c34">
                                 <a class="btn btn-outline-primary" href="/oauth2/authorization/facebook" role="button" style="text-transform:none">
                                     <img width="20px" style="margin-bottom:3px; margin-right:5px" alt="Facebook sign-in" src="https://upload.wikimedia.org/wikipedia/commons/c/cd/Facebook_logo_%28square%29.png" />
                                     Login with Facebook
                                 </a>
                             </li>
-                            <li class="list-group-item">
-                                <a class="btn btn-outline-dark" href="/oauth2/authorization/github" role="button" style="text-transform:none">
+                            <li class="list-group-item" style="background-color: #282c34">
+                                <a class="btn btn-outline-light" href="/oauth2/authorization/github" role="button" style="text-transform:none;">
                                     <img width="20px" style="margin-bottom:3px; margin-right:5px" alt="Github sign-in" src="https://upload.wikimedia.org/wikipedia/commons/9/91/Octicons-mark-github.svg" />
                                     Login with GitHub
                                 </a>
@@ -72,14 +86,6 @@
                 </form>
             </div>
         </div>
-    </div>
-    <div
-            class="d-flex flex-column flex-md-row text-center text-md-start justify-content-between py-4 px-4 px-xl-5 bg-primary">
-        <!-- Copyright -->
-        <div class="text-white mb-3 mb-md-0">
-            Copyright © 2022 CivicLife. All rights reserved.
-        </div>
-        <!-- Copyright -->
     </div>
 </section>
 </body>

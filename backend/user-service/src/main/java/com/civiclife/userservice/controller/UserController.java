@@ -3,6 +3,8 @@ package com.civiclife.userservice.controller;
 import com.civiclife.userservice.model.StatusType;
 import com.civiclife.userservice.model.User;
 import com.civiclife.userservice.repo.UserRepository;
+import com.civiclife.userservice.utils.ErrorMessage;
+import com.civiclife.userservice.utils.ValidateCode;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -91,11 +93,33 @@ public class UserController {
         return false;
     }
 
+    @GetMapping(value = "/error/{code}/{path}/{method}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ErrorMessage error(  @PathVariable(value = "code") ValidateCode code,
+                                @PathVariable(value = "path") String path,
+                                @PathVariable(value = "method") String method) {
+        String pathUrl = new String(Base64.getDecoder().decode(path));
+        return new ErrorMessage(code, pathUrl, method);
+    }
+
     //only for testing with postman
     @PostMapping("/postman/create")
     public boolean createUser(@RequestBody User user) {
         userRepository.save(user);
         return true;
+    }
+
+    @PostMapping(value = "/user/update/{email}/{emailRichiedente}",
+            consumes = MediaType.TEXT_PLAIN_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public boolean updateUser(@PathVariable(value = "email") String email,
+                              @PathVariable(value = "emailRichiedente") String emailRichiedente,
+                              @RequestBody String user){
+
+        if(email.equals(emailRichiedente)){
+            User new_user = parseUser(user.replace("{", "").replace("}","").replace("\"", ""));
+            return updateUser(new_user);
+        }
+        return false;
     }
 
     public boolean updateUser(User user) {
@@ -114,22 +138,6 @@ public class UserController {
             userToUpdate.setAuthorizeBonus(user.isAuthorizeBonus());
             userRepository.save(userToUpdate);
             return true;
-        }
-        return false;
-    }
-
-    @PostMapping(value = "/user/update/{email}/{emailRichiedente}",
-            consumes = MediaType.TEXT_PLAIN_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    public boolean updateUser(@PathVariable(value = "email") String email,
-                              @PathVariable(value = "emailRichiedente") String emailRichiedente,
-                              @RequestBody String user){
-
-        System.out.println(user);
-        if(email.equals(emailRichiedente)){
-
-            User new_user = parseUser(user.replace("{", "").replace("}","").replace("\"", ""));
-            return updateUser(new_user);
         }
         return false;
     }

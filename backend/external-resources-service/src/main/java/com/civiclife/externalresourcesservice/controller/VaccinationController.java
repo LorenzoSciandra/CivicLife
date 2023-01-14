@@ -2,10 +2,13 @@ package com.civiclife.externalresourcesservice.controller;
 
 import com.civiclife.externalresourcesservice.model.Vaccination;
 import com.civiclife.externalresourcesservice.repository.VaccinationRepository;
+import com.civiclife.externalresourcesservice.utils.ErrorMessage;
+import com.civiclife.externalresourcesservice.utils.ValidateCode;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 
@@ -51,6 +54,14 @@ public class VaccinationController {
            return vaccinationRepository.getVaccinationByEmail(email_owner);
        }
         return new ArrayList<>();
+    }
+
+    @GetMapping(value = "/error/{code}/{path}/{method}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ErrorMessage error(@PathVariable(value = "code") ValidateCode code,
+                              @PathVariable(value = "path") String path,
+                              @PathVariable(value = "method") String method) {
+        String pathUrl = new String(Base64.getDecoder().decode(path));
+        return new ErrorMessage(code, pathUrl, method);
     }
 
     @PostMapping("/vaccination/update/{id}")

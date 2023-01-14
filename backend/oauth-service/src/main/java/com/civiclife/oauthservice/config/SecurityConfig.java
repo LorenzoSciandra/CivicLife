@@ -1,7 +1,7 @@
 package com.civiclife.oauthservice.config;
 
-import com.civiclife.oauthservice.service.*;
-import com.civiclife.oauthservice.utils.AES;
+import com.civiclife.oauthservice.utility.AES;
+import com.civiclife.oauthservice.service.OAuth2Service;
 import lombok.AllArgsConstructor;
 import org.apache.hc.core5.http.HttpStatus;
 import org.springframework.context.annotation.Bean;
@@ -23,7 +23,7 @@ import java.util.Objects;
 @AllArgsConstructor
 public class SecurityConfig {
 
-    private OAuth2UserService oAuth2UserService;
+    private OAuth2Service oAuth2UserService;
 
     private final String secret = "!CivicLifeSecret2023!";
 
@@ -48,8 +48,7 @@ public class SecurityConfig {
                                                                             "/resources/templates/**",
                                                                             "/login/**",
                                                                             "/login",
-                                                                            "/oauth2/**",
-                                                                            "/validate/**")
+                                                                            "/oauth2/**")
                                                 .permitAll()
                                                 .anyRequest()
                                                 .authenticated())
@@ -85,11 +84,17 @@ public class SecurityConfig {
                         ((OAuth2AuthenticationToken) authentication)
                 );
 
-                String encryptedToken = AES.encrypt(tokenData, secret);
-                String base64Token = Base64.getEncoder().encodeToString(Objects.requireNonNull(encryptedToken).getBytes());
-                System.out.println("HO CIFRATO CAZZO: " + encryptedToken);
-                System.out.println("HO CIFRATO IL CAZZO IN BASE64: " + base64Token);
-                response.sendRedirect("http://localhost:3000/home?token=" + base64Token);
+                String [] email = tokenData.split(",")[0].split(":");
+
+                if(email.length == 2 && email[1].contains("@")) {
+                    String encryptedToken = AES.encrypt(tokenData, secret);
+                    String base64Token = Base64.getEncoder().encodeToString(Objects.requireNonNull(encryptedToken).getBytes());
+
+                    response.sendRedirect("http://localhost:3000/home?token=" + base64Token);
+                }
+                else {
+                    response.sendRedirect("http://localhost:3000/error?errorReason=" + tokenData);
+                }
             } catch (ResponseStatusException ex) {
                 response.sendRedirect("http://localhost:3000/error?errorReason="+ex.getReason());
             }
