@@ -7,28 +7,27 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 
 @Data
-@AllArgsConstructor
 @Document(collection = "candidates")
 public class Candidate {
 
     @Id
     private String id;
 
+    private String imageLink;
     private String partyId;
     private String name;
     private String surname;
     private String description;
     private String info;
 
-    public Candidate() {
-    }
-
-    public Candidate(String name, String surname, String description, String info, String partyId) {
+    public Candidate(String id, String imageLink, String partyId, String name, String surname, String description, String info) {
+        this.id = id;
+        this.imageLink = imageLink;
+        this.partyId = partyId;
         this.name = name;
         this.surname = surname;
         this.description = description;
         this.info = info;
-        this.partyId = partyId;
     }
 
     public String getId() {
@@ -79,6 +78,14 @@ public class Candidate {
         this.partyId = partyId;
     }
 
+    public String getImageLink() {
+        return imageLink;
+    }
+
+    public void setImageLink(String imageLink) {
+        this.imageLink = imageLink;
+    }
+
     @Override
     public String toString() {
         return "Candidate{" +
@@ -88,6 +95,7 @@ public class Candidate {
                 ", description='" + description + '\'' +
                 ", info='" + info + '\'' +
                 ", partyId=" + partyId +
+                ", imageLink='" + imageLink + '\'' +
                 '}';
     }
 

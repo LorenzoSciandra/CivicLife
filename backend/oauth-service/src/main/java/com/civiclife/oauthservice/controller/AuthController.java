@@ -95,16 +95,19 @@ public class AuthController {
         return ValidateCode.INVALID_PROVIDER;
     }
 
-    @DeleteMapping("/deleteToken/{token}")
-    public boolean deleteToken(@RequestBody TokenKey tokenKey, @PathVariable(value = "token") String token){
-        Optional<Token> optionalTokenBean = tokenRepository.findById(tokenKey);
-        if(optionalTokenBean.isPresent()){
-            Token tokenBean = optionalTokenBean.get();
-            if(tokenBean.getTokens().containsKey(token)){
-                tokenBean.getTokens().remove(token);
-                tokenRepository.save(tokenBean);
+    @DeleteMapping(value = "/deleteToken/{email}/{emailRichiedente}",
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public boolean deleteToken(@RequestBody TokenKey token,
+                               @PathVariable(value = "email") String email,
+                               @PathVariable(value = "emailRichiedente") String emailRichiedente) {
+
+        if(email.equals(emailRichiedente)){
+            Optional<Token> optionalTokenBean = tokenRepository.findById(token);
+            if (optionalTokenBean.isPresent()){
+                Token tokenBean = optionalTokenBean.get();
+                tokenRepository.delete(tokenBean);
+                return true;
             }
-            return false;
         }
         return false;
     }

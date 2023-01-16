@@ -3,24 +3,37 @@ package com.civiclife.voteservice.controller;
 import com.civiclife.voteservice.model.Candidate;
 import com.civiclife.voteservice.model.Party;
 import com.civiclife.voteservice.repo.CandidateRepository;
+import com.civiclife.voteservice.utils.ErrorMessage;
+import com.civiclife.voteservice.utils.ValidateCode;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 
 
 @RestController
 @RequestMapping("/candidateAPI/v1")
+@CrossOrigin(origins = "http://localhost:3000", maxAge = 600)
 public class CandidateController {
 
     @Autowired
     private CandidateRepository candidateRepository;
 
 
-    @GetMapping("/candidates")
+    @GetMapping(value = "/candidates", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Candidate> getAllCandidates() {
         return candidateRepository.findAll();
+    }
+
+    @GetMapping(value = "/error/{code}/{path}/{method}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ErrorMessage error(@PathVariable(value = "code") ValidateCode code,
+                              @PathVariable(value = "path") String path,
+                              @PathVariable(value = "method") String method) {
+        String pathUrl = new String(Base64.getDecoder().decode(path));
+        return new ErrorMessage(code, pathUrl, method);
     }
 
     @GetMapping("/candidates/{candidateId}")

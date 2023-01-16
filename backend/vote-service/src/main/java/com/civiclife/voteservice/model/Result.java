@@ -8,27 +8,24 @@ import java.util.HashMap;
 import java.util.List;
 
 @Data
-@AllArgsConstructor
 @Document(collection = "results")
 public class Result {
-
     @Id
     private String id;
     private String votationId;
+
     private String partyId;
     private int votes;
-
-    private HashMap<String,Float> percentageByCandidateId;
     private HashMap<String, Integer> numberOfVotesPerCandidate;
 
     public Result() {
     }
 
-    public Result(String votationId, String partyId, int votes, HashMap<String,Float> percentageByCandidateId,  HashMap<String, Integer> numberOfVotesPerCandidate) {
+    public Result(String id, String votationId, String partyId, int votes, HashMap<String, Integer> numberOfVotesPerCandidate) {
+        this.id = id;
         this.votationId = votationId;
         this.partyId = partyId;
         this.votes = votes;
-        this.percentageByCandidateId = percentageByCandidateId;
         this.numberOfVotesPerCandidate = numberOfVotesPerCandidate;
     }
 
@@ -64,14 +61,6 @@ public class Result {
         this.votes = votes;
     }
 
-    public HashMap<String, Float> getPercentageByCandidateId() {
-        return percentageByCandidateId;
-    }
-
-    public void setPercentageByCandidateId(HashMap<String, Float> percentageByCandidateId) {
-        this.percentageByCandidateId = percentageByCandidateId;
-    }
-
     public HashMap<String, Integer> getNumberOfVotesPerCandidate() {
         return numberOfVotesPerCandidate;
     }
@@ -83,11 +72,9 @@ public class Result {
     @Override
     public String toString() {
         return "Result{" +
-                "id=" + id +
                 ", votationId='" + votationId + '\'' +
                 ", partyId='" + partyId + '\'' +
                 ", votes=" + votes +
-                ", percentage=" + percentageByCandidateId +
                 ", numberOfVotesPerCandidate=" + numberOfVotesPerCandidate +
                 '}';
     }

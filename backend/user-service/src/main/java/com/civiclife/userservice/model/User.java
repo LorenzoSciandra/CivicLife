@@ -24,13 +24,13 @@ public class User {
     private StatusType status;
     private long telephonNumber;
     private boolean authorizeBonus;
-    private boolean authorizeVaxine;
+    private boolean authorizeVaccine;
 
     public User(){
 
     }
 
-    public User(String email, boolean admin, String name, String surname, String fiscalCode, String residence, String domicile, long birthDate, com.civiclife.userservice.model.StatusType status, long telephonNumber, boolean authorizeBonus, boolean authorizeVaxine) {
+    public User(String email, boolean admin, String name, String surname, String fiscalCode, String residence, String domicile, long birthDate, com.civiclife.userservice.model.StatusType status, long telephonNumber, boolean authorizeBonus, boolean authorizeVaccine) {
         this.email = email;
         this.admin = admin;
         this.name = name;
@@ -42,7 +42,7 @@ public class User {
         this.status = status;
         this.telephonNumber = telephonNumber;
         this.authorizeBonus = authorizeBonus;
-        this.authorizeVaxine = authorizeVaxine;
+        this.authorizeVaccine = authorizeVaccine;
     }
 
     public boolean isAdmin() {
@@ -133,27 +133,29 @@ public class User {
         this.authorizeBonus = authorizeBonus;
     }
 
-    public boolean isAuthorizeVaxine() {
-        return authorizeVaxine;
+    public boolean isAuthorizeVaccine() {
+        return authorizeVaccine;
     }
 
-    public void setAuthorizeVaxine(boolean authorizeVaxine) {
-        this.authorizeVaxine = authorizeVaxine;
+    public void setAuthorizeVaccine(boolean authorizeVaccine) {
+        this.authorizeVaccine = authorizeVaccine;
     }
 
     @Override
-    public String toString() {
+    public String toString(){
         return "User{" +
+                "email='" + email + '\'' +
                 ", admin=" + admin +
                 ", name='" + name + '\'' +
                 ", surname='" + surname + '\'' +
-                ", email='" + email + '\'' +
                 ", fiscalCode='" + fiscalCode + '\'' +
                 ", residence='" + residence + '\'' +
                 ", domicile='" + domicile + '\'' +
                 ", birthDate=" + birthDate +
                 ", status=" + status +
                 ", telephonNumber=" + telephonNumber +
+                ", authorizeBonus=" + authorizeBonus +
+                ", authorizeVaccine=" + authorizeVaccine +
                 '}';
     }
 }

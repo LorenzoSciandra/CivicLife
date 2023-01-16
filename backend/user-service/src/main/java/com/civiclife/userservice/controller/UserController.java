@@ -74,6 +74,54 @@ public class UserController {
         return null;
     }
 
+    @GetMapping(value = "/user/isAdmin/{email}/{emailRichiedente}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public boolean isAdmin(@PathVariable(value = "email") String email,
+                           @PathVariable(value = "emailRichiedente") String emailRichiedente) {
+
+        Optional<User> possiblyAdmin = userRepository.findById(emailRichiedente);
+        Optional<User> requestedUser = userRepository.findById(email);
+        if(possiblyAdmin.isPresent() && requestedUser.isPresent()){
+            User admin = possiblyAdmin.get();
+            User requested = requestedUser.get();
+            if(admin.isAdmin() || email.equals(emailRichiedente)) {
+                return requested.isAdmin();
+            }
+        }
+        return false;
+    }
+
+    @GetMapping(value = "/user/authorizeBonus/{email}/{emailRichiedente}",
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public boolean authorizeBonus(@PathVariable(value = "email") String email,
+                        @PathVariable(value = "emailRichiedente") String emailRichiedente) {
+        if(email.equals(emailRichiedente)){
+            Optional<User> optionalUser = userRepository.findById(email);
+            if(optionalUser.isPresent()){
+                User user = optionalUser.get();
+                user.setAuthorizeBonus(true);
+                userRepository.save(user);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @GetMapping(value = "/user/authorizeVaccine/{email}/{emailRichiedente}",
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public boolean authorizeVaccine(@PathVariable(value = "email") String email,
+                        @PathVariable(value = "emailRichiedente") String emailRichiedente) {
+        if(email.equals(emailRichiedente)){
+            Optional<User> optionalUser = userRepository.findById(email);
+            if(optionalUser.isPresent()){
+                User user = optionalUser.get();
+                user.setAuthorizeVaccine(true);
+                userRepository.save(user);
+                return true;
+            }
+        }
+        return false;
+    }
+
     @DeleteMapping("/user/delete/{email}/{emailUser}/{emailRichiedente}")
     public boolean deleteUser(@PathVariable(value = "email") String email,
                               @PathVariable(value = "emailUser") String emailUser,
@@ -134,7 +182,7 @@ public class UserController {
             userToUpdate.setTelephonNumber(user.getTelephonNumber());
             userToUpdate.setFiscalCode(user.getFiscalCode());
             userToUpdate.setBirthDate(user.getBirthDate());
-            userToUpdate.setAuthorizeVaxine(user.isAuthorizeVaxine());
+            userToUpdate.setAuthorizeVaccine(user.isAuthorizeVaccine());
             userToUpdate.setAuthorizeBonus(user.isAuthorizeBonus());
             userRepository.save(userToUpdate);
             return true;
@@ -201,12 +249,12 @@ public class UserController {
                         user.setAuthorizeBonus(Boolean.parseBoolean(value));
                     }
                 }
-                case "authorizeVaxine" -> {
+                case "authorizeVaccine" -> {
                     if(value.equals("")){
-                        user.setAuthorizeVaxine(false);
+                        user.setAuthorizeVaccine(false);
                     }
                     else {
-                        user.setAuthorizeVaxine(Boolean.parseBoolean(value));
+                        user.setAuthorizeVaccine(Boolean.parseBoolean(value));
                     }
                 }
             }

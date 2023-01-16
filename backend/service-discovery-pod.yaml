@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    io.kompose.service: service-discovery
+  name: service-discovery
+spec:
+  containers:
+  - image: service-discovery-1.0
+    name: service-discovery
+    ports:
+    - containerPort: 8761
+    resources: {}
+  restartPolicy: OnFailure
+status: {}

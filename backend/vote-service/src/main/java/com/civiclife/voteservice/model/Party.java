@@ -6,25 +6,29 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
+import java.util.Set;
 
 @Data
-@AllArgsConstructor
 @Document(collection = "parties")
 public class Party {
 
     @Id
     private String id;
     private String name;
+
+    private String logoLink;
     private String description;
     private String info;
-    private List<String> candidateIdList;
+    private Set<String> candidateIdList;
     private String leaderId;
 
     public Party() {
     }
 
-    public Party(String name, String description, String info, List<String> candidateIdList, String leaderId) {
+    public Party(String id, String name, String logoLink, String description, String info, Set<String> candidateIdList, String leaderId) {
+        this.id = id;
         this.name = name;
+        this.logoLink = logoLink;
         this.description = description;
         this.info = info;
         this.candidateIdList = candidateIdList;
@@ -63,20 +67,28 @@ public class Party {
         this.info = info;
     }
 
-    public List<String> getCandidateIdList() {
-        return candidateIdList;
-    }
-
-    public void setcandidateIdList(List<String> candidateIdList) {
-        this.candidateIdList = candidateIdList;
-    }
-
     public String getLeaderId() {
         return leaderId;
     }
 
     public void setLeaderId(String leader) {
         this.leaderId = leader;
+    }
+
+    public String getLogoLink() {
+        return logoLink;
+    }
+
+    public void setLogoLink(String logoLink) {
+        this.logoLink = logoLink;
+    }
+
+    public Set<String> getCandidateIdList() {
+        return candidateIdList;
+    }
+
+    public void setCandidateIdList(Set<String> candidateIdList) {
+        this.candidateIdList = candidateIdList;
     }
 
     @Override

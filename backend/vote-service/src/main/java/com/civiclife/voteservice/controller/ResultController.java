@@ -1,31 +1,42 @@
 package com.civiclife.voteservice.controller;
 
-import com.civiclife.voteservice.model.Candidate;
 import com.civiclife.voteservice.model.Result;
 import com.civiclife.voteservice.repo.ResultRepository;
+import com.civiclife.voteservice.utils.ErrorMessage;
+import com.civiclife.voteservice.utils.ValidateCode;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Base64;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 
 @RestController
 @RequestMapping("/resultAPI/v1")
+@CrossOrigin(origins = "http://localhost:3000", maxAge = 600)
 public class ResultController {
 
     @Autowired
     private ResultRepository resultRepository;
 
-    @GetMapping("/results")
+    @GetMapping(value = "/results", consumes = MediaType.APPLICATION_JSON_VALUE)
     public List<Result> getAllResults() {
         return resultRepository.findAll();
     }
 
+    @GetMapping(value = "/error/{code}/{path}/{method}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ErrorMessage error(@PathVariable(value = "code") ValidateCode code,
+                              @PathVariable(value = "path") String path,
+                              @PathVariable(value = "method") String method) {
+        String pathUrl = new String(Base64.getDecoder().decode(path));
+        return new ErrorMessage(code, pathUrl, method);
+    }
+
     @GetMapping("/results/{resultId}")
     public Result getResultById(@PathVariable String resultId) {
-        Optional<Result> optionalResult = resultRepository.findResultById(resultId);
+        Optional<Result> optionalResult = resultRepository.findById(resultId);
         return optionalResult.orElse(null);
     }
 
@@ -37,12 +48,11 @@ public class ResultController {
 
     @PostMapping("/result/update/{resultId}")
     public boolean updateResult(@PathVariable String resultId, @RequestBody Result result) {
-        Optional<Result> optionalResult = resultRepository.findResultById(resultId);
+        Optional<Result> optionalResult = resultRepository.findById(resultId);
         if(optionalResult.isPresent()) {
             optionalResult.get().setVotationId(result.getVotationId());
             optionalResult.get().setPartyId(result.getPartyId());
             optionalResult.get().setVotes(result.getVotes());
-            optionalResult.get().setPercentageByCandidateId(result.getPercentageByCandidateId());
             optionalResult.get().setNumberOfVotesPerCandidate(result.getNumberOfVotesPerCandidate());
             resultRepository.save(optionalResult.get());
             return true;
@@ -52,23 +62,24 @@ public class ResultController {
 
     @GetMapping("/result/delete/{resultId}")
     public boolean deleteResult(@PathVariable String resultId) {
-        Optional<Result> optionalResult = resultRepository.findResultById(resultId);
+        Optional<Result> optionalResult = resultRepository.findById(resultId);
         if(optionalResult.isPresent()) {
             resultRepository.delete(optionalResult.get());
             return true;
         }
         return false;
     }
-    public Result getResultsByPartyVotationId(String partyId, String votationId) {
-        List<Result> results = resultRepository.findAll();
-        for (Result result : results) {
-            if (Objects.equals(result.getPartyId(), partyId) && Objects.equals(result.getVotationId(), votationId)) {
-                return result;
-            }
+
+    @GetMapping(value = "/result/{votationId}/{partyId}")
+    public Result getResultsByPartyVotationId(@PathVariable(value = "votationId") String votationId,
+                                              @PathVariable(value = "partyId") String partyId) {
+        Optional<Result> optionalResult = resultRepository.findResultByVotationAndPaAndPartyId(votationId, partyId);
+        if(optionalResult.isPresent()){
+            return optionalResult.get();
         }
+
         return null;
     }
-
 
     public boolean addVoteCandidate(String id, String candidateId) {
         Optional<Result> optionalResult = resultRepository.findById(id);
@@ -80,19 +91,5 @@ public class ResultController {
             return true;
         }
         return false;
-    }
-
-    public boolean finalizeResult(String id) {
-        Optional<Result> optionalResult = resultRepository.findById(String.valueOf(id));
-        Result result = optionalResult.orElse(null);
-        if (result != null) {
-            for(String candidateId : result.getNumberOfVotesPerCandidate().keySet()) {
-                result.getPercentageByCandidateId().put(candidateId, (float) result.getNumberOfVotesPerCandidate().get(candidateId) / result.getVotes());
-            }
-            return true;
-        }
-        else {
-            return false;
-        }
     }
 }
