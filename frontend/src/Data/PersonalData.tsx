@@ -1,4 +1,4 @@
-import {Button, Dialog, Divider, Grid, ListItemText,} from "@mui/material";
+import {Button, Dialog, Divider, Grid, IconButton, ListItemText, Typography,} from "@mui/material";
 import '../App.css'
 import React, {useEffect, useState} from "react";
 import UpperButtonMenu from "../Utils/UpperButtonMenu";
@@ -6,50 +6,99 @@ import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContentText from "@mui/material/DialogContentText";
-import {useLocation} from "react-router-dom";
+import {useLocation, useNavigate} from "react-router-dom";
 import type {User} from "../APIs/UsersAPI";
-import {getLoggedUser, updateUser} from "../APIs/UsersAPI";
+import {
+    authorizeBonusAccess,
+    authorizeVaccineAccess,
+    getLoggedUser,
+    isInstanceOfUser,
+    updateUser
+} from "../APIs/UsersAPI";
 import AuthRequired from "./AuthRequired";
 import dayjs, {Dayjs} from "dayjs";
-import {CssTextField} from "../Utils/CustomTextFields";
+import {Android12Switch, CssTextField} from "../Utils/CustomTextFields";
 import {DatePicker, LocalizationProvider} from "@mui/x-date-pickers";
 import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs";
 import ListItemButton from "@mui/material/ListItemButton";
 import List from "@mui/material/List";
-import {BonusType, getAllBonuses} from "../APIs/ExternalResourcesAPI";
+import {BonusType, getAllBonuses, getAllVaccines, VaccineType} from "../APIs/ExternalResourcesAPI";
 import Stack from '@mui/material/Stack';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert, {AlertProps} from '@mui/material/Alert';
+import AddBoxIcon from '@mui/icons-material/AddBox';
+import VaccinesIcon from '@mui/icons-material/Vaccines';
+import {AuthError, logoutUser} from "../APIs/OauthAPI";
+import FormGroup from '@mui/material/FormGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormControl from "@mui/material/FormControl";
+import FormLabel from "@mui/material/FormLabel";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import Box from '@mui/material/Box';
+import {AppBar} from "@mui/material";
+import Toolbar from '@mui/material/Toolbar';
+
 
 
 const PersonalData = () => {
     const location = useLocation()
-    const [user, setUser] = useState<User>(location.state.user)
+    const navigate = useNavigate()
+    const [user, setUser] = useState<User | null>(null)
     const tokenData = location.state.token
     const buttons = ['Dati', 'Vaccini', 'Bonus']
-    const [dataList, setDataList] = useState([user.name, user.surname, user.email, user.birthDate, user.residence, user.domicile, user.telephonNumber, user.status])
-    const [vaxinesList, setvaxinesList] = useState([])
+    const [dataList, setDataList] = useState([])
+    const [vaccinesList, setVaccinesList] = useState<VaccineType[]>([])
     const [bonusList, setBonusList] = useState<BonusType[]>([])
     const [showingList, setShowingList] = useState(dataList)
     const [activeButton, setActiveButton] = useState(buttons[0]);
-    const [clickedVaxine, setClickedVaxine] = useState(null)
+    const [clickedVaccine, setClickedVaccine] = useState<VaccineType | null>(null)
     const [clickedBonus, setClickedBonus] = useState<BonusType | null>(null)
     const [showBonusAuthorizationRequiredMessage, setShowBonusAuthorizationRequiredMessage] = useState(false)
-    const [showVaxineAuthorizationRequiredMessage, setShowVaxineAuthorizationRequiredMessage] = useState(false)
-    const [name, setName] = useState(user.name)
-    const [surname, setSurname] = useState(user.surname)
-    const [birthDate, setBirthDate] = useState<Dayjs | null>(user.birthDate === 0 ? null : dayjs.unix(user.birthDate / 1000))
-    const email = user.email
-    const [residence, setResidence] = useState(user.residence)
-    const [domicile, setDomicile] = useState(user.domicile)
-    const [telephonNumber, setTelephonNumber] = useState(user.telephonNumber)
-    const [fiscalCode, setFiscalCode] = useState(user.fiscalCode)
+    const [showVaccineAuthorizationRequiredMessage, setShowVaccineAuthorizationRequiredMessage] = useState(false)
 
-    const somethingChanged = async () => {
-        console.log('QUALCOSA E CAMBIATO')
-        const newuser = await getLoggedUser(tokenData)
-        setUser(newuser)
-        handleClick()
+    const [name, setName] = useState<string>('')
+    const [surname, setSurname] = useState<string>('')
+    const [birthDate, setBirthDate] = useState<Dayjs | null>(null)
+    const [residence, setResidence] = useState<string>('')
+    const [domicile, setDomicile] = useState<string>('')
+    const [telephonNumber, setTelephonNumber] = useState<number>(0)
+    const [fiscalCode, setFiscalCode] = useState<string>('')
+    const [message, setMessage] = useState<string>('')
+    const [bonusAccess, setBonusAccess] = useState<boolean | null>(null)
+    const [vaccineAccess, setVaccineAccess] = useState<boolean | null>(null)
+
+    useEffect(() => {
+        if (user === null) {
+            somethingChanged()
+        }
+    })
+
+    useEffect(() => {
+        if (user !== null) {
+            setName(user.name)
+            setSurname(user.surname)
+            setBirthDate(user.birthDate === 0 ? null : dayjs.unix(user.birthDate / 1000))
+            setResidence(user.residence)
+            setDomicile(user.domicile)
+            setTelephonNumber(user.telephonNumber)
+            setFiscalCode(user.fiscalCode)
+            setBonusAccess(user.authorizeBonus)
+            setVaccineAccess(user.authorizeVaccine)
+        }
+    }, [user])
+
+    const somethingChanged = async (message?: string) => {
+        const response = await getLoggedUser(tokenData)
+        if (isInstanceOfUser(response)) {
+            setUser(response)
+            if (message) {
+                handleClick()
+                setMessage(message)
+            }
+        } else {
+            navigate('/error', {state: {error: response}})
+        }
+
     }
 
     const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
@@ -85,23 +134,18 @@ const PersonalData = () => {
         const bonuslist = await getAllBonuses(tokenData)
         setBonusList(bonuslist)
         setShowBonusAuthorizationRequiredMessage(false)
+        somethingChanged()
     }
 
-    const loadVaxines = () => {
-        setShowingList(['Vaxine 1', 'Vaxine 2', 'Vaxine 3'])
-        setShowBonusAuthorizationRequiredMessage(false)
+    const loadVaccines = async () => {
+        const vaccineList = await getAllVaccines(tokenData)
+        setVaccinesList(vaccineList)
+        setShowVaccineAuthorizationRequiredMessage(false)
+        somethingChanged()
     }
 
-    const authVaxines = () => {
-        const updateUserData_fake = true//updateUser(tokenData, newUser)
-        if (updateUserData_fake) {
-            loadVaxines()
-            setShowVaxineAuthorizationRequiredMessage(false)
 
-        }
-    }
-
-    const [open, setOpen] = React.useState(false);
+    const [open, setOpen] = useState(false);
 
     const handleClick = () => {
         setOpen(true);
@@ -114,26 +158,33 @@ const PersonalData = () => {
         setOpen(false);
     };
 
-    const updateUserData = async (externalResoucesAuth?: string): Promise<boolean> => {
-        const newUser: User = {
-            email: user.email,
-            name: name,
-            surname: surname,
-            admin: user.admin,
-            fiscalCode: fiscalCode,
-            residence: residence,
-            birthDate: Number(birthDate),
-            domicile: domicile,
-            status: user.status,
-            telephonNumber: Number(telephonNumber),
-            authorizeBonus: externalResoucesAuth === 'bonus' ? true : user.authorizeBonus,
-            authorizeVaxine: externalResoucesAuth === 'vaxine' ? true : user.authorizeVaxine,
+    const updateUserData = async (): Promise<boolean | AuthError> => {
+        if (user) {
+            console.log('Bonus Access: ' + bonusAccess)
+            console.log('Vaccine Access: ' + vaccineAccess)
+            const newUser: User = {
+                email: user.email,
+                name: name,
+                surname: surname,
+                admin: user.admin,
+                fiscalCode: fiscalCode,
+                residence: residence,
+                birthDate: Number(birthDate),
+                domicile: domicile,
+                status: user.status,
+                telephonNumber: Number(telephonNumber),
+                authorizeBonus: bonusAccess !== null ? bonusAccess : user.authorizeBonus,
+                authorizeVaccine: vaccineAccess !== null ? vaccineAccess : user.authorizeVaccine
+            }
+            console.log('newUser', newUser)
+            //return true
+            return await updateUser(tokenData, newUser)
         }
-        return await updateUser(tokenData, newUser)
+        return false
     }
 
     const authBonus = async () => {
-        const updateResult = await updateUserData('bonus')
+        const updateResult = await authorizeBonusAccess(tokenData)
         if (updateResult) {
             loadBonuses()
             setShowBonusAuthorizationRequiredMessage(false)
@@ -141,23 +192,44 @@ const PersonalData = () => {
         }
     }
 
+    const authVaccine = async () => {
+        const updateResult = await authorizeVaccineAccess(tokenData)
+        if (updateResult) {
+            loadVaccines()
+            setShowVaccineAuthorizationRequiredMessage(false)
+            somethingChanged()
+        }
+    }
+
+    const handleVaccineAuthorizationChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
+        console.log('VACCINI A: ', event.target.checked)
+        setVaccineAccess(event.target.checked)
+    }
+
+    const handleBonusAuthorizationChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
+        console.log('BONUS A: ', event.target.checked)
+        setBonusAccess(event.target.checked)
+    }
+
     useEffect(() => {
-        if (activeButton === buttons[0]) {
-            setShowBonusAuthorizationRequiredMessage(false)
-            setShowVaxineAuthorizationRequiredMessage(false)
-        } else if (activeButton === buttons[1]) {
-            setShowBonusAuthorizationRequiredMessage(false)
-            if (!user.authorizeVaxine) {
-                setShowVaxineAuthorizationRequiredMessage(true)
-            } else {
-                loadVaxines()
-            }
-        } else if (activeButton === buttons[2]) {
-            setShowVaxineAuthorizationRequiredMessage(false)
-            if (!user.authorizeBonus) {
-                setShowBonusAuthorizationRequiredMessage(true)
-            } else {
-                loadBonuses()
+        if (user) {
+            if (activeButton === buttons[0]) {
+                setShowBonusAuthorizationRequiredMessage(false)
+                setShowVaccineAuthorizationRequiredMessage(false)
+            } else if (activeButton === buttons[1]) {
+                setShowBonusAuthorizationRequiredMessage(false)
+                if (!user.authorizeVaccine) {
+                    setShowVaccineAuthorizationRequiredMessage(true)
+                } else {
+                    loadVaccines()
+                }
+            } else if (activeButton === buttons[2]) {
+                setShowVaccineAuthorizationRequiredMessage(false)
+                if (!user.authorizeBonus) {
+                    setShowBonusAuthorizationRequiredMessage(true)
+                } else {
+                    loadBonuses()
+                }
             }
         }
     }, [activeButton])
@@ -167,7 +239,7 @@ const PersonalData = () => {
         if (activeButton === buttons[0]) {
             const update = await updateUserData()
             if (update) {
-                somethingChanged()
+                somethingChanged('Dati aggiornati correttamente')
             }
 
         } else if (activeButton === buttons[1]) { // qui forse si farà una specie di reload, DA VALUTARE
@@ -177,123 +249,220 @@ const PersonalData = () => {
 
     const handleDialogOpen = (data: any) => {
         if (activeButton === buttons[1]) {
-            setClickedVaxine(data)
+            setClickedVaccine(data)
         } else if (activeButton === buttons[2]) {
             setClickedBonus(data)
         }
     }
 
     const handleDialogClose = () => {
-        setClickedVaxine(null)
+        setClickedVaccine(null)
         setClickedBonus(null)
+    }
+
+    const logout = async () => {
+        if (tokenData !== null) {
+            const response = await logoutUser(tokenData)
+            if (typeof response === 'boolean') {
+                if (response) {
+                    navigate('/')
+                } else {
+                    console.log('error')
+                }
+            } else {
+                navigate('/error', {state: {error: response}})
+            }
+        }
     }
 
     return (
         <Grid container direction="row" spacing={2}>
+            <Grid item xs={12} justifyContent="center" alignItems="center" >
+                <Box sx={{ flexGrow: 1 }}>
+                    <AppBar position="fixed" sx={{backgroundColor:'#3d4347' }}>
+                        <Toolbar>
+                            <IconButton
+                                size="small"
+                                edge="start"
+                                aria-label="menu"
+                                sx={{ mr: 2}}
+                            >
+                                <ArrowBackIcon style={{fontSize: '3rem', color: 'white'}}/>
+                            </IconButton>
+                            <Typography variant="h6" component="div" sx={{flexGrow: 1}}
+                                        style={{
+                                            justifyContent: 'center',
+                                            color: 'white',
+                                            textAlign: 'center',
+                                            fontSize: '1.8rem',
+                                        }}>I tuoi dati
+                            </Typography>
+                            <Button sx={{color: 'white', backgroundColor: 'red'}}
+                                onClick={logout}>
+                                logout
+                            </Button>
+                        </Toolbar>
+                    </AppBar>
+                </Box>
+            </Grid>
             <UpperButtonMenu first_label={buttons[0]} second_label={buttons[1]} third_label={buttons[2]}
-                             first_list={dataList} second_list={vaxinesList} third_list={bonusList}
+                             first_list={dataList} second_list={vaccinesList} third_list={bonusList}
                              listSetter={setShowingList} buttonSetter={setActiveButton}/>
             {
-                showBonusAuthorizationRequiredMessage || showVaxineAuthorizationRequiredMessage ?
+                showBonusAuthorizationRequiredMessage || showVaccineAuthorizationRequiredMessage ?
                     <>
-                        <AuthRequired authFor={showVaxineAuthorizationRequiredMessage ? 'Vaccini' : 'Bonus'}
-                                      authFunction={authBonus}/>
+                        <AuthRequired authFor={showVaccineAuthorizationRequiredMessage ? 'Vaccini' : 'Bonus'}
+                                      authFunction={showVaccineAuthorizationRequiredMessage ? authVaccine : authBonus}/>
                     </>
                     : null
             }
+            {
+                activeButton === buttons[2] && bonusList.length === 0 && user && user.authorizeBonus ?
+                    <Grid item xs={12} display="flex" justifyContent="center" alignItems="center">
+                        <Typography variant="h4" sx={{paddingLeft: '10px', paddingRight:'10px', textAlign: 'center',}}>Non possiedi bonus</Typography>
+
+                    </Grid>: null
+            }
+            {
+                activeButton === buttons[1] && vaccinesList.length === 0 && user && user.authorizeVaccine ?
+                    <Grid item xs={12} display="flex" justifyContent="center" alignItems="center">
+                        <Typography variant="h4" sx={{paddingLeft: '10px', paddingRight:'10px', textAlign: 'center',}}>Non possiedi vaccini</Typography>
+
+                    </Grid>: null
+            }
             <Grid item xs={12} display="flex" justifyContent="center" alignItems="center">
                 <List sx={{
-                    width: '80%',
+                    width: '85%',
                     overflow: 'auto',
-                    maxHeight: 595,
-                    position: activeButton === buttons[0] ? 'fixed' : (showBonusAuthorizationRequiredMessage || showVaxineAuthorizationRequiredMessage ? null : 'fixed'),
-                    top: 90,
-                    bottom: 100
+                    maxHeight: 550,
+                    position: activeButton === buttons[0] ? 'fixed' : (showBonusAuthorizationRequiredMessage || showVaccineAuthorizationRequiredMessage ? null : 'fixed'),
+                    top: '20%',
+                    bottom: '1%'
                 }}>
                     {
-                        activeButton === buttons[0] ?
-                            <>
-                                <CssTextField sx={{input: {color: 'white'}, style: {color: 'white'}, marginTop: '9px'}}
-                                              label={'Nome'} defaultValue={user.name} onChange={handleNameChanged}/>
-                                <CssTextField sx={{input: {color: 'white'}, style: {color: 'white'}, marginTop: '9px'}}
-                                              label={'Cognome'} defaultValue={user.surname}
-                                              onChange={handleSurnameChanged}/>
-                                <CssTextField sx={{input: {color: 'white'}, style: {color: 'white'}, marginTop: '9px'}}
-                                              label={'Email'} defaultValue={user.email} InputProps={{readOnly: true}}/>
-                                <CssTextField sx={{input: {color: 'white'}, style: {color: 'white'}, marginTop: '9px'}}
-                                              label={'Numero di telefono'} defaultValue={user.telephonNumber}
-                                              onChange={handleTelephoneNumberChanged}/>
-                                <CssTextField sx={{input: {color: 'white'}, style: {color: 'white'}, marginTop: '9px'}}
-                                              label={'Codice fiscale'} defaultValue={user.fiscalCode}
-                                              onChange={handleFiscalCodeChanged}/>
-                                <CssTextField sx={{input: {color: 'white'}, style: {color: 'white'}, marginTop: '9px'}}
-                                              label={'Residenza'} defaultValue={user.residence}
-                                              onChange={handleResidenceChanged}/>
-                                <CssTextField sx={{input: {color: 'white'}, style: {color: 'white'}, marginTop: '9px'}}
-                                              label={'Domicilio'} defaultValue={user.domicile}
-                                              onChange={handleDomicileChanged}/>
-                                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                    <DatePicker
-                                        inputFormat="DD/MM/YYYY"
-                                        label="Data di nascita"
-                                        value={birthDate}
-                                        renderInput={(params) => <CssTextField {...params} sx={{
-                                            input: {color: 'white'},
-                                            style: {color: 'white'},
-                                            marginTop: '9px'
-                                        }}/>}
-                                        onChange={(newValue) => {
-                                            handleBirthDateChanged(newValue)
-                                        }}/>
-                                </LocalizationProvider>
-                                <CssTextField sx={{input: {color: 'white'}, style: {color: 'white'}, marginTop: '9px'}}
-                                              label={'Stato'} defaultValue={user.status} InputProps={{
-                                    readOnly: true,
-                                }}/>
+                        user ?
+                            activeButton === buttons[0] ?
+                                <>
+                                    <CssTextField
+                                        sx={{input: {color: 'white'}, style: {color: 'white'}, marginTop: '9px'}}
+                                        label={'Nome'} defaultValue={user.name} onChange={handleNameChanged}/>
+                                    <CssTextField
+                                        sx={{input: {color: 'white'}, style: {color: 'white'}, marginTop: '9px'}}
+                                        label={'Cognome'} defaultValue={user.surname}
+                                        onChange={handleSurnameChanged}/>
+                                    <CssTextField
+                                        sx={{input: {color: 'white'}, style: {color: 'white'}, marginTop: '9px'}}
+                                        label={'Email'} defaultValue={user.email} InputProps={{readOnly: true}}/>
+                                    <CssTextField
+                                        sx={{input: {color: 'white'}, style: {color: 'white'}, marginTop: '9px'}}
+                                        label={'Numero di telefono'} defaultValue={user.telephonNumber}
+                                        onChange={handleTelephoneNumberChanged}/>
+                                    <CssTextField
+                                        sx={{input: {color: 'white'}, style: {color: 'white'}, marginTop: '9px'}}
+                                        label={'Codice fiscale'} defaultValue={user.fiscalCode}
+                                        onChange={handleFiscalCodeChanged}/>
+                                    <CssTextField
+                                        sx={{input: {color: 'white'}, style: {color: 'white'}, marginTop: '9px'}}
+                                        label={'Residenza'} defaultValue={user.residence}
+                                        onChange={handleResidenceChanged}/>
+                                    <CssTextField
+                                        sx={{input: {color: 'white'}, style: {color: 'white'}, marginTop: '9px'}}
+                                        label={'Domicilio'} defaultValue={user.domicile}
+                                        onChange={handleDomicileChanged}/>
+                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                        <DatePicker
+                                            inputFormat="DD/MM/YYYY"
+                                            label="Data di nascita"
+                                            value={birthDate}
+                                            renderInput={(params) => <CssTextField {...params} sx={{
+                                                input: {color: 'white'},
+                                                style: {color: 'white'},
+                                                marginTop: '9px'
+                                            }}/>}
+                                            onChange={(newValue) => {
+                                                handleBirthDateChanged(newValue)
+                                            }}/>
+                                    </LocalizationProvider>
+                                    <CssTextField
+                                        sx={{input: {color: 'white'}, style: {color: 'white'}, marginTop: '9px'}}
+                                        label={'Stato'} defaultValue={user.status} InputProps={{
+                                        readOnly: true,
+                                    }}/>
+                                    <Grid item xs={12} display="flex" justifyContent="center" alignItems="center"
+                                          sx={{marginTop: '10px', fontSize: '3rem'}}>
+                                        <FormControl component='fieldset'>
+                                            <FormLabel component='legend'>
+                                                <Typography
+                                                    sx={{color: 'white', justifyContent: 'center', fontWeight: 'bold'}}>Consenti
+                                                    a CivicLife di accedere a:</Typography>
+                                            </FormLabel>
+                                            <FormGroup aria-label='position' row>
+                                                <FormControlLabel control={
+                                                    <Android12Switch
+                                                        checked={vaccineAccess !== null ? vaccineAccess : false}
+                                                        onChange={handleVaccineAuthorizationChanged}
+                                                        inputProps={{'aria-label': 'controlled'}}
+                                                    />}
+                                                                  label="Vaccini?"
+                                                                  labelPlacement={'top'}/>
+                                                <FormControlLabel control={
+                                                    <Android12Switch
+                                                        checked={bonusAccess !== null ? bonusAccess : false}
+                                                        onChange={handleBonusAuthorizationChanged}
+                                                        inputProps={{'aria-label': 'controlled'}}
+                                                    />}
+                                                                  label="Bonus?"
+                                                                  labelPlacement={'top'}/>
+                                            </FormGroup>
+                                        </FormControl>
+                                    </Grid>
 
-
-                            </>
-                            :
-                            activeButton === buttons[1] ?
-
-                                vaxinesList.map((value, index) => {
-                                    return (
-                                        <>
-                                            <ListItemButton onClick={() => handleDialogOpen(value)}>
-                                                <ListItemText primary={value}/>
-                                            </ListItemButton>
-                                            <Divider color={'black'}/>
-                                        </>
-                                    );
-                                })
+                                </>
                                 :
-                                bonusList.map((value, index) => {
+                                activeButton === buttons[1] ?
+
+                                    vaccinesList.map((value, index) => {
                                         return (
                                             <>
                                                 <ListItemButton onClick={() => handleDialogOpen(value)}>
+                                                    <VaccinesIcon sx={{color: 'white', marginRight: '10px'}}/>
                                                     <ListItemText primary={value.name}/>
                                                 </ListItemButton>
                                                 <Divider color={'black'}/>
                                             </>
                                         );
-                                    }
-                                )
+                                    })
+                                    :
+                                    bonusList.map((value, index) => {
+                                            return (
+                                                <>
+                                                    <ListItemButton key={value.id} onClick={() => handleDialogOpen(value)}>
+                                                        <AddBoxIcon sx={{color: 'white', marginRight: '10px'}}/>
+                                                        <ListItemText primary={value.name}/>
+                                                    </ListItemButton>
+                                                    <Divider color={'black'}/>
+                                                </>
+                                            );
+                                        }
+                                    )
+                            : null
                     }
+
                 </List>
 
             </Grid>
             {
-                (showBonusAuthorizationRequiredMessage || showVaxineAuthorizationRequiredMessage) ?
+                (showBonusAuthorizationRequiredMessage || showVaccineAuthorizationRequiredMessage) ?
                     null
                     :
                     <Grid item xs={12} display="flex" justifyContent='center' alignItems="right">
                         <Button style={{
-                            position: 'fixed',
-                            bottom: 40,
                             borderRadius: 35,
                             backgroundColor: "#92d36e",
                             padding: "10px 20px",
-                            fontSize: "18px"
+                            fontSize: "18px",
+                            position:'fixed',
+                            bottom:30
                         }}
                                 variant="contained"
                                 onClick={() => {
@@ -306,35 +475,45 @@ const PersonalData = () => {
                     </Grid>
             }
 
-            <Dialog maxWidth={"sm"} fullWidth={true} open={clickedVaxine !== null} onClose={handleDialogClose}>
+
+            <Dialog maxWidth={"sm"} fullWidth={true} open={clickedVaccine !== null} onClose={handleDialogClose}>
                 <DialogTitle>Dettagli vaccino</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
                         <ListItemText sx={{input: {color: 'white'}, style: {color: 'white'}}}
-                                      primary={'Nome Vaccino'} secondary={'something'}/>
+                                      primary={'Nome Vaccino'} secondary={clickedVaccine ? clickedVaccine.name : null}/>
                         <Divider/>
                         <ListItemText sx={{input: {color: 'white'}, style: {color: 'white'}}}
-                                      primary={'Tipo Vaccino'} secondary={'something'}/>
+                                      primary={'Tipo Vaccino'} secondary={clickedVaccine ? clickedVaccine.type : null}/>
+                        <Divider/>
+                        <ListItemText sx={{input: {color: 'white'}, style: {color: 'white'}}}
+                                      primary={'Vaccino'} secondary={clickedVaccine ? clickedVaccine.vaccine : null}/>
                         <Divider/>
                         <ListItemText sx={{input: {color: 'white'}, style: {color: 'white'}}}
                                       primary={'Data Somministrazione'} secondary={'something'}/>
-                        <Divider/><ListItemText sx={{input: {color: 'white'}, style: {color: 'white'}}}
-                                                primary={'Luogo Somministrazione'} secondary={'something'}/>
+                        <Divider/><
+                        ListItemText sx={{input: {color: 'white'}, style: {color: 'white'}}}
+                                     primary={'Luogo Somministrazione'}
+                                     secondary={clickedVaccine ? clickedVaccine.location : null}/>
+                        <Divider/>
+
+                        <ListItemText sx={{input: {color: 'white'}, style: {color: 'white'}}}
+                                      primary={'Data somministrazione'}
+                                      secondary={clickedVaccine ? dayjs.unix(clickedVaccine.date / 1000).format('D MMMM YYYY').toString() : null}/>
                         <Divider/>
                         <ListItemText sx={{input: {color: 'white'}, style: {color: 'white'}}}
-                                      primary={'Descrizione Vaccino'} secondary={'something'}/>
+                                      primary={'Descrizione Vaccino'}
+                                      secondary={clickedVaccine ? clickedVaccine.description : null}/>
                         <Divider/>
                         <ListItemText sx={{input: {color: 'white'}, style: {color: 'white'}}}
-                                      primary={'Dettagli vaccino'} secondary={'something'}/>
+                                      primary={'Casa produttrice'}
+                                      secondary={clickedVaccine ? clickedVaccine.manufacturer : null}/>
                         <Divider/>
                         <ListItemText sx={{input: {color: 'white'}, style: {color: 'white'}}}
-                                      primary={'Casa produttrice'} secondary={'something'}/>
+                                      primary={'Medico'} secondary={clickedVaccine ? clickedVaccine.doctor : null}/>
                         <Divider/>
                         <ListItemText sx={{input: {color: 'white'}, style: {color: 'white'}}}
-                                      primary={'Medico'} secondary={'something'}/>
-                        <Divider/>
-                        <ListItemText sx={{input: {color: 'white'}, style: {color: 'white'}}}
-                                      primary={'Infermiere'} secondary={'something'}/>
+                                      primary={'Infermiere'} secondary={clickedVaccine ? clickedVaccine.nurse : null}/>
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
@@ -353,7 +532,7 @@ const PersonalData = () => {
                         <Divider/>
                         <ListItemText sx={{input: {color: 'white'}, style: {color: 'white'}}}
                                       primary={'Data scadenza'}
-                                      secondary={clickedBonus ? dayjs.unix(clickedBonus.end_date).format('D MMMM YYYY').toString() : null}/>
+                                      secondary={clickedBonus ? dayjs.unix(clickedBonus.end_date / 1000).format('D MMMM YYYY').toString() : null}/>
                         <Divider/>
                         <ListItemText sx={{input: {color: 'white'}, style: {color: 'white'}}}
                                       primary={'Descrizione'}
@@ -366,9 +545,10 @@ const PersonalData = () => {
                 </DialogActions>
             </Dialog>
             <Stack spacing={2} sx={{width: '100%'}}>
-                <Snackbar open={open} autoHideDuration={3000} onClose={handleClose} anchorOrigin={{ vertical:"top", horizontal:'center' }}>
-                    <Alert onClose={handleClose} severity="success" sx={{width: '100%'}} >
-                        operazione completata con successo
+                <Snackbar open={open} autoHideDuration={3000} onClose={handleClose}
+                          anchorOrigin={{vertical: "bottom", horizontal: 'center'}}>
+                    <Alert onClose={handleClose} severity="success" sx={{width: '100%'}}>
+                        {message}
                     </Alert>
                 </Snackbar>
             </Stack>

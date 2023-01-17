@@ -33,24 +33,20 @@ root.render(
                <BrowserRouter>
                    <App isMobile={isMobile}/>
                </BrowserRouter>
-                <Grid item display="flex" alignItems={'center'} sx={{
-                    position: 'fixed',
-                    width: '100%',
-                    margin: "auto",
-                    bottom:0
-                }}>
-                    <CardMedia
-                        component="img"
-                        image={logo_CivicLife}
-                        sx={{
-                            width: '3%',
-                        }}
-                        alt="Logo"
-                    />
-                    <Typography
-                        style={{color: '#feac0d', textAlign: 'center', fontSize: '1rem'}}>CivicLife</Typography>
-                    <ScrollToTop smooth/>
-                </Grid>
+                {/*<Grid item display="flex" alignItems={'center'} sx={{*/}
+                {/*}}>*/}
+                {/*    <CardMedia*/}
+                {/*        component="img"*/}
+                {/*        image={logo_CivicLife}*/}
+                {/*        sx={{*/}
+                {/*            width: '3%',*/}
+                {/*        }}*/}
+                {/*        alt="Logo"*/}
+                {/*    />*/}
+                {/*    <Typography*/}
+                {/*        style={{color: '#feac0d', textAlign: 'center', fontSize: '1rem'}}>CivicLife</Typography>*/}
+                {/*    <ScrollToTop smooth/>*/}
+                {/*</Grid>*/}
             </Grid>
         </ThemeProvider>
     </React.StrictMode>

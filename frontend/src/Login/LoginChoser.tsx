@@ -54,7 +54,7 @@ const LoginChoser = (props: LoginChoserPropsType) => {
                             padding: "18px 36px",
                             fontSize: "25px"
                         }}
-                        variant="contained">OSpite</Button>
+                        variant="contained">Ospite</Button>
                 </Grid>
             </Grid>
         </>

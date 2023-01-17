@@ -13,7 +13,7 @@ import CandidateDetails from "./Vote/CandidateDetails";
 import InitiativeCreateForm from "./Initiative/InitiativeCreateForm";
 import LoginChoser from "./Login/LoginChoser";
 import VotationsAdmin from "./Vote/VotationsAdmin";
-import SessionExpired from "./SessionExpired";
+import Error from "./Error";
 
 type AppPropsType= {
         isMobile: boolean
@@ -35,7 +35,7 @@ const App = (props: AppPropsType) => {
             <Route path='/votations/votationDetails/partyDetails/candidateDetails' element={<CandidateDetails/>}/>
             <Route path='/votationsAdmin' element={<VotationsAdmin/>}/>
             <Route path="/" element={<LoginChoser isMobile={props.isMobile}/>}/>
-            <Route path='/error' element={<SessionExpired/>}/>
+            <Route path='/error' element={<Error/>}/>
             <Route path='*' element={<Typography>ERROR 404</Typography>}/>
         </Routes>
     )
