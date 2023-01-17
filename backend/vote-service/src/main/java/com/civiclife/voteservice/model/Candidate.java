@@ -2,33 +2,21 @@ package com.civiclife.voteservice.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-
-
 @Data
 @Document(collection = "candidates")
+@NoArgsConstructor
+@AllArgsConstructor
 public class Candidate {
-
     @Id
     private String id;
-
     private String imageLink;
     private String partyId;
     private String name;
     private String surname;
     private String description;
-    private String info;
-
-    public Candidate(String id, String imageLink, String partyId, String name, String surname, String description, String info) {
-        this.id = id;
-        this.imageLink = imageLink;
-        this.partyId = partyId;
-        this.name = name;
-        this.surname = surname;
-        this.description = description;
-        this.info = info;
-    }
 
     public String getId() {
         return id;
@@ -62,14 +50,6 @@ public class Candidate {
         this.description = description;
     }
 
-    public String getInfo() {
-        return info;
-    }
-
-    public void setInfo(String info) {
-        this.info = info;
-    }
-
     public String getPartyId() {
         return partyId;
     }
@@ -93,7 +73,6 @@ public class Candidate {
                 ", name='" + name + '\'' +
                 ", surname='" + surname + '\'' +
                 ", description='" + description + '\'' +
-                ", info='" + info + '\'' +
                 ", partyId=" + partyId +
                 ", imageLink='" + imageLink + '\'' +
                 '}';

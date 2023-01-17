@@ -18,6 +18,7 @@ public class InitiativeServiceApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(InitiativeServiceApplication.class, args);
-        System.out.println("PROVA");
     }
+
+
 }

@@ -95,14 +95,15 @@ public class AuthController {
         return ValidateCode.INVALID_PROVIDER;
     }
 
-    @DeleteMapping(value = "/deleteToken/{email}/{emailRichiedente}",
+    @PostMapping(value = "/deleteToken/{email}",
+            consumes = MediaType.TEXT_PLAIN_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public boolean deleteToken(@RequestBody TokenKey token,
-                               @PathVariable(value = "email") String email,
-                               @PathVariable(value = "emailRichiedente") String emailRichiedente) {
+    public boolean deleteToken(@RequestBody String token,
+                               @PathVariable(value = "email") String email) {
 
-        if(email.equals(emailRichiedente)){
-            Optional<Token> optionalTokenBean = tokenRepository.findById(token);
+        TokenKey tokenkey = parseToken(token.replace("{", "").replace("}", "").replace("\"", ""));;
+        if(tokenkey != null){
+            Optional<Token> optionalTokenBean = tokenRepository.findById(tokenkey);
             if (optionalTokenBean.isPresent()){
                 Token tokenBean = optionalTokenBean.get();
                 tokenRepository.delete(tokenBean);
@@ -111,4 +112,61 @@ public class AuthController {
         }
         return false;
     }
+
+    private TokenKey parseToken(String token){
+        System.out.println("Parser: " + token);
+        TokenKey tokenKey = new TokenKey();
+        String[] campi = token.split(",");
+
+        if(campi.length == 2){
+            for (String campo : campi) {
+                String[] keyValue = campo.split(":");
+                String key = campo.split(":")[0];
+                String value = "";
+                if(keyValue.length > 1){
+                    value = campo.split(":")[1];
+
+                    switch (key) {
+                        case "email" -> {
+                            if(value.contains("@")) {
+                                tokenKey.setEmail(value);
+                            }
+                            else{
+                                return null;
+                            }
+                        }
+                        case "provider" -> {
+                            TokenKey.OauthProvider provider = getParseProvider(value);
+                            if (provider != null) {
+                                tokenKey.setProvider(provider);
+                            } else {
+                                return null;
+                            }
+                        }
+                    }
+                }
+                else{
+                    return null;
+                }
+
+            }
+            return tokenKey;
+
+        }
+
+        return null;
+
+    }
+
+    private TokenKey.OauthProvider getParseProvider(String provider){
+        return switch (provider) {
+            case "Google" -> TokenKey.OauthProvider.Google;
+            case "Facebook" -> TokenKey.OauthProvider.Facebook;
+            case "Github" -> TokenKey.OauthProvider.Github;
+            default -> null;
+        };
+    }
+
+
+
 }

@@ -1,7 +1,6 @@
 package com.civiclife.voteservice.controller;
 
 import com.civiclife.voteservice.model.Candidate;
-import com.civiclife.voteservice.model.Party;
 import com.civiclife.voteservice.repo.CandidateRepository;
 import com.civiclife.voteservice.utils.ErrorMessage;
 import com.civiclife.voteservice.utils.ValidateCode;
@@ -36,50 +35,22 @@ public class CandidateController {
         return new ErrorMessage(code, pathUrl, method);
     }
 
-    @GetMapping("/candidates/{candidateId}")
+    @GetMapping(value = "/candidate/get/{candidateId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public Candidate getCandidateById(@PathVariable String candidateId) {
         Optional<Candidate> candidateOptional = candidateRepository.findById(candidateId);
         return candidateOptional.orElse(null);
     }
 
-    @PostMapping("/candidate/create")
-    public boolean createCandidate(@RequestBody Candidate candidate) {
-        candidateRepository.save(candidate);
+    @PostMapping("postman/candidate/create")
+    public boolean createCandidate(@RequestBody Candidate[] candidate) {
+        candidateRepository.saveAll(List.of(candidate));
         return true;
     }
 
-    @PostMapping("/candidate/update/{candidateId}")
-    public boolean updateCandidate(@PathVariable String candidateId, @RequestBody Candidate candidate) {
-        Optional<Candidate> candidateOptional = candidateRepository.findById(candidateId);
 
-        if(candidateOptional.isPresent()) {
-            candidateOptional.get().setName(candidate.getName());
-            candidateOptional.get().setDescription(candidate.getDescription());
-            candidateOptional.get().setInfo(candidate.getInfo());
-            candidateOptional.get().setPartyId(candidate.getPartyId());
-            candidateRepository.save(candidateOptional.get());
-            return true;
-        }
-        else{
-            return false;
-        }
-    }
-
-    @GetMapping("/candidate/setParty/{candidateId}/{partyId}")
-    public boolean updateCandidateParty(@PathVariable String candidateId, @PathVariable String partyId){
-        Optional<Candidate> candidateOptional = candidateRepository.findById(candidateId);
-        if(candidateOptional.isPresent()){
-            candidateOptional.get().setPartyId(partyId);
-            candidateRepository.save(candidateOptional.get());
-            return true;
-        }
-        return false;
-    }
-
-
-    @GetMapping("/candidate/delete/{candidateId}")
+    @GetMapping("postman/candidate/delete/{candidateId}")
     public boolean deleteCandidate(@PathVariable String candidateId) {
-        Optional<Candidate> candidateOptional= candidateRepository.findCandidateById(candidateId);
+        Optional<Candidate> candidateOptional= candidateRepository.findById(candidateId);
         if(candidateOptional.isPresent()) {
             candidateRepository.delete(candidateOptional.get());
             return true;

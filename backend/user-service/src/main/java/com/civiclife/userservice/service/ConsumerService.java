@@ -1,10 +1,9 @@
 package com.civiclife.userservice.service;
 
 import com.civiclife.userservice.component.UserComponent;
-import com.civiclife.userservice.model.StatusType;
+import com.civiclife.userservice.model.UserStatus;
 import com.civiclife.userservice.model.User;
 import com.civiclife.userservice.repo.UserRepository;
-import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,7 +26,7 @@ public class ConsumerService {
             user.setDomicile("");
             user.setFiscalCode("");
             user.setResidence("");
-            user.setStatus(StatusType.ACTIVE);
+            user.setStatus(UserStatus.ACTIVE);
             user.setTelephonNumber(0);
             userRepository.save(user);
             return true;

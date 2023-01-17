@@ -3,9 +3,6 @@ package com.civiclife.userservice.model;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-import com.civiclife.userservice.model.StatusType;
-
-import java.util.List;
 
 
 @Data
@@ -21,7 +18,7 @@ public class User {
     private String residence;
     private String domicile;
     private long birthDate;
-    private StatusType status;
+    private UserStatus status;
     private long telephonNumber;
     private boolean authorizeBonus;
     private boolean authorizeVaccine;
@@ -30,7 +27,7 @@ public class User {
 
     }
 
-    public User(String email, boolean admin, String name, String surname, String fiscalCode, String residence, String domicile, long birthDate, com.civiclife.userservice.model.StatusType status, long telephonNumber, boolean authorizeBonus, boolean authorizeVaccine) {
+    public User(String email, boolean admin, String name, String surname, String fiscalCode, String residence, String domicile, long birthDate, UserStatus status, long telephonNumber, boolean authorizeBonus, boolean authorizeVaccine) {
         this.email = email;
         this.admin = admin;
         this.name = name;
@@ -109,11 +106,11 @@ public class User {
         this.birthDate = birthDate;
     }
 
-    public StatusType getStatus() {
+    public UserStatus getStatus() {
         return status;
     }
 
-    public void setStatus(StatusType status) {
+    public void setStatus(UserStatus status) {
         this.status = status;
     }
 

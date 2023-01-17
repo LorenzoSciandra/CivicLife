@@ -4,7 +4,7 @@
 /home/lorenzosciandra/Documenti/Code/GithubProjects/CivicLife/backend/user-service/src/main/java/com/civiclife/userservice/UserServiceApplication.java
 /home/lorenzosciandra/Documenti/Code/GithubProjects/CivicLife/backend/user-service/src/main/java/com/civiclife/userservice/model/User.java
 /home/lorenzosciandra/Documenti/Code/GithubProjects/CivicLife/backend/user-service/src/main/java/com/civiclife/userservice/repo/UserRepository.java
+/home/lorenzosciandra/Documenti/Code/GithubProjects/CivicLife/backend/user-service/src/main/java/com/civiclife/userservice/model/UserStatus.java
 /home/lorenzosciandra/Documenti/Code/GithubProjects/CivicLife/backend/user-service/src/main/java/com/civiclife/userservice/config/RabbitConfig.java
 /home/lorenzosciandra/Documenti/Code/GithubProjects/CivicLife/backend/user-service/src/main/java/com/civiclife/userservice/service/ConsumerService.java
 /home/lorenzosciandra/Documenti/Code/GithubProjects/CivicLife/backend/user-service/src/main/java/com/civiclife/userservice/controller/UserController.java
-/home/lorenzosciandra/Documenti/Code/GithubProjects/CivicLife/backend/user-service/src/main/java/com/civiclife/userservice/model/StatusType.java

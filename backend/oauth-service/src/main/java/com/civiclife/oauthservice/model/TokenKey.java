@@ -1,5 +1,10 @@
 package com.civiclife.oauthservice.model;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
 public class TokenKey {
 
     public enum OauthProvider {

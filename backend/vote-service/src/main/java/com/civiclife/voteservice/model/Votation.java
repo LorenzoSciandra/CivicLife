@@ -2,15 +2,16 @@ package com.civiclife.voteservice.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-
 import java.util.HashMap;
-import java.util.List;
 import java.util.Set;
 
 @Data
 @Document(collection = "votations")
+@AllArgsConstructor
+@NoArgsConstructor
 public class Votation {
 
     public enum VotationStatus {
@@ -18,7 +19,6 @@ public class Votation {
     }
 
     @Id
-    private String id;
     private String title;
     private String description;
     private long startDate;
@@ -26,33 +26,12 @@ public class Votation {
     private VotationStatus status;
     private int numberOfVotes;
     private Set<String> votersIdList;
+
+    // <PartyId : ResultId>
     private HashMap<String, String> resultIdPerPartyId;
 
     private HashMap<String, Float> percentagePerPartyId;
 
-    public Votation() {
-    }
-
-    public Votation(String id, String title, String description, long startDate, long endDate, VotationStatus status, int numberOfVotes, Set<String> votersIdList, HashMap<String, String> resultIdPerPartyId, HashMap<String, Float> percentagePerPartyId) {
-        this.id = id;
-        this.title = title;
-        this.description = description;
-        this.startDate = startDate;
-        this.endDate = endDate;
-        this.status = status;
-        this.numberOfVotes = numberOfVotes;
-        this.votersIdList = votersIdList;
-        this.resultIdPerPartyId = resultIdPerPartyId;
-        this.percentagePerPartyId = percentagePerPartyId;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
 
     public String getTitle() {
         return title;
@@ -129,7 +108,6 @@ public class Votation {
     @Override
     public String toString() {
         return "Votation{" +
-                "id='" + id + '\'' +
                 ", title='" + title + '\'' +
                 ", description='" + description + '\'' +
                 ", startDate=" + startDate +

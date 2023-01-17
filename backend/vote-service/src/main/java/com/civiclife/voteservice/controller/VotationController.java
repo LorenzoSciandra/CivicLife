@@ -1,8 +1,5 @@
 package com.civiclife.voteservice.controller;
-import com.civiclife.voteservice.model.Candidate;
-import com.civiclife.voteservice.model.Party;
-import com.civiclife.voteservice.model.Result;
-import com.civiclife.voteservice.model.Votation;
+import com.civiclife.voteservice.model.*;
 import com.civiclife.voteservice.repo.CandidateRepository;
 import com.civiclife.voteservice.repo.PartyRepository;
 import com.civiclife.voteservice.repo.ResultRepository;
@@ -37,6 +34,13 @@ public class VotationController {
         return votationRepository.findAll();
     }
 
+
+    @GetMapping(value = "/votation/get/parties/{votationId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Set<String> getAllPartiesFromVotation(@PathVariable String votationId){
+        Optional<Votation> votation = votationRepository.findById(votationId);
+        return votation.map(value -> value.getResultIdPerPartyId().keySet()).orElseGet(HashSet::new);
+    }
+
     @GetMapping(value = "/error/{code}/{path}/{method}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ErrorMessage error(@PathVariable(value = "code") ValidateCode code,
                               @PathVariable(value = "path") String path,
@@ -45,21 +49,15 @@ public class VotationController {
         return new ErrorMessage(code, pathUrl, method);
     }
 
-    @GetMapping("/votations/{votationId}")
-    public Votation getVotationById(@PathVariable String votationId) {
-        Optional<Votation> votation = votationRepository.findVotationById(votationId);
-        return votation.orElse(null);
-    }
-
-    @PostMapping("/votation/create")
-    public boolean createVotation(@RequestBody Votation votation) {
-        votationRepository.save(votation);
+    @PostMapping("postman/votation/create")
+    public boolean createVotation(@RequestBody Votation[] votations) {
+        votationRepository.saveAll(Set.of(votations));
         return true;
     }
 
-    @DeleteMapping("/votation/delete/{votationId}")
+    @DeleteMapping("postman/votation/delete/{votationId}")
     public boolean deleteVotation(@PathVariable String votationId) {
-        Optional<Votation> votation = votationRepository.findVotationById(votationId);
+        Optional<Votation> votation = votationRepository.findById(votationId);
         if(votation.isPresent()) {
             votationRepository.delete(votation.get());
             return true;
@@ -67,7 +65,8 @@ public class VotationController {
         return false;
     }
 
-    @GetMapping("/votation/vote/{votationId}/{partyId}/{candidateId}/{voterId}/{emailRichiedente}")
+    @GetMapping(value = "/votation/vote/{votationId}/{partyId}/{candidateId}/{voterId}/{emailRichiedente}",
+            produces = MediaType.APPLICATION_JSON_VALUE)
     public boolean voteCandidate(@PathVariable String votationId,
                                  @PathVariable String partyId,
                                  @PathVariable String candidateId,
@@ -75,13 +74,13 @@ public class VotationController {
                                  @PathVariable String emailRichiedente) {
 
         if(emailRichiedente.equals(voterId)) {
-            Optional<Votation> votationOptional = votationRepository.findVotationById(votationId);
-            Optional<Party> partyOptional = partyRepository.findPartyById(partyId);
-            Optional<Candidate> candidateOptional = candidateRepository.findCandidateById(candidateId);
+            Optional<Votation> votationOptional = votationRepository.findById(votationId);
+            Optional<Party> partyOptional = partyRepository.findById(partyId);
+            Optional<Candidate> candidateOptional = candidateRepository.findById(candidateId);
             if (votationOptional.isPresent() && partyOptional.isPresent() && candidateOptional.isPresent()) {
                 Votation votation = votationOptional.get();
                 if (!votation.getVotersIdList().contains(voterId) && checkDate(votation)) {
-                    String resultId = votation.getResultIdPerPartyId().get(partyId);
+                    ResultId resultId = new ResultId(votationId,partyId);
                     Optional<Result> resultOptional = resultRepository.findById(resultId);
                     if (resultOptional.isPresent()) {
                         Result result = resultOptional.get();
@@ -99,19 +98,19 @@ public class VotationController {
         return false;
     }
 
-    @GetMapping("/votation/vote/{votationId}/{partyId}/{voterId}/{emailRichiedente}")
+    @GetMapping(value = "/votation/vote/{votationId}/{partyId}/{voterId}/{emailRichiedente}", produces = MediaType.APPLICATION_JSON_VALUE)
     public boolean voteParty(@PathVariable String votationId,
                              @PathVariable String partyId,
                              @PathVariable String voterId,
                              @PathVariable String emailRichiedente) {
 
         if(emailRichiedente.equals(voterId)) {
-            Optional<Votation> votationOptional = votationRepository.findVotationById(votationId);
+            Optional<Votation> votationOptional = votationRepository.findById(votationId);
             Optional<Party> partyOptional = partyRepository.findById(partyId);
             if (votationOptional.isPresent() && partyOptional.isPresent()) {
                 Votation votation = votationOptional.get();
                 if (!votation.getVotersIdList().contains(voterId) && checkDate(votation)) {
-                    String resultId = votation.getResultIdPerPartyId().get(partyId);
+                    ResultId resultId = new ResultId(votationId,partyId);
                     Optional<Result> resultOptional = resultRepository.findById(resultId);
                     if (resultOptional.isPresent()) {
                         Result result = resultOptional.get();
@@ -142,7 +141,7 @@ public class VotationController {
                              @PathVariable String emailRichiedente) {
 
         if(email.equals(emailRichiedente)){
-            Optional<Votation> votationOptional = votationRepository.findVotationById(votationId);
+            Optional<Votation> votationOptional = votationRepository.findById(votationId);
             if(votationOptional.isPresent()){
                 Votation votation = votationOptional.get();
 
@@ -168,16 +167,17 @@ public class VotationController {
 
         HashMap<String, Result> results = new HashMap<>();
 
-        for(String resultParty : votation.getResultIdPerPartyId().values()){
-            Optional<Result> resultOptional = resultRepository.findById(resultParty);
+        for(String partyId : votation.getResultIdPerPartyId().keySet()){
+            ResultId resultId = new ResultId(votation.getTitle(), partyId);
+            Optional<Result> resultOptional = resultRepository.findById(resultId);
             if(resultOptional.isPresent()){
                 Result result = resultOptional.get();
-                results.put(resultParty, result);
+                results.put(partyId, result);
             }
         }
 
         for (Result result : results.values()) {
-            votation.getPercentagePerPartyId().put(result.getPartyId(), (float) (result.getVotes()/ votation.getNumberOfVotes()));
+            votation.getPercentagePerPartyId().put(result.getId().getPartyId(), (float) (result.getVotes()/ votation.getNumberOfVotes()));
         }
     }
 

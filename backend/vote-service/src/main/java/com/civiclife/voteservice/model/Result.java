@@ -1,6 +1,7 @@
 package com.civiclife.voteservice.model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -8,49 +9,21 @@ import java.util.HashMap;
 import java.util.List;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Document(collection = "results")
 public class Result {
     @Id
-    private String id;
-    private String votationId;
-
-    private String partyId;
+    private ResultId id;
     private int votes;
     private HashMap<String, Integer> numberOfVotesPerCandidate;
 
-    public Result() {
-    }
-
-    public Result(String id, String votationId, String partyId, int votes, HashMap<String, Integer> numberOfVotesPerCandidate) {
-        this.id = id;
-        this.votationId = votationId;
-        this.partyId = partyId;
-        this.votes = votes;
-        this.numberOfVotesPerCandidate = numberOfVotesPerCandidate;
-    }
-
-    public String getId() {
+    public ResultId getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(ResultId id) {
         this.id = id;
-    }
-
-    public String getVotationId() {
-        return votationId;
-    }
-
-    public void setVotationId(String votationId) {
-        this.votationId = votationId;
-    }
-
-    public String getPartyId() {
-        return partyId;
-    }
-
-    public void setPartyId(String partyId) {
-        this.partyId = partyId;
     }
 
     public int getVotes() {
@@ -72,8 +45,7 @@ public class Result {
     @Override
     public String toString() {
         return "Result{" +
-                ", votationId='" + votationId + '\'' +
-                ", partyId='" + partyId + '\'' +
+                ", id='" + id + '\'' +
                 ", votes=" + votes +
                 ", numberOfVotesPerCandidate=" + numberOfVotesPerCandidate +
                 '}';

@@ -12,10 +12,10 @@ public interface InitiativeRepository extends MongoRepository<Initiative, String
     @Query("{ 'idCreator' : ?0 }")
     List<Initiative> findInitiativesByCreator( @Param("idCreator") String idCreator);
 
-    @Query("{'idOrganizers': {$elemMatch: {$eq: 'idOrganizer'}}}")
+    @Query("{'idOrganizers': {$elemMatch: {$eq: ?0}}}")
     List<Initiative> findInitiativesByOrganizer( @Param("idOrganizer") String idOrganizer);
 
-    @Query("{'idMembers': {$elemMatch: {$eq: 'idMember'}}}")
+    @Query("{'idMembers': {$elemMatch: {$eq: ?0}}}")
     List<Initiative> findInitiativeByMember( @Param("idMember") String idMember);
 
 }

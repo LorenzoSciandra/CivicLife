@@ -14,13 +14,21 @@ import java.util.Set;
 @Document(collection = "initiatives")
 public class Initiative {
 
+    public enum InitiativeStatus {
+        PROGRAMMED, IN_PROGRESS, FINISHED
+    }
+
+    public enum InitiativeType {
+        SOCIAL, CULTURAL, SPORT, EDUCATIONAL, ENVIRONMENTAL, OTHER, HEALTH
+    }
+
     @Id
     private String id;
 
     private String name;
     private String description;
-    private String status;
-    private String type;
+    private InitiativeStatus status;
+    private InitiativeType type;
     private String idCreator;
     private Set<String> idOrganizers;
     private Set<String> idMembers;
@@ -31,7 +39,7 @@ public class Initiative {
     public Initiative() {
     }
 
-    public Initiative(String id, String name, String description, String status, String type, String idCreator, Set<String> idOrganizers, Set<String> idMembers, long startDate, long endDate, String location) {
+    public Initiative(String id, String name, String description, InitiativeStatus status, InitiativeType type, String idCreator, Set<String> idOrganizers, Set<String> idMembers, long startDate, long endDate, String location) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -69,19 +77,19 @@ public class Initiative {
         this.description = description;
     }
 
-    public String getStatus() {
+    public InitiativeStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(InitiativeStatus status) {
         this.status = status;
     }
 
-    public String getType() {
+    public InitiativeType getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(InitiativeType type) {
         this.type = type;
     }
 

@@ -3,6 +3,7 @@ package com.civiclife.initiativeservice.controller;
 import com.civiclife.initiativeservice.model.Initiative;
 import com.civiclife.initiativeservice.repo.InitiativeRepository;
 import com.civiclife.initiativeservice.utils.ErrorMessage;
+import com.civiclife.initiativeservice.utils.UserStatus;
 import com.civiclife.initiativeservice.utils.ValidateCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -16,17 +17,21 @@ import java.util.*;
 @CrossOrigin(origins = "http://localhost:3000", maxAge = 600)
 public class InitiativeController {
 
+    private final String userAPI = "http://localhost:8080/userAPI/v1/get/status/";
+
     @Autowired
     private InitiativeRepository initiativeRepository;
 
-    @GetMapping(value = "/initiatives", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Initiative> getInitiatives() {
-        return initiativeRepository.findAll();
-    }
+    @GetMapping(value = "/initiatives/{email}/{emailRichiedente}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<Initiative> getInitiatives(@PathVariable String email, @PathVariable String emailRichiedente) {
 
-    @GetMapping(value = "/initiative/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Initiative getInitiativeById(@PathVariable (value = "id") String id){
-        return initiativeRepository.findById(id).orElse(null);
+        if (email.equals(emailRichiedente)) {
+            UserStatus userStatus = new RestTemplate().getForObject(userAPI + emailRichiedente, UserStatus.class);
+            if(userStatus != UserStatus.BANNED){
+                return initiativeRepository.findAll();
+            }
+        }
+        return new ArrayList<>();
     }
 
     @GetMapping(value = "/error/{code}/{path}/{method}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -43,12 +48,14 @@ public class InitiativeController {
                                     @PathVariable(value = "emailRichiedente") String emailRichiedente) {
 
         Optional<Initiative> optionalInitiative = initiativeRepository.findById(id);
-
         if(optionalInitiative.isPresent() && emailRichiedente.equals(email_creator)){
-            Initiative initiative = optionalInitiative.get();
-            if(initiative.getIdCreator().equals(emailRichiedente)){
-                initiativeRepository.deleteById(id);
-                return true;
+            UserStatus userStatus = new RestTemplate().getForObject(userAPI + emailRichiedente, UserStatus.class);
+            if(userStatus != UserStatus.BANNED){
+                Initiative initiative = optionalInitiative.get();
+                if(initiative.getIdCreator().equals(emailRichiedente)){
+                    initiativeRepository.deleteById(id);
+                    return true;
+                }
             }
         }
         return false;
@@ -62,10 +69,15 @@ public class InitiativeController {
         if(emailRichiedente.equals(email_user)){
             Optional<Initiative> initiative = initiativeRepository.findById(idInitiative);
             if(initiative.isPresent()){
-                Initiative initiativeToModify = initiative.get();
-                boolean val = initiativeToModify.getIdMembers().add(email_user);
-                initiativeRepository.save(initiativeToModify);
-                return val;
+                UserStatus userStatus = new RestTemplate().getForObject(userAPI + emailRichiedente, UserStatus.class);
+                if(userStatus != UserStatus.BANNED){
+                    Initiative initiativeToModify = initiative.get();
+                    boolean val = initiativeToModify.getIdMembers().add(email_user);
+                    if(val) {
+                        initiativeRepository.save(initiativeToModify);
+                    }
+                    return val;
+                }
             }
         }
 
@@ -82,11 +94,14 @@ public class InitiativeController {
         if(emailRichiedente.equals(email_user)) {
             Optional<Initiative> initiative = initiativeRepository.findById(idInitiative);
             if (initiative.isPresent()) {
-                Initiative initiativeToModify = initiative.get();
-                if (initiativeToModify.getIdMembers().contains(email_user)) {
-                    initiativeToModify.getIdMembers().remove(email_user);
-                    initiativeRepository.save(initiativeToModify);
-                    return true;
+                UserStatus userStatus = new RestTemplate().getForObject(userAPI + emailRichiedente, UserStatus.class);
+                if(userStatus != UserStatus.BANNED){
+                    Initiative initiativeToModify = initiative.get();
+                    boolean val = initiativeToModify.getIdMembers().remove(email_user);
+                    if(val){
+                        initiativeRepository.save(initiativeToModify);
+                    }
+                    return val;
                 }
             }
         }
@@ -102,11 +117,19 @@ public class InitiativeController {
         if (email_org.equals(emailRichiedente)) {
             Optional<Initiative> initiative = initiativeRepository.findById(idInitiative);
             if (initiative.isPresent()) {
-                Initiative initiativeToModify = initiative.get();
-                initiativeToModify.getIdMembers().add(new_org);
-                boolean val = initiativeToModify.getIdOrganizers().add(new_org);
-                initiativeRepository.save(initiativeToModify);
-                return val;
+                UserStatus userStatus = new RestTemplate().getForObject(userAPI + emailRichiedente, UserStatus.class);
+                if(userStatus == UserStatus.ACTIVE) {
+                    Initiative initiativeToModify = initiative.get();
+                    
+                    if(initiativeToModify.getIdCreator().equals(emailRichiedente)){
+                        boolean addMem = initiativeToModify.getIdMembers().add(new_org);
+                        boolean val = initiativeToModify.getIdOrganizers().add(new_org);
+                        if(val || addMem){
+                            initiativeRepository.save(initiativeToModify);
+                        }
+                        return val;
+                    }
+                }
             }
         }
         return false;
@@ -121,12 +144,16 @@ public class InitiativeController {
         if (email_user.equals(emailRichiedente)) {
             Optional<Initiative> initiative = initiativeRepository.findById(idInitiative);
             if(initiative.isPresent()){
-                Initiative initiativeToModify = initiative.get();
-                if(initiativeToModify.getIdOrganizers().contains(email_org) &&
-                        (email_org.equals(email_user) || initiativeToModify.getIdCreator().equals(email_user))){
-                    initiativeToModify.getIdOrganizers().remove(email_org);
-                    initiativeRepository.save(initiativeToModify);
-                    return true;
+                UserStatus userStatus = new RestTemplate().getForObject(userAPI + emailRichiedente, UserStatus.class);
+                if(userStatus == UserStatus.ACTIVE) {
+                    Initiative initiativeToModify = initiative.get();
+                    if (email_org.equals(email_user) || initiativeToModify.getIdCreator().equals(emailRichiedente)){
+                        boolean val = initiativeToModify.getIdOrganizers().remove(email_org);
+                        if(val){
+                            initiativeRepository.save(initiativeToModify);
+                        }
+                        return val;
+                    }
                 }
             }
         }
@@ -139,9 +166,12 @@ public class InitiativeController {
                                              @PathVariable(value = "emailRichiedente") String emailRichiedente){
 
         if(email_user.equals(emailRichiedente)){
-            return initiativeRepository.findInitiativesByOrganizer(email_user);
+            UserStatus userStatus = new RestTemplate().getForObject(userAPI + emailRichiedente, UserStatus.class);
+            if(userStatus != UserStatus.BANNED){
+                return initiativeRepository.findInitiativesByOrganizer(email_user);
+            }
         }
-        return new ArrayList<Initiative>();
+        return new ArrayList<>();
     }
 
     @GetMapping(value = "/initiative/getCreatedInitiatives/{email_user}/{emailRichiedente}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -149,9 +179,12 @@ public class InitiativeController {
                                                   @PathVariable(value = "emailRichiedente") String emailRichiedente){
 
         if(email_user.equals(emailRichiedente)){
-           return initiativeRepository.findInitiativesByCreator(email_user);
+            UserStatus userStatus = new RestTemplate().getForObject(userAPI + emailRichiedente, UserStatus.class);
+            if(userStatus != UserStatus.BANNED){
+                return initiativeRepository.findInitiativesByCreator(email_user);
+            }
         }
-        return new ArrayList<Initiative>();
+        return new ArrayList<>();
     }
 
     @GetMapping(value = "/initiative/getMySubscribedInitiatives/{email_user}/{emailRichiedente}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -159,27 +192,32 @@ public class InitiativeController {
                                                        @PathVariable(value = "emailRichiedente") String emailRichiedente){
 
         if(email_user.equals(emailRichiedente)){
-            return initiativeRepository.findInitiativeByMember(email_user);
+            UserStatus userStatus = new RestTemplate().getForObject(userAPI + emailRichiedente, UserStatus.class);
+            if(userStatus != UserStatus.BANNED){
+                return initiativeRepository.findInitiativeByMember(email_user);
+            }
         }
-
-        return new ArrayList<Initiative>();
+        return new ArrayList<>();
     }
 
-    @PostMapping(value = "/initiative/create/{email_creator}/{token}/{emailRichiedente}",
+    @PostMapping(value = "/initiative/create/{email_creator}/{emailRichiedente}",
             consumes = MediaType.TEXT_PLAIN_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public boolean createInitiative(@PathVariable(value = "email_creator") String email_creator,
-                                    @PathVariable(value = "token") String token,
                                     @PathVariable(value = "emailRichiedente") String emailRichiedente,
                                     @RequestBody String initiative) {
 
         if (email_creator.equals(emailRichiedente)) {
-            Initiative realInitiative = parseInitiative(initiative.replace("{", "").replace("}","").replace("\"", ""));
-            realInitiative.setIdCreator(email_creator);
-            realInitiative.setIdMembers(new HashSet<>(Collections.singleton(email_creator)));
-            realInitiative.setIdOrganizers(new HashSet<>(Collections.singleton(email_creator)));
-            initiativeRepository.save(realInitiative);
-            return true;
+            UserStatus userStatus = new RestTemplate().getForObject(userAPI + emailRichiedente, UserStatus.class);
+            if (userStatus == UserStatus.ACTIVE) {
+                Initiative realInitiative = parseInitiative(initiative.replace("{", "").replace("}", "").replace("\"", ""));
+                realInitiative.setIdCreator(email_creator);
+                realInitiative.setIdMembers(new HashSet<>(Collections.singleton(email_creator)));
+                realInitiative.setIdOrganizers(new HashSet<>(Collections.singleton(email_creator)));
+                realInitiative.setStatus(Initiative.InitiativeStatus.PROGRAMMED);
+                initiativeRepository.save(realInitiative);
+                return true;
+            }
         }
         return false;
     }
@@ -196,12 +234,17 @@ public class InitiativeController {
         if (emailRichiedente.equals(email_org)) {
             Optional<Initiative> optionalOriginalInitiative = initiativeRepository.findById(id);
             if(optionalOriginalInitiative.isPresent()){
-                Initiative originalInitiative = optionalOriginalInitiative.get();
-                if(originalInitiative.getIdOrganizers().contains(email_org)) {
-                    Initiative realInitiative = parseInitiative(updateInitiative.replace("{", "").replace("}","").replace("\"", ""));
-                    modifyInitiative(realInitiative, originalInitiative);
-                    initiativeRepository.save(originalInitiative);
-                    return true;
+                UserStatus userStatus = new RestTemplate().getForObject(userAPI + emailRichiedente, UserStatus.class);
+                if(userStatus == UserStatus.ACTIVE ) {
+                    Initiative originalInitiative = optionalOriginalInitiative.get();
+                    if (originalInitiative.getIdOrganizers().contains(emailRichiedente)) {
+                        Initiative newInitiative = parseInitiative(updateInitiative.replace("{", "").replace("}", "").replace("\"", ""));
+                        boolean update = modifyInitiative(newInitiative, originalInitiative);
+                        if(update){
+                            initiativeRepository.save(originalInitiative);
+                        }
+                        return update;
+                    }
                 }
             }
         }
@@ -210,16 +253,14 @@ public class InitiativeController {
     }
 
 
-    private void modifyInitiative(Initiative toCopy, Initiative modified){
+    private boolean modifyInitiative(Initiative toCopy, Initiative modified){
         modified.setDescription(toCopy.getDescription());
         modified.setStartDate(toCopy.getStartDate());
         modified.setEndDate(toCopy.getEndDate());
         modified.setLocation(toCopy.getLocation());
         modified.setName(toCopy.getName());
         modified.setType(toCopy.getType());
-        modified.setIdMembers(toCopy.getIdMembers());
-        modified.setIdOrganizers(toCopy.getIdOrganizers());
-        modified.setStatus(toCopy.getStatus());
+        return true;
     }
 
     private Initiative parseInitiative(String initiative){
@@ -265,7 +306,7 @@ public class InitiativeController {
                     parsedInitiative.setLocation(value);
                     break;
                 case "type":
-                    parsedInitiative.setType(value);
+                    parsedInitiative.setType(Initiative.InitiativeType.valueOf(value));
                     break;
                 case "idMembers":
 
@@ -290,7 +331,7 @@ public class InitiativeController {
                     parsedInitiative.setIdCreator(value);
                     break;
                 case "status":
-                    parsedInitiative.setStatus(value);
+                    parsedInitiative.setStatus(Initiative.InitiativeStatus.valueOf(value));
                     break;
 
             }
