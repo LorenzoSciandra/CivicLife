@@ -77,7 +77,7 @@ const PersonalData = () => {
         if (user !== null) {
             setName(user.name)
             setSurname(user.surname)
-            setBirthDate(user.birthDate === 0 ? null : dayjs.unix(user.birthDate / 1000))
+            setBirthDate(user.birthDate !== 0 ? dayjs.unix(user.birthDate): null )
             setResidence(user.residence)
             setDomicile(user.domicile)
             setTelephonNumber(user.telephonNumber)
@@ -158,6 +158,11 @@ const PersonalData = () => {
         setOpen(false);
     };
 
+    function toTimestamp(strDate: string){
+        const datum = Date.parse(strDate);
+        return datum/1000;
+    }
+
     const updateUserData = async (): Promise<boolean | AuthError> => {
         if (user) {
             console.log('Bonus Access: ' + bonusAccess)
@@ -169,7 +174,7 @@ const PersonalData = () => {
                 admin: user.admin,
                 fiscalCode: fiscalCode,
                 residence: residence,
-                birthDate: Number(birthDate),
+                birthDate: toTimestamp(birthDate?.format('DD/MM/YYYY HH:mm:ss') as string),
                 domicile: domicile,
                 status: user.status,
                 telephonNumber: Number(telephonNumber),
@@ -275,6 +280,10 @@ const PersonalData = () => {
         }
     }
 
+    const goBack = () => {
+        navigate(-1)
+    }
+
     return (
         <Grid container direction="row" spacing={2}>
             <Grid item xs={12} justifyContent="center" alignItems="center" >
@@ -287,7 +296,7 @@ const PersonalData = () => {
                                 aria-label="menu"
                                 sx={{ mr: 2}}
                             >
-                                <ArrowBackIcon style={{fontSize: '3rem', color: 'white'}}/>
+                                <ArrowBackIcon onClick={goBack} sx={{fontSize: '3rem', color: 'white'}}/>
                             </IconButton>
                             <Typography variant="h6" component="div" sx={{flexGrow: 1}}
                                         style={{

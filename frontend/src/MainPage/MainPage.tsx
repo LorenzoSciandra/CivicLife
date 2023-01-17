@@ -137,7 +137,7 @@ const MainPage = () => {
     }
 
     const goToInitiatives = () => {
-        // navigate('/initiatives', {state: {token: token, email: email, isAdmin: isAdmin}})
+        navigate('/initiatives', {state: {token: tokenData}})
     }
 
     return (

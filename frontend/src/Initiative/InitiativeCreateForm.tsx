@@ -1,5 +1,5 @@
-import {Button, Chip, Dialog, Divider, Grid, Typography} from "@mui/material";
-import React, {useState} from "react";
+import {AppBar, Button, Chip, Dialog, Divider, Grid, IconButton, Typography} from "@mui/material";
+import React, {useEffect, useState} from "react";
 import {CssTextField} from "../Utils/CustomTextFields";
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
@@ -13,24 +13,54 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogActions from "@mui/material/DialogActions";
 import ErrorIcon from '@mui/icons-material/Error';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import Box from "@mui/material/Box";
+import Toolbar from "@mui/material/Toolbar";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import {isInstanceOfAuthError, logoutUser} from "../APIs/OauthAPI";
+import {useLocation, useNavigate} from "react-router-dom";
+import {InitiativeType} from "../APIs/InitiativeAPI";
+import {getAllUsersEmail} from "../APIs/UsersAPI";
 
 const InitiativeCreateForm = () => {
-    const types = ['tipo1', 'tipo2', 'tipo3']
-    const [usersList, setUsersList] = useState<any[]>(['utente1', 'utente2', 'utente3', 'utente4', 'utente5', 'utente6', 'utente7', 'utente8', 'utente9', 'utente10', 'utente11', 'utente12'])
-    const [selectedUsers, setSelectedUsers] = useState<any>([])
+    const location = useLocation();
+    const navigate = useNavigate()
+    const types = [InitiativeType.CULTURAL, InitiativeType.SPORT, InitiativeType.SOCIAL, InitiativeType.OTHER, InitiativeType.EDUCATIONAL, InitiativeType.ENVIRONMENTAL, InitiativeType.HEALTH, InitiativeType.OTHER]
+    const [usersList, setUsersList] = useState<string[]| null>(null)
+    const [selectedUsers, setSelectedUsers] = useState<string[]>([])
     const [selectedType, setSelectedType] = useState<any>(types[0])
     const [startDate, setStartDate] = useState<Dayjs | null>(null);
     const [endDate, setEndDate] = useState<Dayjs | null>(null);
     const [description, setDescription] = useState<any>(null)
     const [name, setName] = useState<any>(null)
-    const [location, setLocation] = useState<any>(null)
+    const [place, setPlace] = useState<any>(null)
     const [open, setOpen] =  useState(false);
     const [errors, setErrors] = useState<any>([])
+    const tokenData = location.state.token;
+
+    function toTimestamp(strDate: string){
+        const datum = Date.parse(strDate);
+        return datum/1000;
+    }
+
+    const getUsers = async () => {
+        const response = await getAllUsersEmail(tokenData)
+        if (isInstanceOfAuthError(response)) {
+            navigate('/error', {state: {error: response}})
+        } else {
+            setUsersList(response.filter((email: string) => email !== tokenData.email))
+        }
+    }
+
+    useEffect(() => {
+        if(usersList === null){
+            getUsers()
+        }
+    })
 
     const errorsCheck = () => {
         setErrors([]);
         let errors = []
-        if (name && description && location && startDate && endDate && selectedType) {
+        if (name && description && place && startDate && endDate && selectedType) {
             if (!startDate.isBefore(endDate)) {
                 console.log('DATA INIZIO DOPO DATA FINE')
                 errors.push('La data di inizio deve essere precedente alla data di fine')
@@ -68,7 +98,7 @@ const InitiativeCreateForm = () => {
     }
 
     const handleLocationChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setLocation(event.target.value);
+        setPlace(event.target.value);
     }
 
     const handleUserAdd = (user: any) => {
@@ -85,22 +115,55 @@ const InitiativeCreateForm = () => {
         setOpen(false);
     }
 
-    const whiteTypography=(phrase:string) =>{
-        return( <Typography sx={{color: 'white'}} variant="h6" component="div">
-            {phrase}
-        </Typography>)
+    const logout = async () => {
+        if (tokenData !== null) {
+            const response = await logoutUser(tokenData)
+            if (typeof response === 'boolean') {
+                if (response) {
+                    navigate('/')
+                } else {
+                    console.log('error')
+                }
+            } else {
+                navigate('/error', {state: {error: response}})
+            }
+        }
+    }
+
+    const goBack = () => {
+        navigate(-1)
     }
 
     return (
         <Grid container>
-            {/*    <Grid item xs={12} display="flex" sx={{*/}
-            {/*    width: '100%',*/}
-            {/*    margin: "auto",*/}
-            {/*    top: 0,*/}
-            {/*    right: 0*/}
-            {/*}}>*/}
-            {/*    <IconButton><KeyboardBackspaceIcon sx={{fontSize: 60, color: '#ffffff'}}/></IconButton>*/}
-            {/*</Grid>*/}
+            <Grid item xs={12} justifyContent="center" alignItems="center" >
+                <Box sx={{ flexGrow: 1 }}>
+                    <AppBar position="fixed" sx={{backgroundColor:'#3d4347' }}>
+                        <Toolbar>
+                            <IconButton
+                                size="small"
+                                edge="start"
+                                aria-label="menu"
+                                sx={{ mr: 2}}
+                            >
+                                <ArrowBackIcon onClick={goBack} sx={{fontSize: '3rem', color: 'white'}}/>
+                            </IconButton>
+                            <Typography variant="h6" component="div" sx={{flexGrow: 1}}
+                                        style={{
+                                            justifyContent: 'center',
+                                            color: 'white',
+                                            textAlign: 'center',
+                                            fontSize: '1.8rem',
+                                        }}>I tuoi dati
+                            </Typography>
+                            <Button sx={{color: 'white', backgroundColor: 'red'}}
+                                    onClick={logout}>
+                                logout
+                            </Button>
+                        </Toolbar>
+                    </AppBar>
+                </Box>
+            </Grid>
             <Grid item xs={12} display="flex" justifyContent="center" alignItems="center">
                 <Typography style={{color: '#feac0d', textAlign: 'center', fontSize: '3rem'}}>Crea la tua
                     iniziativa</Typography>
@@ -158,11 +221,11 @@ const InitiativeCreateForm = () => {
                                       label='Organizzatori'
                                       onChange={handleTypeChange}>
                             {
-                                usersList.map((user) => {
+                                usersList ? usersList.map((user) => {
                                     return <MenuItem onClick={() => {
                                         handleUserAdd(user)
                                     }} value={user}>{user}</MenuItem>
-                                })
+                                }): null
                             }
                         </CssTextField>
                     </FormControl>

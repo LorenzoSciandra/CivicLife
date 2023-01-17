@@ -112,6 +112,26 @@ export const authorizeVaccineAccess=async (tokenData: TokenData): Promise<boolea
     })
 }
 
+export const getAllUsersEmail=async (tokenData: TokenData): Promise<string[] | AuthError> => {
+    const emailBase64 = Base64.encode(tokenData.email)
+    const providerBase64 = Base64.encode(tokenData.provider)
+    const tokenBase64 = Base64.encode(tokenData.token)
+
+    const url = 'http://localhost:8080/userAPI/v1/users/emails/' +tokenData.email +'?email=' + emailBase64 + '&provider=' + providerBase64 + '&token=' + tokenBase64
+
+    return await axios.get(url).then((response) => {
+        console.log('response', response.data)
+        return response.data
+    }).catch(() => {
+        const authError: AuthError = {
+            code: ValidateCode.UPDATE_FAIL,
+            method: 'GET',
+            requestedPath: url.split('?')[0]
+        }
+        return authError
+    })
+}
+
 
 //ADMIN METHODS
 

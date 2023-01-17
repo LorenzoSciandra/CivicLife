@@ -92,6 +92,10 @@ const UsersAdmin = () => {
         }
     }
 
+    const goBack = () => {
+        navigate(-1)
+    }
+
     return (
         <Grid container direction="row">
             <Grid item xs={12} justifyContent="center" alignItems="center">
@@ -104,7 +108,7 @@ const UsersAdmin = () => {
                                 aria-label="menu"
                                 sx={{mr: 2}}
                             >
-                                <ArrowBackIcon style={{fontSize: '3rem', color: 'white'}}/>
+                                <ArrowBackIcon onClick={goBack} style={{fontSize: '3rem', color: 'white'}}/>
                             </IconButton>
                             <Typography variant="h6" component="div" sx={{flexGrow: 1}}
                                         style={{
