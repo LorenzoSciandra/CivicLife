@@ -2,13 +2,13 @@ package com.civiclife.initiativeservice.controller;
 
 import com.civiclife.initiativeservice.model.Initiative;
 import com.civiclife.initiativeservice.repo.InitiativeRepository;
+import com.civiclife.initiativeservice.service.ApiCall;
 import com.civiclife.initiativeservice.utils.ErrorMessage;
 import com.civiclife.initiativeservice.utils.UserStatus;
 import com.civiclife.initiativeservice.utils.ValidateCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
 
@@ -17,17 +17,29 @@ import java.util.*;
 @CrossOrigin(origins = "http://localhost:3000", maxAge = 600)
 public class InitiativeController {
 
-    private final String userAPI = "http://localhost:8080/userAPI/v1/get/status/";
+    @Autowired
+    private ApiCall apiCall;
 
     @Autowired
     private InitiativeRepository initiativeRepository;
+
+    @GetMapping(value="/getAllNamesDesc", produces = MediaType.APPLICATION_JSON_VALUE)
+    public HashMap<String, String> getAllInitiativesNamesAndDescriptions() {
+        List<Initiative> initiatives = initiativeRepository.findAll();
+        HashMap<String, String> initiativesNamesDescr = new HashMap<>();
+        for (Initiative initiative : initiatives) {
+            initiativesNamesDescr.put(initiative.getName(), initiative.getDescription());
+        }
+        return initiativesNamesDescr;
+    }
+
 
     @GetMapping(value = "/initiatives/{email}/{emailRichiedente}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Initiative> getInitiatives(@PathVariable String email, @PathVariable String emailRichiedente) {
 
         if (email.equals(emailRichiedente)) {
-            UserStatus userStatus = new RestTemplate().getForObject(userAPI + emailRichiedente, UserStatus.class);
-            if(userStatus != UserStatus.BANNED){
+            UserStatus userStatus = apiCall.getUserStatus(email);
+            if(userStatus!=null && userStatus != UserStatus.BANNED){
                 return initiativeRepository.findAll();
             }
         }
@@ -49,8 +61,8 @@ public class InitiativeController {
 
         Optional<Initiative> optionalInitiative = initiativeRepository.findById(id);
         if(optionalInitiative.isPresent() && emailRichiedente.equals(email_creator)){
-            UserStatus userStatus = new RestTemplate().getForObject(userAPI + emailRichiedente, UserStatus.class);
-            if(userStatus != UserStatus.BANNED){
+            UserStatus userStatus = apiCall.getUserStatus(email_creator);
+            if(userStatus!=null && userStatus != UserStatus.BANNED){
                 Initiative initiative = optionalInitiative.get();
                 if(initiative.getIdCreator().equals(emailRichiedente)){
                     initiativeRepository.deleteById(id);
@@ -69,8 +81,8 @@ public class InitiativeController {
         if(emailRichiedente.equals(email_user)){
             Optional<Initiative> initiative = initiativeRepository.findById(idInitiative);
             if(initiative.isPresent()){
-                UserStatus userStatus = new RestTemplate().getForObject(userAPI + emailRichiedente, UserStatus.class);
-                if(userStatus != UserStatus.BANNED){
+                UserStatus userStatus = apiCall.getUserStatus(email_user);
+                if(userStatus!=null && userStatus != UserStatus.BANNED){
                     Initiative initiativeToModify = initiative.get();
                     boolean val = initiativeToModify.getIdMembers().add(email_user);
                     if(val) {
@@ -94,8 +106,8 @@ public class InitiativeController {
         if(emailRichiedente.equals(email_user)) {
             Optional<Initiative> initiative = initiativeRepository.findById(idInitiative);
             if (initiative.isPresent()) {
-                UserStatus userStatus = new RestTemplate().getForObject(userAPI + emailRichiedente, UserStatus.class);
-                if(userStatus != UserStatus.BANNED){
+                UserStatus userStatus = apiCall.getUserStatus(email_user);
+                if(userStatus!=null && userStatus != UserStatus.BANNED){
                     Initiative initiativeToModify = initiative.get();
                     boolean val = initiativeToModify.getIdMembers().remove(email_user);
                     if(val){
@@ -117,10 +129,10 @@ public class InitiativeController {
         if (email_org.equals(emailRichiedente)) {
             Optional<Initiative> initiative = initiativeRepository.findById(idInitiative);
             if (initiative.isPresent()) {
-                UserStatus userStatus = new RestTemplate().getForObject(userAPI + emailRichiedente, UserStatus.class);
+                UserStatus userStatus = apiCall.getUserStatus(email_org);
                 if(userStatus == UserStatus.ACTIVE) {
                     Initiative initiativeToModify = initiative.get();
-                    
+
                     if(initiativeToModify.getIdCreator().equals(emailRichiedente)){
                         boolean addMem = initiativeToModify.getIdMembers().add(new_org);
                         boolean val = initiativeToModify.getIdOrganizers().add(new_org);
@@ -144,7 +156,7 @@ public class InitiativeController {
         if (email_user.equals(emailRichiedente)) {
             Optional<Initiative> initiative = initiativeRepository.findById(idInitiative);
             if(initiative.isPresent()){
-                UserStatus userStatus = new RestTemplate().getForObject(userAPI + emailRichiedente, UserStatus.class);
+                UserStatus userStatus = apiCall.getUserStatus(email_user);
                 if(userStatus == UserStatus.ACTIVE) {
                     Initiative initiativeToModify = initiative.get();
                     if (email_org.equals(email_user) || initiativeToModify.getIdCreator().equals(emailRichiedente)){
@@ -163,11 +175,11 @@ public class InitiativeController {
 
     @GetMapping(value = "/initiative/getOrganizedInitiatives/{email_user}/{emailRichiedente}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Initiative> getOrganizedInitiatives(@PathVariable(value = "email_user") String email_user,
-                                             @PathVariable(value = "emailRichiedente") String emailRichiedente){
+                                                    @PathVariable(value = "emailRichiedente") String emailRichiedente){
 
         if(email_user.equals(emailRichiedente)){
-            UserStatus userStatus = new RestTemplate().getForObject(userAPI + emailRichiedente, UserStatus.class);
-            if(userStatus != UserStatus.BANNED){
+            UserStatus userStatus = apiCall.getUserStatus(email_user);
+            if(userStatus!=null && userStatus != UserStatus.BANNED){
                 return initiativeRepository.findInitiativesByOrganizer(email_user);
             }
         }
@@ -179,8 +191,8 @@ public class InitiativeController {
                                                   @PathVariable(value = "emailRichiedente") String emailRichiedente){
 
         if(email_user.equals(emailRichiedente)){
-            UserStatus userStatus = new RestTemplate().getForObject(userAPI + emailRichiedente, UserStatus.class);
-            if(userStatus != UserStatus.BANNED){
+            UserStatus userStatus = apiCall.getUserStatus(email_user);
+            if(userStatus != null && userStatus != UserStatus.BANNED){
                 return initiativeRepository.findInitiativesByCreator(email_user);
             }
         }
@@ -192,8 +204,8 @@ public class InitiativeController {
                                                        @PathVariable(value = "emailRichiedente") String emailRichiedente){
 
         if(email_user.equals(emailRichiedente)){
-            UserStatus userStatus = new RestTemplate().getForObject(userAPI + emailRichiedente, UserStatus.class);
-            if(userStatus != UserStatus.BANNED){
+            UserStatus userStatus = apiCall.getUserStatus(email_user);
+            if(userStatus!=null && userStatus != UserStatus.BANNED){
                 return initiativeRepository.findInitiativeByMember(email_user);
             }
         }
@@ -208,7 +220,7 @@ public class InitiativeController {
                                     @RequestBody String initiative) {
 
         if (email_creator.equals(emailRichiedente)) {
-            UserStatus userStatus = new RestTemplate().getForObject(userAPI + emailRichiedente, UserStatus.class);
+            UserStatus userStatus = apiCall.getUserStatus(email_creator);
             if (userStatus == UserStatus.ACTIVE) {
                 Initiative realInitiative = parseInitiative(initiative.replace("{", "").replace("}", "").replace("\"", ""));
                 realInitiative.setIdCreator(email_creator);
@@ -234,7 +246,7 @@ public class InitiativeController {
         if (emailRichiedente.equals(email_org)) {
             Optional<Initiative> optionalOriginalInitiative = initiativeRepository.findById(id);
             if(optionalOriginalInitiative.isPresent()){
-                UserStatus userStatus = new RestTemplate().getForObject(userAPI + emailRichiedente, UserStatus.class);
+                UserStatus userStatus = apiCall.getUserStatus(email_org);
                 if(userStatus == UserStatus.ACTIVE ) {
                     Initiative originalInitiative = optionalOriginalInitiative.get();
                     if (originalInitiative.getIdOrganizers().contains(emailRichiedente)) {

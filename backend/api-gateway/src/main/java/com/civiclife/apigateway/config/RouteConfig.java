@@ -12,22 +12,22 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RouteConfig {
 
-    private AuthFilter authFilter;
-
     @LoadBalanced
     @Bean
     public RouteLocator gatewayRoutes(RouteLocatorBuilder builder) {
         return builder.routes()
                 .route(r -> r.path("/bonusAPI/**", "/vaccinationAPI/**")
-                        .filters(f -> f.filter(authFilter))
+                        .filters(f -> f.filter(new AuthFilter()))
                         .uri("lb://EXTERNAL-RESOURCES-SERVICE"))
-                .route(r -> r.path("/initiativeAPI/v1/initiatives")
+                .route(r -> r.path("/initiativeAPI/v1/getAllNamesDesc")
                         .uri("lb://INITIATIVE-SERVICE"))
-                .route(r -> r.path("/initiativeAPI/v1/initiative/**")
-                        .filters(f -> f.filter(authFilter))
+                .route(r -> r.path("/initiativeAPI/**")
+                        .filters(f -> f.filter(new AuthFilter()))
                         .uri("lb://INITIATIVE-SERVICE"))
+                .route(r -> r.path("/userAPI/v1/user/getStatus/**")
+                        .uri("lb://USER-SERVICE"))
                 .route(r-> r.path("/userAPI/**")
-                        .filters(f -> f.filter(authFilter, -1))
+                        .filters(f -> f.filter(new AuthFilter()))
                             .uri("lb://USER-SERVICE"))
                 .route(r -> r.path("/candidateAPI/**", "/partyAPI/**", "/resultAPI/**", "/votationAPI/**")
                         .uri("lb://VOTE-SERVICE"))

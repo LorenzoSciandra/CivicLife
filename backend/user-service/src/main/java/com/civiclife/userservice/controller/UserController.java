@@ -38,27 +38,21 @@ public class UserController {
 
     @GetMapping(value = "/users/emails/{email}/{emailRichiedente}", produces = MediaType.APPLICATION_JSON_VALUE)
     public Set<String> getAllUtentiEmail(@PathVariable(value = "email") String email,
-                                        @PathVariable(value = "emailRichiedente") String emailRichiedente) {
+                                         @PathVariable(value = "emailRichiedente") String emailRichiedente) {
 
         Optional<User> optionalUser = userRepository.findById(email);
         if (optionalUser.isPresent() && emailRichiedente.equals(email)) {
-            User user = optionalUser.get();
             return userRepository.findAll().stream().map(User::getEmail).collect(Collectors.toSet());
         }
         return new HashSet<>();
     }
 
-
-    @GetMapping(value = "/user/get/status/{email}/{emailRichiedente}",
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    public UserStatus getStatus(@PathVariable(value = "email") String email,
-                                @PathVariable(value = "emailRichiedente") String emailRichiedente) {
+    @GetMapping(value = "/user/getStatus/{email}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public UserStatus getStatus(@PathVariable(value = "email") String email) {
+        System.out.println("Il coglione vuole sapere lo stato di " + email);
         Optional<User> optionalUser = userRepository.findById(email);
-        if (optionalUser.isPresent() && emailRichiedente.equals(email)) {
-            User user = optionalUser.get();
-            return user.getStatus();
-        }
-        return null;
+        return optionalUser.map(User::getStatus).orElse(null);
+
     }
 
     @GetMapping(value = "/user/get/{email}/{emailRichiedente}",
@@ -245,11 +239,7 @@ public class UserController {
                     }
                 }
                 case "status" -> {
-                    if (value.equals("")) {
-                        user.setStatus(UserStatus.ACTIVE);
-                    } else {
-                        user.setStatus(UserStatus.valueOf(value));
-                    }
+                    user.setStatus(parseStatus(value));
                 }
                 case "telephonNumber" -> {
                     if (value.equals("")) {
@@ -288,7 +278,7 @@ public class UserController {
         String decodedStatus = new String(Base64.getDecoder().decode(status));
         System.out.println("Cambio stato utente a: " + emailToUpdate + " richiesto da: " + emailRichiedente + " a: " + decodedStatus);
         UserStatus newStatus = parseStatus(decodedStatus);
-        if(emailAdmin.equals(emailRichiedente) && newStatus != null) {
+        if(emailAdmin.equals(emailRichiedente)) {
             Optional<User> optionalAdmin = userRepository.findById(emailRichiedente);
             Optional<User> optionalUser = userRepository.findById(emailToUpdate);
             if (optionalAdmin.isPresent() && optionalUser.isPresent()) {
@@ -307,13 +297,14 @@ public class UserController {
     }
 
     private UserStatus parseStatus(String status) {
-        UserStatus newStatus = null;
+        UserStatus newStatus;
 
         switch (status) {
             case "ACTIVE" -> newStatus = UserStatus.ACTIVE;
             case "BANNED" -> newStatus = UserStatus.BANNED;
             case "SUSPENDED" -> newStatus = UserStatus.SUSPENDED;
             default -> {
+                newStatus = UserStatus.ACTIVE;
             }
         }
 

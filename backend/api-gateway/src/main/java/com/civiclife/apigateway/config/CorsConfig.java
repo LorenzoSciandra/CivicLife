@@ -12,7 +12,6 @@ import java.util.Collections;
 @Configuration
 public class CorsConfig {
 
-    @LoadBalanced
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration apiCorsConfiguration = new CorsConfiguration();
@@ -25,4 +24,5 @@ public class CorsConfig {
         source.registerCorsConfiguration("/**", apiCorsConfiguration);
         return source;
     }
+
 }

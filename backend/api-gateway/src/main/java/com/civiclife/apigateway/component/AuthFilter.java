@@ -26,7 +26,6 @@ public class AuthFilter implements GatewayFilter {
         Github
     }
 
-
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         try {
@@ -52,17 +51,27 @@ public class AuthFilter implements GatewayFilter {
                 String AUTH_URL = "http://localhost:8080/authAPI/v1/validate/";
                 String validateUrl = AUTH_URL + email + "/" + token + "/" + provider;
 
-                ValidateCode validateCode =  new RestTemplate().getForObject(validateUrl, ValidateCode.class);
+                AuthThread authThread = new AuthThread(validateUrl);
+                authThread.start();
+                authThread.join(500);
 
-                if(validateCode != null){
-                    System.out.println(validateCode);
+                if(authThread.isAlive()) {
+                    authThread.interrupt();
+                }
+                else{
+                    ValidateCode validateCode =  authThread.getValidateCode();
 
-                    if(validateCode == ValidateCode.ACTIVE){
-                        final_url = path.split("\\?")[0] + "/" + email;
+                    if(validateCode != null){
+                        System.out.println(validateCode);
+
+                        if(validateCode == ValidateCode.ACTIVE){
+                            final_url = path.split("\\?")[0] + "/" + email;
+                        }
+                        else{
+                            error = validateCode;
+                        }
                     }
-                    else{
-                        error = validateCode;
-                    }
+
                 }
             }
             else{
@@ -88,6 +97,27 @@ public class AuthFilter implements GatewayFilter {
         } catch (NullPointerException e) {
             exchange.getResponse().setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR);
             return Mono.empty();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    private static class AuthThread extends Thread{
+        private final String url;
+        private ValidateCode validateCode;
+
+        AuthThread(String url){
+            this.url = url;
+        }
+
+        @Override
+        public void run() {
+            validateCode =  new RestTemplate().getForObject(url, ValidateCode.class);
+        }
+
+        public ValidateCode getValidateCode(){
+            return validateCode;
         }
 
     }

@@ -6,3 +6,4 @@
 /home/lorenzosciandra/Documenti/Code/GithubProjects/CivicLife/backend/initiative-service/src/main/java/com/civiclife/initiativeservice/repo/InitiativeRepository.java
 /home/lorenzosciandra/Documenti/Code/GithubProjects/CivicLife/backend/initiative-service/src/main/java/com/civiclife/initiativeservice/utils/ErrorMessage.java
 /home/lorenzosciandra/Documenti/Code/GithubProjects/CivicLife/backend/initiative-service/src/main/java/com/civiclife/initiativeservice/utils/ValidateCode.java
+/home/lorenzosciandra/Documenti/Code/GithubProjects/CivicLife/backend/initiative-service/src/main/java/com/civiclife/initiativeservice/service/ApiCall.java
