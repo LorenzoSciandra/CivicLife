@@ -10,6 +10,8 @@ services:
     deploy:
       restart_policy:
         condition: on-failure
+    networks:
+      - clnet
 
   rabbitmq:
     image: rabbitmq:management-alpine
@@ -20,6 +22,8 @@ services:
     deploy:
       restart_policy:
         condition: on-failure
+    networks:
+      - clnet
 
   api-gateway:
     container_name: api-gateway
@@ -32,6 +36,8 @@ services:
     deploy:
       restart_policy:
         condition: on-failure
+    networks:
+      - clnet
 
 
   #  ----------------------------------------------
@@ -53,6 +59,8 @@ services:
     deploy:
       restart_policy:
         condition: on-failure
+    networks:
+      - clnet
 
   oauth-service:
     build: oauth-service
@@ -69,6 +77,8 @@ services:
     deploy:
       restart_policy:
         condition: on-failure
+    networks:
+      - clnet
 
  # external-resources-service:
  #   build: external-resources-service
@@ -99,6 +109,8 @@ services:
     deploy:
       restart_policy:
         condition: on-failure
+    networks:
+      - clnet
 
   token-db:
     image: mongo:latest
@@ -111,6 +123,8 @@ services:
     deploy:
       restart_policy:
         condition: on-failure
+    networks:
+      - clnet
 
  # external-resources-db:
  #   image: mongo:latest
@@ -128,3 +142,6 @@ volumes:
 #  external-resources-db:
   user-db:
   token-db:
+networks:
+  clnet:
+    driver: bridge

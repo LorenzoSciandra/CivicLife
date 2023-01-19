@@ -2,8 +2,8 @@ package com.civiclife.voteservice.controller;
 import com.civiclife.voteservice.model.*;
 import com.civiclife.voteservice.repo.CandidateRepository;
 import com.civiclife.voteservice.repo.PartyRepository;
-import com.civiclife.voteservice.repo.ResultRepository;
 import com.civiclife.voteservice.repo.VotationRepository;
+import com.civiclife.voteservice.service.ApiCall;
 import com.civiclife.voteservice.utils.ErrorMessage;
 import com.civiclife.voteservice.utils.ValidateCode;
 import lombok.AllArgsConstructor;
@@ -25,8 +25,8 @@ public class VotationController {
     @Autowired
     private VotationRepository votationRepository;
     private PartyRepository partyRepository;
-    private CandidateRepository candidateRepository;
-    private ResultRepository resultRepository;
+    @Autowired
+    private ApiCall apiCall;
 
 
     @GetMapping(value = "/votations", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -34,11 +34,31 @@ public class VotationController {
         return votationRepository.findAll();
     }
 
+    @GetMapping(value = "/votations/{status}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<Votation> getAllVotationsByStatus(@PathVariable Votation.VotationStatus status) {
+        return votationRepository.votationsByStatus(status);
+    }
+
+    @GetMapping(value = "/votations/done/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<Votation> getAllVotationsDoneByUser(@PathVariable String userId) {
+        List<Votation> votations = votationRepository.findAll();
+        return votations.stream().filter(votation -> votation.getVotationResult().getVotersIdList().contains(userId)).toList();
+    }
 
     @GetMapping(value = "/votation/get/parties/{votationId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Set<String> getAllPartiesFromVotation(@PathVariable String votationId){
-        Optional<Votation> votation = votationRepository.findById(votationId);
-        return votation.map(value -> value.getResultIdPerPartyId().keySet()).orElseGet(HashSet::new);
+    public Set<Party> getAllPartiesFromVotation(@PathVariable String votationId){
+        Optional<Votation> optionalVotation = votationRepository.findById(votationId);
+        if(optionalVotation.isPresent()){
+            Votation votation = optionalVotation.get();
+            return votation.getParties();
+        }
+        return new HashSet<>();
+    }
+
+    @GetMapping(value = "votation/get/result/{votationId}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public VotationResult getResult(@PathVariable String votationId) {
+        Optional<Votation> optionalVotation = votationRepository.findById(votationId);
+        return optionalVotation.map(Votation::getVotationResult).orElse(null);
     }
 
     @GetMapping(value = "/error/{code}/{path}/{method}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -49,17 +69,31 @@ public class VotationController {
         return new ErrorMessage(code, pathUrl, method);
     }
 
-    @PostMapping("postman/votation/create")
+    @PostMapping("/postman/votation/create")
     public boolean createVotation(@RequestBody Votation[] votations) {
         votationRepository.saveAll(Set.of(votations));
         return true;
     }
 
-    @DeleteMapping("postman/votation/delete/{votationId}")
+    @DeleteMapping("/postman/votation/delete/{votationId}")
     public boolean deleteVotation(@PathVariable String votationId) {
         Optional<Votation> votation = votationRepository.findById(votationId);
         if(votation.isPresent()) {
             votationRepository.delete(votation.get());
+            return true;
+        }
+        return false;
+    }
+
+    @GetMapping("/postman/result/delete/{votationId}")
+    public boolean deleteResult(@PathVariable String votationId) {
+
+        Optional<Votation> optionalVotation = votationRepository.findById(votationId);
+
+        if(optionalVotation.isPresent()) {
+            Votation votation = optionalVotation.get();
+            votation.setVotationResult(new VotationResult());
+            votationRepository.save(votation);
             return true;
         }
         return false;
@@ -75,23 +109,33 @@ public class VotationController {
 
         if(emailRichiedente.equals(voterId)) {
             Optional<Votation> votationOptional = votationRepository.findById(votationId);
-            Optional<Party> partyOptional = partyRepository.findById(partyId);
-            Optional<Candidate> candidateOptional = candidateRepository.findById(candidateId);
-            if (votationOptional.isPresent() && partyOptional.isPresent() && candidateOptional.isPresent()) {
+
+            if (votationOptional.isPresent()) {
                 Votation votation = votationOptional.get();
-                if (!votation.getVotersIdList().contains(voterId) && checkDate(votation)) {
-                    ResultId resultId = new ResultId(votationId,partyId);
-                    Optional<Result> resultOptional = resultRepository.findById(resultId);
-                    if (resultOptional.isPresent()) {
-                        Result result = resultOptional.get();
-                        votation.getVotersIdList().add(voterId);
-                        votation.setNumberOfVotes(votation.getNumberOfVotes() + 1);
-                        result.setVotes(result.getVotes() + 1);
-                        result.getNumberOfVotesPerCandidate().put(candidateId, result.getNumberOfVotesPerCandidate().get(candidateId) + 1);
-                        resultRepository.save(result);
-                        votationRepository.save(votation);
-                        return true;
+                if (!votation.getVotationResult().getVotersIdList().contains(voterId)
+                        && votation.getStatus().equals(Votation.VotationStatus.OPEN)
+                        && checkDate(votation)) {
+                    VotationResult votationResult = votation.getVotationResult();
+                    for (PartyResult partyResult : votationResult.getPartyResults()) {
+                        if (partyResult.getPartyId().equals(partyId)) {
+                            Set<String> candidateIdList = partyResult.getNumberOfVotesPerCandidate().keySet();
+                            if (candidateIdList.contains(candidateId)) {
+                                HashMap<String, Integer> numberOfVotesPerCandidate = partyResult.getNumberOfVotesPerCandidate();
+                                numberOfVotesPerCandidate.put(candidateId, numberOfVotesPerCandidate.get(candidateId) + 1);
+                                partyResult.setNumberOfVotesPerCandidate(numberOfVotesPerCandidate);
+                                partyResult.setVotes(partyResult.getVotes() + 1);
+                                Set<String> votersIdList = votationResult.getVotersIdList();
+                                votersIdList.add(voterId);
+                                votationResult.setVotersIdList(votersIdList);
+                                votationResult.setNumberOfVotes(votationResult.getNumberOfVotes() + 1);
+                                votation.setVotationResult(votationResult);
+                                votationRepository.save(votation);
+                                return true;
+
+                            }
+                        }
                     }
+
                 }
             }
         }
@@ -106,23 +150,36 @@ public class VotationController {
 
         if(emailRichiedente.equals(voterId)) {
             Optional<Votation> votationOptional = votationRepository.findById(votationId);
-            Optional<Party> partyOptional = partyRepository.findById(partyId);
-            if (votationOptional.isPresent() && partyOptional.isPresent()) {
+            if (votationOptional.isPresent()) {
                 Votation votation = votationOptional.get();
-                if (!votation.getVotersIdList().contains(voterId) && checkDate(votation)) {
-                    ResultId resultId = new ResultId(votationId,partyId);
-                    Optional<Result> resultOptional = resultRepository.findById(resultId);
-                    if (resultOptional.isPresent()) {
-                        Result result = resultOptional.get();
-                        Party party = partyOptional.get();
-                        votation.getVotersIdList().add(voterId);
-                        votation.setNumberOfVotes(votation.getNumberOfVotes() + 1);
-                        result.setVotes(result.getVotes() + 1);
-                        result.getNumberOfVotesPerCandidate().put(party.getLeaderId(), result.getNumberOfVotesPerCandidate().get(party.getLeaderId()) + 1);
-                        votationRepository.save(votation);
-                        resultRepository.save(result);
-                        return true;
+                if (!votation.getVotationResult().getVotersIdList().contains(voterId)
+                        && votation.getStatus().equals(Votation.VotationStatus.OPEN)
+                        && checkDate(votation)) {
+                    VotationResult votationResult = votation.getVotationResult();
+                    for (PartyResult partyResult : votationResult.getPartyResults()) {
+                        if (partyResult.getPartyId().equals(partyId)) {
+                            Set<String> candidateIdList = partyResult.getNumberOfVotesPerCandidate().keySet();
+                            Optional<Party> partyOptional = partyRepository.findById(partyId);
+                            if(partyOptional.isPresent()){
+                                String candidateId = partyOptional.get().getLeaderId();
+                                if (candidateIdList.contains(candidateId)) {
+                                    HashMap<String, Integer> numberOfVotesPerCandidate = partyResult.getNumberOfVotesPerCandidate();
+                                    numberOfVotesPerCandidate.put(candidateId, numberOfVotesPerCandidate.get(candidateId) + 1);
+                                    partyResult.setNumberOfVotesPerCandidate(numberOfVotesPerCandidate);
+                                    partyResult.setVotes(partyResult.getVotes() + 1);
+                                    Set<String> votersIdList = votationResult.getVotersIdList();
+                                    votersIdList.add(voterId);
+                                    votationResult.setVotersIdList(votersIdList);
+                                    votationResult.setNumberOfVotes(votationResult.getNumberOfVotes() + 1);
+                                    votation.setVotationResult(votationResult);
+                                    votationRepository.save(votation);
+                                    return true;
+
+                                }
+                            }
+                        }
                     }
+
                 }
             }
         }
@@ -133,23 +190,23 @@ public class VotationController {
         return votation.getEndDate() > java.time.LocalDateTime.now().get(ChronoField.MILLI_OF_DAY);
     }
 
-    @GetMapping(value = "/votation/status/{votationId}/{newStatus}/{email}/{emailRichiedente}",
+    @PostMapping(value = "/votation/status/{votationId}/{email}/{emailRichiedente}",
+            consumes = MediaType.TEXT_PLAIN_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public boolean setStatus(@PathVariable String votationId,
-                             @PathVariable Votation.VotationStatus newStatus,
                              @PathVariable String email,
-                             @PathVariable String emailRichiedente) {
+                             @PathVariable String emailRichiedente,
+                             @RequestBody String status) {
 
-        if(email.equals(emailRichiedente)){
+        Votation.VotationStatus newStatus = parseVotationStatus(status);
+        if(newStatus!=null && email.equals(emailRichiedente)){
             Optional<Votation> votationOptional = votationRepository.findById(votationId);
             if(votationOptional.isPresent()){
                 Votation votation = votationOptional.get();
 
-                String url = "http://localhost:8080/userAPI/v1/user/isAdmin    /" + email + "/" + emailRichiedente;
+                boolean isAuthorized = apiCall.isAdmin(email);
 
-                boolean result = Boolean.TRUE.equals(new RestTemplate().getForObject(url, boolean.class));
-
-                if(result){
+                if(isAuthorized){
                     votation.setStatus(newStatus);
                     if(newStatus.equals(Votation.VotationStatus.CLOSED)){
                         votation.setEndDate(java.time.LocalDateTime.now().get(ChronoField.MILLI_OF_DAY));
@@ -163,22 +220,31 @@ public class VotationController {
         return false;
     }
 
+    private Votation.VotationStatus parseVotationStatus(String status){
+        return switch (status) {
+            case "OPEN" -> Votation.VotationStatus.OPEN;
+            case "CLOSED" -> Votation.VotationStatus.CLOSED;
+            case "TERMINATED" -> Votation.VotationStatus.TERMINATED;
+            default -> null;
+        };
+    }
+
     public void finalizeResults(Votation votation){
+        VotationResult votationResult = votation.getVotationResult();
+        HashMap<String, Float> numberOfVotesPerParty = new HashMap<>();
 
-        HashMap<String, Result> results = new HashMap<>();
+        for(PartyResult partyResult : votationResult.getPartyResults()){
+            HashMap<String, Float> percentagePerCandidate = new HashMap<>();
+            Set<String> candidateIdList = partyResult.getNumberOfVotesPerCandidate().keySet();
 
-        for(String partyId : votation.getResultIdPerPartyId().keySet()){
-            ResultId resultId = new ResultId(votation.getTitle(), partyId);
-            Optional<Result> resultOptional = resultRepository.findById(resultId);
-            if(resultOptional.isPresent()){
-                Result result = resultOptional.get();
-                results.put(partyId, result);
+            for(String candidate: candidateIdList){
+                float percentage = (float) partyResult.getNumberOfVotesPerCandidate().get(candidate) / votationResult.getNumberOfVotes();
+                percentagePerCandidate.put(candidate, percentage);
             }
+            partyResult.setFinalPartyResult(percentagePerCandidate);
+            numberOfVotesPerParty.put(partyResult.getPartyId(), (float) partyResult.getVotes()/votationResult.getNumberOfVotes());
         }
-
-        for (Result result : results.values()) {
-            votation.getPercentagePerPartyId().put(result.getId().getPartyId(), (float) (result.getVotes()/ votation.getNumberOfVotes()));
-        }
+        votationResult.setFinalResults(numberOfVotesPerParty);
     }
 
 }

@@ -14,6 +14,20 @@ import java.util.Collections;
 
 @Configuration
 public class CorsConfig {
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration apiCorsConfiguration = new CorsConfiguration();
+        apiCorsConfiguration.setAllowCredentials(true);
+        apiCorsConfiguration.setAllowedOriginPatterns(Collections.singletonList("*"));
+        apiCorsConfiguration.setAllowedHeaders(Collections.singletonList("*"));
+        apiCorsConfiguration.setAllowedMethods(Collections.singletonList("*"));
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", apiCorsConfiguration);
+        return source;
+    }
+
     @Bean
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
@@ -28,5 +42,4 @@ public class CorsConfig {
             }
         };
     }
-
 }

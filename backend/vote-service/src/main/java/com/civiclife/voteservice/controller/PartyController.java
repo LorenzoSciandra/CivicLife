@@ -49,13 +49,13 @@ public class PartyController {
         return party.map(Party::getCandidateIdList).orElse(null);
     }
 
-    @PostMapping("postman/party/create")
+    @PostMapping("/postman/party/create")
     public boolean createParty(@RequestBody Party[] party) {
         partyRepository.saveAll(Set.of(party));
         return true;
     }
 
-    @GetMapping("postman/party/delete/{partyId}")
+    @GetMapping("/postman/party/delete/{partyId}")
     public boolean deleteParty(@PathVariable String partyId) {
         Optional<Party> party = partyRepository.findById(partyId);
         if (party.isPresent()) {
@@ -66,7 +66,7 @@ public class PartyController {
     }
 
 
-    @GetMapping("postman/party/setLeader/{partyId}/{candidateId}")
+    @GetMapping("/postman/party/setLeader/{partyId}/{candidateId}")
     public boolean setLeaderIdFromParty(@PathVariable String partyId, @PathVariable String candidateId) {
         Optional<Party> party = partyRepository.findById(partyId);
         if (party.isPresent()) {

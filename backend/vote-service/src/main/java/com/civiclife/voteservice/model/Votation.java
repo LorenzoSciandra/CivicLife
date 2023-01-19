@@ -5,7 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-import java.util.HashMap;
+
 import java.util.Set;
 
 @Data
@@ -24,14 +24,8 @@ public class Votation {
     private long startDate;
     private long endDate;
     private VotationStatus status;
-    private int numberOfVotes;
-    private Set<String> votersIdList;
-
-    // <PartyId : ResultId>
-    private HashMap<String, String> resultIdPerPartyId;
-
-    private HashMap<String, Float> percentagePerPartyId;
-
+    private Set<Party> parties;
+    private VotationResult votationResult;
 
     public String getTitle() {
         return title;
@@ -65,22 +59,6 @@ public class Votation {
         this.endDate = endDate;
     }
 
-    public void setResultIdPerPartyId(HashMap<String, String> resultIdPerPartyId) {
-        this.resultIdPerPartyId = resultIdPerPartyId;
-    }
-
-    public HashMap<String, String> getResultIdPerPartyId() {
-        return resultIdPerPartyId;
-    }
-
-    public int getNumberOfVotes() {
-        return numberOfVotes;
-    }
-
-    public void setNumberOfVotes(int numberOfVotes) {
-        this.numberOfVotes = numberOfVotes;
-    }
-
     public VotationStatus getStatus() {
         return status;
     }
@@ -89,20 +67,20 @@ public class Votation {
         this.status = status;
     }
 
-    public HashMap<String, Float> getPercentagePerPartyId() {
-        return percentagePerPartyId;
+    public VotationResult getVotationResult() {
+        return votationResult;
     }
 
-    public void setPercentagePerPartyId(HashMap<String, Float> percentagePerPartyId) {
-        this.percentagePerPartyId = percentagePerPartyId;
+    public void setVotationResult(VotationResult votationResult) {
+        this.votationResult = votationResult;
     }
 
-    public Set<String> getVotersIdList() {
-        return votersIdList;
+    public Set<Party> getParties() {
+        return parties;
     }
 
-    public void setVotersIdList(Set<String> votersIdList) {
-        this.votersIdList = votersIdList;
+    public void setParties(Set<Party> parties) {
+        this.parties = parties;
     }
 
     @Override
@@ -113,10 +91,6 @@ public class Votation {
                 ", startDate=" + startDate +
                 ", endDate=" + endDate +
                 ", status=" + status +
-                ", votersIdList=" + votersIdList +
-                ", resultIdPerPartyId=" + resultIdPerPartyId +
-                ", numberOfVotes=" + numberOfVotes +
-                ", percentagePerPartyId=" + percentagePerPartyId +
                 '}';
     }
 }

@@ -1,19 +1,19 @@
 [{   
     "name":"Partito Democratico",
     "description": "Partito politico italiano di centro-sinistra fondato il 14 ottobre 2007. Secondo il Manifesto dei valori, approvato dal partito il 16 febbraio 2008, «il Partito Democratico intende contribuire a costruire e consolidare, in Europa e nel mondo, un ampio campo riformista, europeista e di centro-sinistra, operando in un rapporto organico con le principali forze socialiste, democratiche, progressiste e promuovendone l'azione comune»",
-    "candidateIdList": [],
-    "leaderId": "lklklklklk"
+    "candidateIdList": ["5454545ff", "1454111asas", "545454asas"],
+    "leaderId": "5454545ff"
 },
 {   
     "name":"Lega per Salvini Premier",
     "description": "La Lega per Salvini Premier (LSP), meglio nota semplicemente come Lega, è un partito politico italiano di destra ed estrema destra fondato il 14 dicembre 2017.Secondo il suo statuto la LSP è un partito federalista che \"promuove e sostiene la libertà e la sovranità dei popoli a livello europeo\". È diretto discendente politico della Lega Nord, della quale può usare il simbolo, e dalla quale ha ereditato le posizioni populiste ed euroscettiche, rinunciando tuttavia al secessionismo.Fino al 2019 la LSP raccoglieva soltanto gli iscritti del centro e del sud Italia, mentre la Lega Nord raccoglieva gli iscritti del nord. Il congresso federale della Lega Nord svoltosi il 21 dicembre 2019 sancì, di fatto, il passaggio di consegne tra i due partiti: la LSP concluse la sua campagna di tesseramento nell'agosto del 2020, accettando nuovi militanti anche dalle regioni del nord, mentre i militanti di vecchio corso della Lega Nord avrebbero ottenuto il tesseramento ad entrambi i partiti.È considerato un partito personale legato principalmente alla figura di Matteo Salvini, che ne è leader e segretario.",
-    "candidateIdList": [],
-    "leaderId": "lklklklklk"
+    "candidateIdList": ["111145ff", "5454ggaazz5ff", "aaaaaaaab"],
+    "leaderId": "111145ff"
 },
 {   
     "name":"Movimento 5 Stelle",
     "description": "Il Movimento 5 Stelle (M5S), reso graficamente anche come MoVimento 5 Stelle e noto semplicemente come 5 Stelle, è un partito politico italiano fondato a Milano il 4 ottobre 2009 dal comico e attivista politico Beppe Grillo e dall'imprenditore del web Gianroberto Casaleggio sulla scia dell'esperienza del movimento Amici di Beppe Grillo, attivo dal 2005, e delle liste civiche a Cinque Stelle, presentate per la prima volta alle elezioni amministrative del 2009. In base all'atto costitutivo dell'associazione \"Movimento 5 Stelle\", registrato il 18 dicembre 2012 (in vista delle elezioni politiche del 2013), a Beppe Grillo competevano la presidenza e la rappresentanza legale. Tramite il blog e gli spettacoli di Grillo e attraverso il sito web del Movimento, venivano veicolate e promosse le riflessioni sulle iniziative politiche con l'ambizione di stimolare metodi di democrazia diretta, contrapposta alla democrazia rappresentativa, con una forte componente antipartitocratica. In occasione delle elezioni politiche del 2018, la rappresentanza legale venne trasferita al \"capo politico\", mentre Grillo rimaneva \"garante\" del Movimento; la testata ufficiale divenne \"Il Blog delle Stelle\", mentre il blog di Grillo si \"slegò\" maggiormente dal Movimento.",
-    "candidateIdList": [],
-    "leaderId": "lklklklklk"
+    "candidateIdList": ["bbbbbbbbbba","55555555ff", "88aa888888"],
+    "leaderId": "bbbbbbbbbba"
 }
 ]

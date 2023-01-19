@@ -15,16 +15,15 @@ import java.util.Set;
 public class Initiative {
 
     public enum InitiativeStatus {
-        PROGRAMMED, IN_PROGRESS, FINISHED
+        PROGRAMMED, ONGOING, TERMINATED
     }
 
     public enum InitiativeType {
-        SOCIAL, CULTURAL, SPORT, EDUCATIONAL, ENVIRONMENTAL, OTHER, HEALTH
+        SOCIAL, SPORT, EDUCATIONAL, ENVIRONMENTAL, OTHER, HEALTH, FOOD
     }
 
     @Id
     private String id;
-
     private String name;
     private String description;
     private InitiativeStatus status;

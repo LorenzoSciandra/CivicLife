@@ -2,6 +2,7 @@
 /home/lorenzosciandra/Documenti/Code/GithubProjects/CivicLife/backend/initiative-service/src/main/java/com/civiclife/initiativeservice/controller/InitiativeController.java
 /home/lorenzosciandra/Documenti/Code/GithubProjects/CivicLife/backend/initiative-service/src/main/java/com/civiclife/initiativeservice/utils/UserStatus.java
 /home/lorenzosciandra/Documenti/Code/GithubProjects/CivicLife/backend/initiative-service/src/main/java/com/civiclife/initiativeservice/model/Initiative.java
+/home/lorenzosciandra/Documenti/Code/GithubProjects/CivicLife/backend/initiative-service/src/main/java/com/civiclife/initiativeservice/model/InitiativeReadOnly.java
 /home/lorenzosciandra/Documenti/Code/GithubProjects/CivicLife/backend/initiative-service/src/main/java/com/civiclife/initiativeservice/config/CorsConfig.java
 /home/lorenzosciandra/Documenti/Code/GithubProjects/CivicLife/backend/initiative-service/src/main/java/com/civiclife/initiativeservice/repo/InitiativeRepository.java
 /home/lorenzosciandra/Documenti/Code/GithubProjects/CivicLife/backend/initiative-service/src/main/java/com/civiclife/initiativeservice/utils/ErrorMessage.java

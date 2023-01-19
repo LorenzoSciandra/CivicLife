@@ -22,7 +22,6 @@ public class Party {
     private Set<String> candidateIdList;
     private String leaderId;
 
-
     public String getName() {
         return name;
     }

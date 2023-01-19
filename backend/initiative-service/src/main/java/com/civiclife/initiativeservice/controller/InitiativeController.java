@@ -1,6 +1,7 @@
 package com.civiclife.initiativeservice.controller;
 
 import com.civiclife.initiativeservice.model.Initiative;
+import com.civiclife.initiativeservice.model.InitiativeReadOnly;
 import com.civiclife.initiativeservice.repo.InitiativeRepository;
 import com.civiclife.initiativeservice.service.ApiCall;
 import com.civiclife.initiativeservice.utils.ErrorMessage;
@@ -24,13 +25,19 @@ public class InitiativeController {
     private InitiativeRepository initiativeRepository;
 
     @GetMapping(value="/getAllNamesDesc", produces = MediaType.APPLICATION_JSON_VALUE)
-    public HashMap<String, String> getAllInitiativesNamesAndDescriptions() {
+    public Set<InitiativeReadOnly> getAllInitiativesNamesAndDescriptions() {
         List<Initiative> initiatives = initiativeRepository.findAll();
-        HashMap<String, String> initiativesNamesDescr = new HashMap<>();
-        for (Initiative initiative : initiatives) {
-            initiativesNamesDescr.put(initiative.getName(), initiative.getDescription());
+        Set<InitiativeReadOnly> initiativesReadOnly = new HashSet<>();
+        for(Initiative initiative : initiatives){
+            InitiativeReadOnly initiativeReadOnly = new InitiativeReadOnly();
+            initiativeReadOnly.setName(initiative.getName());
+            initiativeReadOnly.setDescription(initiative.getDescription());
+            initiativeReadOnly.setLocation(initiative.getLocation());
+            initiativeReadOnly.setType(initiative.getType());
+            initiativesReadOnly.add(initiativeReadOnly);
         }
-        return initiativesNamesDescr;
+
+        return initiativesReadOnly;
     }
 
 
@@ -212,6 +219,12 @@ public class InitiativeController {
         return new ArrayList<>();
     }
 
+    @PostMapping(value = "/postman/create")
+    public boolean createInitiativePostman(@RequestBody Initiative[] initiatives){
+        initiativeRepository.saveAll(Arrays.asList(initiatives));
+        return true;
+    }
+
     @PostMapping(value = "/initiative/create/{email_creator}/{emailRichiedente}",
             consumes = MediaType.TEXT_PLAIN_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
@@ -318,7 +331,7 @@ public class InitiativeController {
                     parsedInitiative.setLocation(value);
                     break;
                 case "type":
-                    parsedInitiative.setType(Initiative.InitiativeType.valueOf(value));
+                    parsedInitiative.setType(parseType(value));
                     break;
                 case "idMembers":
 
@@ -343,12 +356,34 @@ public class InitiativeController {
                     parsedInitiative.setIdCreator(value);
                     break;
                 case "status":
-                    parsedInitiative.setStatus(Initiative.InitiativeStatus.valueOf(value));
+                    parsedInitiative.setStatus(parseStatus(value));
                     break;
 
             }
         }
         return parsedInitiative;
+    }
+
+    private Initiative.InitiativeType parseType(String type){
+        return switch (type) {
+            case "SOCIAL" -> Initiative.InitiativeType.SOCIAL;
+            case "SPORT" -> Initiative.InitiativeType.SPORT;
+            case "CULTURE" -> Initiative.InitiativeType.EDUCATIONAL;
+            case "ENVIRONMENT" -> Initiative.InitiativeType.ENVIRONMENTAL;
+            case "FOOD" -> Initiative.InitiativeType.FOOD;
+            case "HEALTH" -> Initiative.InitiativeType.HEALTH;
+            case "OTHER" -> Initiative.InitiativeType.OTHER;
+            default -> Initiative.InitiativeType.OTHER;
+        };
+    }
+
+    private Initiative.InitiativeStatus parseStatus(String status){
+        return switch (status) {
+            case "PROGRAMMED" -> Initiative.InitiativeStatus.PROGRAMMED;
+            case "ONGOING" -> Initiative.InitiativeStatus.ONGOING;
+            case "TERMINATED" -> Initiative.InitiativeStatus.TERMINATED;
+            default -> Initiative.InitiativeStatus.PROGRAMMED;
+        };
     }
 
 

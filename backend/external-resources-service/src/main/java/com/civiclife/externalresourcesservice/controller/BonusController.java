@@ -81,4 +81,10 @@ public class BonusController {
         return false;
     }
 
+    @PostMapping(value="/postman/create", produces = MediaType.APPLICATION_JSON_VALUE)
+    public boolean createBonusPostman(@RequestBody Bonus[] bonuses) {
+        bonusRepository.saveAll(List.of(bonuses));
+        return true;
+    }
+
 }

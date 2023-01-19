@@ -33,14 +33,14 @@
     "description": "Giancarlo Giorgetti (Cazzago Brabbia, 16 dicembre 1966) è un politico italiano, dal 22 ottobre 2022 ministro dell'economia e delle finanze della Repubblica Italiana nel governo Meloni.Membro di spicco della Lega, della quale è attualmente deputato oltreché vicesegretario federale, è stato anche segretario della Lega Lombarda (2002-2012) e, alla Camera, presidente della 5ª Commissione Bilancio, Tesoro e Programmazione nella XIV (2001-2006) e XVI legislatura (2008-2013), quindi capogruppo del partito all'inizio della XVII legislatura (2013-2014).Nella XVIII legislatura (2018-2022) è stato di nuovo brevemente capogruppo della Lega alla Camera, prima di divenire segretario del Consiglio dei ministri del governo Conte I (2018-2019) e ministro dello sviluppo economico del governo Draghi (2021-2022).",
     "imageLink": "https://upload.wikimedia.org/wikipedia/commons/1/15/Giancarlo_Giorgetti_Quirinale_2018.png"
 },
-{   "id" : "aaaaaaaa",
+{   "id" : "aaaaaaaab",
     "partyId":"Lega per Salvini Premier",
     "name": "Alessandra",
     "surname": "Locatelli",
     "description": "Alessandra Locatelli (Como, 24 settembre 1976) è una politica italiana. Deputata della Lega per Salvini Premier dal 2018 al 2021, è stata brevemente ministro per la famiglia e le disabilità nel governo Conte I (dal 10 luglio al 5 settembre 2019); dal 2021 è assessore regionale della Lombardia con delega alla famiglia, alla solidarietà sociale, alle disabilità e alle pari opportunità. Dal 22 ottobre 2022 è nuovamente ministro per le disabilità nel governo Meloni.",
     "imageLink": "https://upload.wikimedia.org/wikipedia/commons/a/ab/Alessandra_Locatelli_2022_verticale.png"
 },
-{   "id" : "bbbbbbbbbb",
+{   "id" : "bbbbbbbbbba",
     "partyId":"Movimento 5 Stelle",
     "name": "Giuseppe",
     "surname": "Conte",

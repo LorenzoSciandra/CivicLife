@@ -1,5 +1,6 @@
 package com.civiclife.externalresourcesservice.controller;
 
+import com.civiclife.externalresourcesservice.model.Bonus;
 import com.civiclife.externalresourcesservice.model.Vaccination;
 import com.civiclife.externalresourcesservice.repository.VaccinationRepository;
 import com.civiclife.externalresourcesservice.utils.ErrorMessage;
@@ -82,6 +83,12 @@ public class VaccinationController {
             return true;
         }
         return false;
+    }
+
+    @PostMapping(value="/postman/create", produces = MediaType.APPLICATION_JSON_VALUE)
+    public boolean createVaccinationPostman(@RequestBody Vaccination[] vaccinations) {
+        vaccinationRepository.saveAll(List.of(vaccinations));
+        return true;
     }
 
 }

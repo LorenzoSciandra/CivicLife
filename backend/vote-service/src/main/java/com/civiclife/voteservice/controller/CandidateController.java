@@ -41,14 +41,14 @@ public class CandidateController {
         return candidateOptional.orElse(null);
     }
 
-    @PostMapping("postman/candidate/create")
+    @PostMapping("/postman/candidate/create")
     public boolean createCandidate(@RequestBody Candidate[] candidate) {
         candidateRepository.saveAll(List.of(candidate));
         return true;
     }
 
 
-    @GetMapping("postman/candidate/delete/{candidateId}")
+    @GetMapping("/postman/candidate/delete/{candidateId}")
     public boolean deleteCandidate(@PathVariable String candidateId) {
         Optional<Candidate> candidateOptional= candidateRepository.findById(candidateId);
         if(candidateOptional.isPresent()) {
