@@ -18,13 +18,13 @@ import Toolbar from "@mui/material/Toolbar";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import {isInstanceOfAuthError, logoutUser} from "../APIs/OauthAPI";
 import {useLocation, useNavigate} from "react-router-dom";
-import {InitiativeType} from "../APIs/InitiativeAPI";
+import {createInitiative, Initiative, InitiativeType} from "../APIs/InitiativeAPI";
 import {getAllUsersEmail} from "../APIs/UsersAPI";
 
 const InitiativeCreateForm = () => {
     const location = useLocation();
     const navigate = useNavigate()
-    const types = [InitiativeType.CULTURAL, InitiativeType.SPORT, InitiativeType.SOCIAL, InitiativeType.OTHER, InitiativeType.EDUCATIONAL, InitiativeType.ENVIRONMENTAL, InitiativeType.HEALTH, InitiativeType.OTHER]
+    const types = [InitiativeType.FOOD, InitiativeType.SPORT, InitiativeType.SOCIAL, InitiativeType.OTHER, InitiativeType.EDUCATIONAL, InitiativeType.ENVIRONMENTAL, InitiativeType.HEALTH, InitiativeType.OTHER]
     const [usersList, setUsersList] = useState<string[]| null>(null)
     const [selectedUsers, setSelectedUsers] = useState<string[]>([])
     const [selectedType, setSelectedType] = useState<any>(types[0])
@@ -55,7 +55,7 @@ const InitiativeCreateForm = () => {
         if(usersList === null){
             getUsers()
         }
-    })
+    },[])
 
     const errorsCheck = () => {
         setErrors([]);
@@ -65,9 +65,17 @@ const InitiativeCreateForm = () => {
                 console.log('DATA INIZIO DOPO DATA FINE')
                 errors.push('La data di inizio deve essere precedente alla data di fine')
             }
-            if (description.length < 20) {
+            if (description.length < 150) {
                 console.log('DESCRIZIONE TROPPO CORTA')
-                errors.push('La descrizione deve essere lunga almeno 20 caratteri')
+                errors.push('La descrizione deve essere lunga almeno 150 caratteri')
+            }
+            if(name.length>50){
+                console.log('NOME TROPPO LUNGO')
+                errors.push('Il nome deve essere lungo al massimo 50 caratteri')
+            }
+            if(name.length<5){
+                console.log('NOME TROPPO CORTO')
+                errors.push('Il nome deve essere lungo almeno 5 caratteri')
             }
         } else {
             console.log('DATI MANCANTI')
@@ -77,12 +85,37 @@ const InitiativeCreateForm = () => {
         return errors
     }
 
-    const handleCreateInitiative = () => {
+    const makeid = (length: number) => {
+        let result           = '';
+        let characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        let charactersLength = characters.length;
+        for ( let i = 0; i < length; i++ ) {
+            result += characters.charAt(Math.floor(Math.random() * charactersLength));
+        }
+        return result;
+    }
+
+    const handleCreateInitiative = async () => {
         const errorsChecked = errorsCheck()
         setErrors(errorsChecked)
         if (errorsChecked.length === 0) {
             console.log('CREO INIZIATIVA')
-            //TODO: chiamata al backend crea iniziativa
+            const newInitiative: Initiative = {
+                id: makeid(15),
+                name: name,
+                description: description,
+                type: selectedType,
+                idCreator: tokenData.email,
+                idOrganizers: selectedUsers,
+                idMembers: [],
+                startDate: startDate !== null ? toTimestamp(startDate.toString()) : 0,
+                endDate: endDate !== null ? toTimestamp(endDate.toString()) : 0,
+                location: place,
+            }
+            console.log(newInitiative)
+            //TODO gestire errore
+            const creation_response= await createInitiative(tokenData, newInitiative)
+            console.log(creation_response)
         }
         setOpen(true)
     }
@@ -218,8 +251,7 @@ const InitiativeCreateForm = () => {
                     <FormControl sx={{width: '70%'}}>
                         <CssTextField sx={{input: {color: 'white'}, style: {color: 'white'}}}
                                       select
-                                      label='Organizzatori'
-                                      onChange={handleTypeChange}>
+                                      label='Organizzatori'>
                             {
                                 usersList ? usersList.map((user) => {
                                     return <MenuItem onClick={() => {

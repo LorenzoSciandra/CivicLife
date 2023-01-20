@@ -20,6 +20,7 @@ export enum ValidateCode{
     LOGOUT_FAIL = 'LOGOUT_FAIL',
     LOGIN_FAIL = 'LOGIN_FAIL',
     GET_FAIL = 'GET_FAIL',
+    DELETE_FAIL = 'DELETE_FAIL',
 }
 
 export interface AuthError{

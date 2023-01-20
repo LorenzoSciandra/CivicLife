@@ -56,7 +56,7 @@ const Error = () => {
     }
 
     return (
-        <Grid container direction={'column'} spacing={2}>
+        <Grid container direction={'column'} spacing={3}>
             <Grid item display="flex" justifyContent="center" alignItems="center">
                 <CancelTwoToneIcon style={{color: 'red', fontSize: '7rem'}}/>
             </Grid>

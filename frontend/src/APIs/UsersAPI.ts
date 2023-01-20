@@ -8,6 +8,12 @@ export enum UserStatus{
     BANNED='BANNED' // puo solo votare le iniziative sono bloccate
 }
 
+export enum UserStatusColor{
+    ACTIVE='#4CAF50',
+    SUSPENDED='#FFC107',
+    BANNED='#F44336'
+}
+
 export interface User{
     email: string,
     name: string,

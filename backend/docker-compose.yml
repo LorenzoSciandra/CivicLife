@@ -70,20 +70,35 @@ services:
       restart_policy:
         condition: on-failure
 
-  external-resources-service:
-     build: external-resources-service
-     image: external-resources-service-1.0
-     container_name: external-resources-service
-     links:
-       - external-resources-db
-     depends_on:
-       - external-resources-db
-       - service-discovery
-     ports:
-       - "8081:8081"
-     deploy:
-       restart_policy:
-         condition: on-failure
+  initiative-service:
+    build: initiative-service
+    image: initiative-service-1.0
+    container_name: initiative-service
+    links:
+      - initiative-db
+    ports:
+      - "8082:8082"
+    depends_on:
+      - initiative-db
+      - service-discovery
+    deploy:
+      restart_policy:
+        condition: on-failure
+
+#  external-resources-service:
+#     build: external-resources-service
+#     image: external-resources-service-1.0
+#     container_name: external-resources-service
+#     links:
+#       - external-resources-db
+#     depends_on:
+#       - external-resources-db
+#       - service-discovery
+#     ports:
+#       - "8081:8081"
+#     deploy:
+#       restart_policy:
+#         condition: on-failure
 
   #  ----------------------------------------------
   #  DATABASES
@@ -100,6 +115,19 @@ services:
       restart_policy:
         condition: on-failure
 
+  initiative-db:
+    image: mongo:latest
+    container_name: initiative-db
+    restart: unless-stopped
+    volumes:
+      - initiative-db:/var/lib/initiativeDB/data
+    ports:
+      - "27018:27017"
+    deploy:
+      restart_policy:
+        condition: on-failure
+
+
   token-db:
     image: mongo:latest
     container_name: token-db
@@ -112,19 +140,20 @@ services:
       restart_policy:
         condition: on-failure
 
-  external-resources-db:
-     image: mongo:latest
-     container_name: external-resources-db
-     restart: unless-stopped
-     volumes:
-       - external-resources-db:/var/lib/external-resourcesDB/data
-     ports:
-       - "27022:27017"
-     deploy:
-       restart_policy:
-         condition: on-failure
+#  external-resources-db:
+#     image: mongo:latest
+#     container_name: external-resources-db
+#     restart: unless-stopped
+#     volumes:
+#       - external-resources-db:/var/lib/external-resourcesDB/data
+#     ports:
+#       - "27022:27017"
+#     deploy:
+#       restart_policy:
+#         condition: on-failure
 
 volumes:
   #  external-resources-db:
   user-db:
+  initiative-db:
   token-db:

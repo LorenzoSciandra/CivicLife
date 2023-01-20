@@ -28,7 +28,7 @@ import Snackbar from '@mui/material/Snackbar';
 import MuiAlert, {AlertProps} from '@mui/material/Alert';
 import AddBoxIcon from '@mui/icons-material/AddBox';
 import VaccinesIcon from '@mui/icons-material/Vaccines';
-import {AuthError, logoutUser} from "../APIs/OauthAPI";
+import {AuthError, isInstanceOfAuthError, logoutUser} from "../APIs/OauthAPI";
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from "@mui/material/FormControl";
@@ -114,8 +114,14 @@ const PersonalData = () => {
     const handleSurnameChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSurname(event.target.value);
     }
+
     const handleBirthDateChanged = (newValue: Dayjs | null) => {
-        setBirthDate(newValue);
+        if (dayjs(newValue, 'DD/MM/YYYY', true).isValid()) {
+            setBirthDate(newValue);
+        }
+        else{
+            console.log("Invalid date")
+        }
     }
     const handleResidenceChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
         setResidence(event.target.value);
@@ -132,18 +138,27 @@ const PersonalData = () => {
 
     const loadBonuses = async () => {
         const bonuslist = await getAllBonuses(tokenData)
-        setBonusList(bonuslist)
-        setShowBonusAuthorizationRequiredMessage(false)
-        somethingChanged()
+        if(isInstanceOfAuthError(bonuslist)){
+            navigate('/error', {state: {error: bonuslist}})
+        }
+        else{
+            setBonusList(bonuslist)
+            setShowBonusAuthorizationRequiredMessage(false)
+            somethingChanged()
+        }
     }
 
     const loadVaccines = async () => {
         const vaccineList = await getAllVaccines(tokenData)
-        setVaccinesList(vaccineList)
-        setShowVaccineAuthorizationRequiredMessage(false)
-        somethingChanged()
+        if(isInstanceOfAuthError(vaccineList)){
+            navigate('/error', {state: {error: vaccineList}})
+        }
+        else{
+            setVaccinesList(vaccineList)
+            setShowVaccineAuthorizationRequiredMessage(false)
+            somethingChanged()
+        }
     }
-
 
     const [open, setOpen] = useState(false);
 
@@ -159,8 +174,20 @@ const PersonalData = () => {
     };
 
     function toTimestamp(strDate: string){
+        console.log(strDate)
         const datum = Date.parse(strDate);
+        console.log(datum)
+        console.log(datum/1000)
         return datum/1000;
+    }
+
+    function checkDataChanged(date: Dayjs | null, oldDate: number){
+        if(date === null){
+            return false
+        }
+        else{
+            return date.unix() !== oldDate
+        }
     }
 
     const updateUserData = async (): Promise<boolean | AuthError> => {
@@ -174,7 +201,7 @@ const PersonalData = () => {
                 admin: user.admin,
                 fiscalCode: fiscalCode,
                 residence: residence,
-                birthDate: toTimestamp(birthDate?.format('DD/MM/YYYY HH:mm:ss') as string),
+                birthDate: birthDate && checkDataChanged(birthDate, user.birthDate) ? toTimestamp(birthDate.toString()) : user.birthDate,
                 domicile: domicile,
                 status: user.status,
                 telephonNumber: Number(telephonNumber),
@@ -383,6 +410,7 @@ const PersonalData = () => {
                                             inputFormat="DD/MM/YYYY"
                                             label="Data di nascita"
                                             value={birthDate}
+
                                             renderInput={(params) => <CssTextField {...params} sx={{
                                                 input: {color: 'white'},
                                                 style: {color: 'white'},

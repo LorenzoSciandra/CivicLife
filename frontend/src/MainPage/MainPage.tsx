@@ -19,19 +19,18 @@ import "@fontsource/ubuntu-mono";
 import {useLocation, useNavigate} from "react-router-dom";
 import {exchangeToken, isInstanceOfAuthError, logoutUser, TokenData} from "../APIs/OauthAPI";
 import type {User} from "../APIs/UsersAPI";
-import {getLoggedUser, isInstanceOfUser} from "../APIs/UsersAPI";
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import {getLoggedUser, UserStatus, UserStatusColor} from "../APIs/UsersAPI";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import HomeIcon from '@mui/icons-material/Home';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
+import CircleIcon from '@mui/icons-material/Circle';
 
 const MainPage = () => {
 
     const location = useLocation();
-    const isVisitor = location.state?.isVisitor;
+    const isVisitor = location.state?.isVisitor
     const navigate = useNavigate();
-
     const [tokenData, setTokenData] = useState<TokenData | null>(null);
     const [firstLoad, setFirstLoad] = useState(true);
     const [user, setUser] = useState<User | null>(null);
@@ -137,7 +136,9 @@ const MainPage = () => {
     }
 
     const goToInitiatives = () => {
-        navigate('/initiatives', {state: {token: tokenData}})
+            if((user && user.status!==UserStatus.BANNED)|| isVisitor){
+                navigate('/initiatives', {state: {token: tokenData, isVisitor: isVisitor, user: user}})
+            }
     }
 
     return (
@@ -154,7 +155,10 @@ const MainPage = () => {
                                     aria-label="menu"
                                     sx={{mr: 2}}
                                 >
-                                    {user && user.admin ? <AdminPanelSettingsIcon sx={{color:'#feac0d'}}/>: <HomeIcon sx={{color:'white'}}/>}
+                                    {user && user.admin ? <AdminPanelSettingsIcon sx={{color:'#feac0d'}}/>:
+                                        <><HomeIcon sx={{color: 'white'}}/><CircleIcon
+                                            sx={{color: user? UserStatusColor[user.status]: null}}/></>
+                                    }
                                 </IconButton>
                                 {user && !isVisitor ?
                                     <Typography variant="h6" component="div" sx={{flexGrow: 1}}
@@ -183,7 +187,9 @@ const MainPage = () => {
                     </Box>
                 </Grid>
                 <Grid item xs={6} display="flex" justifyContent="center" alignItems="center">
-                    <Card sx={{width: '60%'}} onClick={goToVotations}>
+                    <Card sx={{width: '60%',"&:hover": {
+                            background: "#d7d7d7"
+                        }}} onClick={goToVotations}>
                         <CardActionArea>
                             <Grid container direction="column">
                                 <Grid item display="flex" justifyContent="center" alignItems="center"
@@ -209,7 +215,9 @@ const MainPage = () => {
                     </Card>
                 </Grid>
                 <Grid item xs={6} display="flex" justifyContent="center" alignItems="center">
-                    <Card sx={{width: '60%'}} onClick={goToInitiatives}>
+                    <Card sx={{width: '60%',"&:hover": {
+                            background: "#d7d7d7"
+                        }}} onClick={goToInitiatives}>
                         <CardActionArea>
                             <Grid container direction="column">
                                 <Grid item display="flex" justifyContent="center" alignItems="center"
@@ -238,7 +246,9 @@ const MainPage = () => {
                     <Grid item xs={12} display="flex" justifyContent="center" alignItems="center">
                         <Card
                             onClick={goToData}
-                            sx={{width: '30%'}}>
+                            sx={{width: '30%',"&:hover": {
+                                    background: "#d7d7d7"
+                                }}}>
                             <CardActionArea>
                                 <Grid container direction="column">
                                     <Grid item display="flex" justifyContent="center" alignItems="center"
