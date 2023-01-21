@@ -34,6 +34,7 @@ const InitiativeCreateForm = () => {
     const [name, setName] = useState<any>(null)
     const [place, setPlace] = useState<any>(null)
     const [open, setOpen] =  useState(false);
+    const [errorOpen, setErrorOpen] = useState<any>(null)
     const [errors, setErrors] = useState<any>([])
     const tokenData = location.state.token;
 
@@ -113,11 +114,19 @@ const InitiativeCreateForm = () => {
                 location: place,
             }
             console.log(newInitiative)
-            //TODO gestire errore
             const creation_response= await createInitiative(tokenData, newInitiative)
-            console.log(creation_response)
+            if( typeof creation_response === 'boolean'){
+                if(creation_response===true){
+                    setOpen(true)
+                } else if(creation_response===false) {
+                    setErrorOpen(true)
+                } else{
+                    navigate('/error', {state: {error: creation_response}})
+                }
+            }
+        }else{
+            setErrorOpen(true)
         }
-        setOpen(true)
     }
 
     const handleTypeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -145,6 +154,10 @@ const InitiativeCreateForm = () => {
     };
 
     const handleDialogClose = () => {
+        setErrorOpen(false);
+    }
+
+    const handleSuccessDialogClose = () => {
         setOpen(false);
     }
 
@@ -311,22 +324,13 @@ const InitiativeCreateForm = () => {
                     CREA
                 </Button>
             </Grid>
-            <Dialog maxWidth={"sm"} fullWidth={true} open={open} onClose={handleDialogClose}>
+            <Dialog maxWidth={"sm"} fullWidth={true} open={errorOpen} onClose={handleDialogClose}>
                 <DialogTitle>
-                    {
-                    errors.length>0 ?
                         <Chip sx={{color: 'red'}}
                               icon={<ErrorIcon sx={{color: 'red'}}/>}
                               label={'Errore'}
                               variant="outlined"
                         />
-                        :
-                        <Chip sx={{color: 'green'}}
-                              icon={<CheckCircleIcon sx={{color: 'green'}}/>}
-                              label={'Successo'}
-                              variant="outlined"
-                        />
-                    }
                 </DialogTitle>
                 <DialogContent>
                     <DialogContentText>
@@ -335,11 +339,24 @@ const InitiativeCreateForm = () => {
                                 return(<><Typography>{error}</Typography><Divider/></>)
                             })
                             :
-                            <Typography>La tua iniziativa è stata creata con successo!</Typography>}
+                            null}
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleDialogClose}>Chiudi</Button>
+                </DialogActions>
+            </Dialog>
+            <Dialog maxWidth={"sm"} fullWidth={true} open={open} onClose={handleSuccessDialogClose}>
+                <DialogTitle>
+                    <Chip sx={{color: 'green'}}
+                          icon={<CheckCircleIcon sx={{color: 'red'}}/>}
+                          label={'Successo'}
+                          variant="outlined"
+                    />
+                </DialogTitle>
+                <DialogActions>
+                    <Button onClick={handleSuccessDialogClose}>Continua a creare</Button>
+                    <Button onClick={goBack}>Vai alla iniziative</Button>
                 </DialogActions>
             </Dialog>
         </Grid>

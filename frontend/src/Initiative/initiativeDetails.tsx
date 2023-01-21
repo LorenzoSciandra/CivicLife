@@ -98,7 +98,7 @@ const InitiativeDetails = () => {
 
     const somethingChanged = async (message?:string) => {
         const response= await getInitiative()
-        if (response) {
+        if (response){
             if (message) {
                 setOpen(true)
                 setMessage(message)
