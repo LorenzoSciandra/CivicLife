@@ -210,6 +210,9 @@ const Initiatives = () => {
         navigate(-1)
     }
 
+    const login = () => {
+        window.location.assign('http://localhost:8080/login')
+    }
 
     return (
         <>
@@ -236,9 +239,14 @@ const Initiatives = () => {
                                             }}>
                                     {user && user.isAdmin ? 'Amministrazione iniziative' : 'Iniziative'}
                                 </Typography>
-                                <Button sx={{color: 'white', backgroundColor: 'red'}}
-                                        onClick={logout}>
-                                    logout
+                                <Button
+                                    onClick={isVisitor ? login : logout}
+                                    style={{
+                                        color:'white',
+                                        backgroundColor: isVisitor? "green" : "red",
+                                    }}>
+
+                                    {isVisitor? "login" : "logout"}
                                 </Button>
                             </Toolbar>
                         </AppBar>
