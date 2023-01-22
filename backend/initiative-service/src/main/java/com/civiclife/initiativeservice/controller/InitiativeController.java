@@ -61,7 +61,7 @@ public class InitiativeController {
         return new ErrorMessage(code, pathUrl, method);
     }
 
-    @DeleteMapping(value = "/initiative/remove/{id}/{email_creator}/{emailRichiedente}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/initiative/remove/{id}/{email_creator}/{emailRichiedente}", produces = MediaType.APPLICATION_JSON_VALUE)
     public boolean removeInitiative(@PathVariable(value = "id") String id,
                                     @PathVariable(value = "email_creator") String email_creator,
                                     @PathVariable(value = "emailRichiedente") String emailRichiedente) {
@@ -88,14 +88,17 @@ public class InitiativeController {
         if(emailRichiedente.equals(email_user)){
             Optional<Initiative> initiative = initiativeRepository.findById(idInitiative);
             if(initiative.isPresent()){
-                UserStatus userStatus = apiCall.getUserStatus(email_user);
-                if(userStatus!=null && userStatus != UserStatus.BANNED){
-                    Initiative initiativeToModify = initiative.get();
-                    boolean val = initiativeToModify.getIdMembers().add(email_user);
-                    if(val) {
-                        initiativeRepository.save(initiativeToModify);
+                Initiative initiativeToModify = initiative.get();
+                if(checkDateForOpOnInitative(initiativeToModify.getStartDate(), initiativeToModify.getEndDate())) {
+                    UserStatus userStatus = apiCall.getUserStatus(email_user);
+                    if (userStatus != null && userStatus != UserStatus.BANNED) {
+
+                        boolean val = initiativeToModify.getIdMembers().add(email_user);
+                        if (val) {
+                            initiativeRepository.save(initiativeToModify);
+                        }
+                        return val;
                     }
-                    return val;
                 }
             }
         }
@@ -113,14 +116,44 @@ public class InitiativeController {
         if(emailRichiedente.equals(email_user)) {
             Optional<Initiative> initiative = initiativeRepository.findById(idInitiative);
             if (initiative.isPresent()) {
-                UserStatus userStatus = apiCall.getUserStatus(email_user);
-                if(userStatus!=null && userStatus != UserStatus.BANNED){
-                    Initiative initiativeToModify = initiative.get();
-                    boolean val = initiativeToModify.getIdMembers().remove(email_user);
-                    if(val){
-                        initiativeRepository.save(initiativeToModify);
+                Initiative initiativeToModify = initiative.get();
+                if(checkDateForOpOnInitative(initiativeToModify.getStartDate(), initiativeToModify.getEndDate())) {
+                    UserStatus userStatus = apiCall.getUserStatus(email_user);
+                    if(userStatus!=null && userStatus != UserStatus.BANNED){
+                        boolean val = initiativeToModify.getIdMembers().remove(email_user);
+                        if(val){
+                            initiativeRepository.save(initiativeToModify);
+                        }
+                        return val;
                     }
-                    return val;
+                }
+            }
+        }
+        return false;
+    }
+
+    @PostMapping(value= "/initiative/changeOrganizers/{idInitiative}/{emailUser}/{emailRichiedente}",
+            consumes=MediaType.TEXT_PLAIN_VALUE,
+            produces= MediaType.APPLICATION_JSON_VALUE)
+    public boolean changeOrganizers(@PathVariable(value = "idInitiative") String idInitiative,
+                                    @PathVariable(value = "emailUser") String emailUser,
+                                    @PathVariable(value = "emailRichiedente") String emailRichiedente,
+                                    @RequestBody String newOrgs){
+
+        if (emailUser.equals(emailRichiedente)) {
+            Optional<Initiative> initiative = initiativeRepository.findById(idInitiative);
+            if(initiative.isPresent()){
+                Initiative initiativeToModify = initiative.get();
+                Set<String> newOrganizers = parseOrganizers(newOrgs, initiativeToModify.getIdCreator());
+                if(checkDateForOpOnInitative(initiativeToModify.getStartDate(), initiativeToModify.getEndDate())){
+                    if(initiativeToModify.getIdCreator().equals(emailRichiedente)) {
+                        UserStatus userStatus = apiCall.getUserStatus(emailUser);
+                        if(userStatus == UserStatus.ACTIVE) {
+                            initiativeToModify.setIdOrganizers(newOrganizers);
+                            initiativeRepository.save(initiativeToModify);
+                            return true;
+                        }
+                    }
                 }
             }
         }
@@ -139,8 +172,8 @@ public class InitiativeController {
                 UserStatus userStatus = apiCall.getUserStatus(email_org);
                 if(userStatus == UserStatus.ACTIVE) {
                     Initiative initiativeToModify = initiative.get();
-
-                    if(initiativeToModify.getIdCreator().equals(emailRichiedente)){
+                    if(checkDateForOpOnInitative(initiativeToModify.getStartDate(), initiativeToModify.getEndDate()) &&
+                            initiativeToModify.getIdCreator().equals(emailRichiedente)){
                         boolean addMem = initiativeToModify.getIdMembers().add(new_org);
                         boolean val = initiativeToModify.getIdOrganizers().add(new_org);
                         if(val || addMem){
@@ -166,18 +199,35 @@ public class InitiativeController {
                 UserStatus userStatus = apiCall.getUserStatus(email_user);
                 if(userStatus == UserStatus.ACTIVE) {
                     Initiative initiativeToModify = initiative.get();
-                    if (email_org.equals(email_user) || initiativeToModify.getIdCreator().equals(emailRichiedente)){
-                        boolean val = initiativeToModify.getIdOrganizers().remove(email_org);
-                        if(val){
-                            initiativeRepository.save(initiativeToModify);
+                    if(checkDateForOpOnInitative(initiativeToModify.getStartDate(), initiativeToModify.getEndDate())){
+                        if (email_org.equals(email_user) || initiativeToModify.getIdCreator().equals(emailRichiedente)) {
+                            boolean val = initiativeToModify.getIdOrganizers().remove(email_org);
+                            if (val) {
+                                initiativeRepository.save(initiativeToModify);
+                            }
+                            return val;
                         }
-                        return val;
                     }
                 }
             }
         }
         return false;
 
+    }
+
+    @GetMapping(value="initiative/getInitiative/{idInitiative}/{email_user}/{emailRichiedente}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Initiative getInitiative(@PathVariable(value = "idInitiative") String idInitiative, @PathVariable(value = "email_user") String email_user,
+                                    @PathVariable(value = "emailRichiedente") String emailRichiedente){
+        if(emailRichiedente.equals(email_user)){
+            UserStatus userStatus = apiCall.getUserStatus(email_user);
+            if(userStatus!=null && userStatus != UserStatus.BANNED){
+                Optional<Initiative> initiative = initiativeRepository.findById(idInitiative);
+                if(initiative.isPresent()){
+                    return initiative.get();
+                }
+            }
+        }
+        return null;
     }
 
     @GetMapping(value = "/initiative/getOrganizedInitiatives/{email_user}/{emailRichiedente}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -236,12 +286,13 @@ public class InitiativeController {
             UserStatus userStatus = apiCall.getUserStatus(email_creator);
             if (userStatus == UserStatus.ACTIVE) {
                 Initiative realInitiative = parseInitiative(initiative.replace("{", "").replace("}", "").replace("\"", ""));
-                realInitiative.setIdCreator(email_creator);
-                realInitiative.setIdMembers(new HashSet<>(Collections.singleton(email_creator)));
-                realInitiative.setIdOrganizers(new HashSet<>(Collections.singleton(email_creator)));
-                realInitiative.setStatus(Initiative.InitiativeStatus.PROGRAMMED);
-                initiativeRepository.save(realInitiative);
-                return true;
+                if(checkDatesInitiative(realInitiative.getStartDate(), realInitiative.getEndDate())){
+                    realInitiative.setIdCreator(email_creator);
+                    realInitiative.setIdMembers(new HashSet<>(Collections.singleton(email_creator)));
+                    realInitiative.setIdOrganizers(new HashSet<>(Collections.singleton(email_creator)));
+                    initiativeRepository.save(realInitiative);
+                    return true;
+                }
             }
         }
         return false;
@@ -255,15 +306,19 @@ public class InitiativeController {
                                     @PathVariable(value = "email_org") String email_org,
                                     @PathVariable(value = "emailRichiedente") String emailRichiedente) {
 
+        System.out.println("Iniziative che mi è arrivata: " + updateInitiative);
 
         if (emailRichiedente.equals(email_org)) {
             Optional<Initiative> optionalOriginalInitiative = initiativeRepository.findById(id);
             if(optionalOriginalInitiative.isPresent()){
                 UserStatus userStatus = apiCall.getUserStatus(email_org);
                 if(userStatus == UserStatus.ACTIVE ) {
-                    Initiative originalInitiative = optionalOriginalInitiative.get();
-                    if (originalInitiative.getIdOrganizers().contains(emailRichiedente)) {
+                    Initiative originalInitiative = optionalOriginalInitiative.get();;
+                    if ((originalInitiative.getIdOrganizers().contains(emailRichiedente) ||
+                            originalInitiative.getIdCreator().equals(emailRichiedente)) &&
+                            checkDateForOpOnInitative(originalInitiative.getStartDate(), originalInitiative.getEndDate())) {
                         Initiative newInitiative = parseInitiative(updateInitiative.replace("{", "").replace("}", "").replace("\"", ""));
+                        System.out.println("Iniziative che mi è arrivata dopo il parsing: " + newInitiative);
                         boolean update = modifyInitiative(newInitiative, originalInitiative);
                         if(update){
                             initiativeRepository.save(originalInitiative);
@@ -355,9 +410,6 @@ public class InitiativeController {
                 case "idCreator":
                     parsedInitiative.setIdCreator(value);
                     break;
-                case "status":
-                    parsedInitiative.setStatus(parseStatus(value));
-                    break;
 
             }
         }
@@ -372,19 +424,30 @@ public class InitiativeController {
             case "ENVIRONMENT" -> Initiative.InitiativeType.ENVIRONMENTAL;
             case "FOOD" -> Initiative.InitiativeType.FOOD;
             case "HEALTH" -> Initiative.InitiativeType.HEALTH;
-            case "OTHER" -> Initiative.InitiativeType.OTHER;
             default -> Initiative.InitiativeType.OTHER;
         };
     }
 
-    private Initiative.InitiativeStatus parseStatus(String status){
-        return switch (status) {
-            case "PROGRAMMED" -> Initiative.InitiativeStatus.PROGRAMMED;
-            case "ONGOING" -> Initiative.InitiativeStatus.ONGOING;
-            case "TERMINATED" -> Initiative.InitiativeStatus.TERMINATED;
-            default -> Initiative.InitiativeStatus.PROGRAMMED;
-        };
+
+    // non posso creare un'iniziativa che inizi nel passato e che finisca prima che inizi
+    private boolean checkDatesInitiative(long startDate, long endDate){
+        long now = System.currentTimeMillis()/1000;
+        return endDate >= startDate &&  startDate >= now;
     }
 
+    // per fare operazione su iniziativa questa non deve essere finita
+    // con "operazione" rientra: modifica, subscribe, unsubscribe, etc.
+    private boolean checkDateForOpOnInitative(long startDate, long endDate){
+        long now = System.currentTimeMillis()/1000;
+        return startDate <= endDate && now <= endDate;
+    }
 
+    private Set<String> parseOrganizers(String organizers, String creator){
+        String first = organizers.replace("[", "").replace("]", "").replace("\"", "");
+        String[] organizersArray = first.split(",");
+        if(organizersArray.length == 1 && organizersArray[0].equals("")){
+            return new HashSet<>(Collections.singleton(creator));
+        }
+        return new HashSet<>(Arrays.asList(organizersArray));
+    }
 }

@@ -13,7 +13,8 @@ public class ApiCall {
     private final String USER_API = "http://user-service/userAPI/v1/user/isAdmin/";
 
     public boolean isAdmin(String userId) {
-        return Boolean.TRUE.equals(restTemplate.getForObject(USER_API + userId, Boolean.class));
+        String finalUrl = USER_API + userId + "/"+ userId;
+        return Boolean.TRUE.equals(restTemplate.getForObject(finalUrl, Boolean.class));
     }
 
 }

@@ -2,6 +2,7 @@ package com.civiclife.oauthservice.config;
 
 import com.civiclife.oauthservice.utility.AES;
 import com.civiclife.oauthservice.service.OAuth2Service;
+import com.mongodb.lang.NonNull;
 import lombok.AllArgsConstructor;
 import org.apache.hc.core5.http.HttpStatus;
 import org.springframework.context.annotation.Bean;
@@ -13,8 +14,11 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.Base64;
+import java.util.Collections;
 import java.util.Objects;
 
 
@@ -32,7 +36,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
-                .cors().and().csrf().disable()
+                .cors().disable().csrf().disable()
                 .formLogin(form -> form.loginPage("/login")
                             .permitAll()
                             .failureHandler(basicLoginFailureHandler())
@@ -97,6 +101,21 @@ public class SecurityConfig {
                 }
             } catch (ResponseStatusException ex) {
                 response.sendRedirect("http://localhost:3000/error?errorReason="+ex.getReason());
+            }
+        };
+    }
+
+    @Bean
+    public WebMvcConfigurer corsConfigurer() {
+        return new WebMvcConfigurer() {
+            @Override
+            public void addCorsMappings(@NonNull CorsRegistry registry) {
+                registry.addMapping("/**")
+                        .allowCredentials(true)
+                        .allowedHeaders("Authorization", "Cache-Control", "Content-Type",
+                                "Access-Control-Request-Headers", "Access-Control-Request-Method",
+                                "Access-Control-Allow-Origin", "Access-Control-Allow-Headers")
+                        .allowedOrigins("http://localhost:3000");
             }
         };
     }

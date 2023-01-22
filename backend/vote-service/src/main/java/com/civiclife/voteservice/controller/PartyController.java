@@ -1,26 +1,29 @@
 package com.civiclife.voteservice.controller;
 
+import com.civiclife.voteservice.model.Candidate;
 import com.civiclife.voteservice.model.Party;
+import com.civiclife.voteservice.repo.CandidateRepository;
 import com.civiclife.voteservice.repo.PartyRepository;
 import com.civiclife.voteservice.utils.ErrorMessage;
 import com.civiclife.voteservice.utils.ValidateCode;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Base64;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 
 @RestController
 @RequestMapping("/partyAPI/v1")
 @CrossOrigin(origins = "http://localhost:3000", maxAge = 600)
+@AllArgsConstructor
 public class PartyController {
 
     @Autowired
     private PartyRepository partyRepository;
+
+    private CandidateRepository candidateRepository;
 
 
     @GetMapping(value = "/parties", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -38,15 +41,21 @@ public class PartyController {
 
     @GetMapping(value = "/party/get/{partyId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public Party getPartyById(@PathVariable String partyId) {
-        Optional<Party> partyOptional = partyRepository.findById(partyId);
+        String decodedPartyId = new String(Base64.getDecoder().decode(partyId));
+        Optional<Party> partyOptional = partyRepository.findById(decodedPartyId);
         return partyOptional.orElse(null);
     }
 
 
-    @GetMapping("/party/get/allCandidates/{partyId}")
-    public Set<String> getAllCandidatesFromParty(@PathVariable String partyId) {
-        Optional<Party> party = partyRepository.findById(partyId);
-        return party.map(Party::getCandidateIdList).orElse(null);
+    @GetMapping(value = "/party/get/allCandidates/{partyId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<Candidate> getAllCandidatesFromParty(@PathVariable String partyId) {
+        String decodedPartyId = new String(Base64.getDecoder().decode(partyId));
+        Optional<Party> optionalParty = partyRepository.findById(decodedPartyId);
+        if(optionalParty.isPresent()) {
+            Party party = optionalParty.get();
+            return candidateRepository.findAllById(party.getCandidateIdList());
+        }
+        return new ArrayList<>();
     }
 
     @PostMapping("/postman/party/create")

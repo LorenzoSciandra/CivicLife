@@ -5,18 +5,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-
-import java.sql.Timestamp;
-import java.util.List;
 import java.util.Set;
 
 @Data
 @Document(collection = "initiatives")
+@NoArgsConstructor
+@AllArgsConstructor
 public class Initiative {
-
-    public enum InitiativeStatus {
-        PROGRAMMED, ONGOING, TERMINATED
-    }
 
     public enum InitiativeType {
         SOCIAL, SPORT, EDUCATIONAL, ENVIRONMENTAL, OTHER, HEALTH, FOOD
@@ -26,7 +21,6 @@ public class Initiative {
     private String id;
     private String name;
     private String description;
-    private InitiativeStatus status;
     private InitiativeType type;
     private String idCreator;
     private Set<String> idOrganizers;
@@ -34,23 +28,6 @@ public class Initiative {
     private long startDate;
     private long endDate;
     private String location;
-
-    public Initiative() {
-    }
-
-    public Initiative(String id, String name, String description, InitiativeStatus status, InitiativeType type, String idCreator, Set<String> idOrganizers, Set<String> idMembers, long startDate, long endDate, String location) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.status = status;
-        this.type = type;
-        this.idCreator = idCreator;
-        this.idOrganizers = idOrganizers;
-        this.idMembers = idMembers;
-        this.startDate = startDate;
-        this.endDate = endDate;
-        this.location = location;
-    }
 
     public String getId() {
         return id;
@@ -74,14 +51,6 @@ public class Initiative {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public InitiativeStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(InitiativeStatus status) {
-        this.status = status;
     }
 
     public InitiativeType getType() {
@@ -143,7 +112,8 @@ public class Initiative {
     @Override
     public String toString() {
         return "Initiative{" +
-                "id='" + id + '\'' + ", name='" + name + '\'' + ", description='" + description + '\'' + ", status='" + status + '\'' + ", type='" + type + '\'' + ", idCreator=" + idCreator + ", idOrganizers=" + idOrganizers + ", idMembers=" + idMembers + ", startDate=" + startDate + ", endDate=" + endDate + ", location='" + location + '\'' + '}';
+                "id='" + id + '\'' + ", name='" + name + '\'' + ", description='" + description + '\'' +
+                ", type='" + type + '\'' + ", idCreator=" + idCreator + ", idOrganizers=" + idOrganizers + ", idMembers=" + idMembers + ", startDate=" + startDate + ", endDate=" + endDate + ", location='" + location + '\'' + '}';
     }
 
 }

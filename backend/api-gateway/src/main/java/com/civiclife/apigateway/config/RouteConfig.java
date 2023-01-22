@@ -24,12 +24,16 @@ public class RouteConfig {
                 .route(r -> r.path("/initiativeAPI/**")
                         .filters(f -> f.filter(new AuthFilter()))
                         .uri("lb://INITIATIVE-SERVICE"))
-                .route(r -> r.path("/userAPI/v1/user/getStatus/**")
-                        .uri("lb://USER-SERVICE"))
                 .route(r-> r.path("/userAPI/**")
                         .filters(f -> f.filter(new AuthFilter()))
                             .uri("lb://USER-SERVICE"))
-                .route(r -> r.path("/candidateAPI/**", "/partyAPI/**", "/resultAPI/**", "/votationAPI/**")
+                .route(r -> r.path("/votationAPI/v1/votation/vote/**",
+                                "/votationAPI/v1/votation/updateStatus/**",
+                                "/votationAPI/v1/votations/done/**",
+                                "/votationAPI/v1/votations/programmed/**")
+                        .filters(f -> f.filter(new AuthFilter()))
+                        .uri("lb://VOTE-SERVICE"))
+                .route(r -> r.path("/candidateAPI/**", "/partyAPI/**",  "/votationAPI/**")
                         .uri("lb://VOTE-SERVICE"))
                 .route(r -> r.path("/authAPI/**", "/login", "/login/**", "/oauth2/**")
                         .uri("lb://OAUTH-SERVICE"))

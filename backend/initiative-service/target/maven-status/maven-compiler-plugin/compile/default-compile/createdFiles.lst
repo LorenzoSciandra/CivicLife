@@ -1,7 +1,6 @@
 com/civiclife/initiativeservice/controller/InitiativeController.class
 com/civiclife/initiativeservice/utils/ErrorMessage.class
 com/civiclife/initiativeservice/config/CorsConfig.class
-com/civiclife/initiativeservice/model/Initiative$InitiativeStatus.class
 com/civiclife/initiativeservice/InitiativeServiceApplication.class
 com/civiclife/initiativeservice/model/InitiativeReadOnly.class
 com/civiclife/initiativeservice/utils/UserStatus.class

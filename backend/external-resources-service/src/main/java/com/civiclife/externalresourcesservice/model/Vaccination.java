@@ -11,12 +11,11 @@ public class Vaccination {
     @Id
     private String id;
     private String email_owner;
-    private String type;
     private Long date;
     private String location;
     private String description;
-    private String name;
-    private String vaccine;
+    private String vaccineName;
+    private String dose;
     private String manufacturer;
     private String doctor;
     private String nurse;
@@ -24,15 +23,12 @@ public class Vaccination {
     public Vaccination() {
     }
 
-    public Vaccination(String id, String email_owner, String type, Long date, String location, String description, String name, String vaccine, String manufacturer, String doctor, String nurse) {
+    public Vaccination(String id, String email_owner, Long date, String location, String description, String manufacturer, String doctor, String nurse) {
         this.id = id;
         this.email_owner = email_owner;
-        this.type = type;
         this.date = date;
         this.location = location;
         this.description = description;
-        this.name = name;
-        this.vaccine = vaccine;
         this.manufacturer = manufacturer;
         this.doctor = doctor;
         this.nurse = nurse;
@@ -52,14 +48,6 @@ public class Vaccination {
 
     public void setEmail_owner(String email_owner) {
         this.email_owner = email_owner;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
     }
 
     public Long getDate() {
@@ -86,22 +74,6 @@ public class Vaccination {
         this.description = description;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getVaccine() {
-        return vaccine;
-    }
-
-    public void setVaccine(String vaccine) {
-        this.vaccine = vaccine;
-    }
-
     public String getManufacturer() {
         return manufacturer;
     }
@@ -126,17 +98,32 @@ public class Vaccination {
         this.nurse = nurse;
     }
 
+    public String getVaccineName() {
+        return vaccineName;
+    }
+
+    public void setVaccineName(String vaccineName) {
+        this.vaccineName = vaccineName;
+    }
+
+    public String getDose() {
+        return dose;
+    }
+
+    public void setDose(String dose) {
+        this.dose = dose;
+    }
+
     @Override
     public String toString(){
         return "Vaccination= {" +
                 "id=" + id +
                 "owner = " + email_owner + '\'' +
-                ", name='" + name + '\'' +
+                ", vaccineName = " + vaccineName + '\'' +
+                ", dose = " + dose + '\'' +
                 ", description='" + description + '\'' +
-                ", type='" + type + '\'' +
                 ", date='" + date + '\'' +
                 ", location='" + location + '\'' +
-                ", vaccine='" + vaccine + '\'' +
                 ", manufacturer='" + manufacturer + '\'' +
                 ", doctor='" + doctor + '\'' +
                 ", nurse='" + nurse + '\'' +

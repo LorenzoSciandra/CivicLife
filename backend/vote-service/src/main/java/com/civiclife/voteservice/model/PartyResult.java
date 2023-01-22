@@ -1,36 +1,28 @@
 package com.civiclife.voteservice.model;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 import java.util.HashMap;
+import java.util.Set;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 public class PartyResult {
     private String partyId;
-    private int votes;
-    private HashMap<String, Integer> numberOfVotesPerCandidate;
+    private float votes;
+    private Float percentage;
 
-    public HashMap<String, Float> finalPartyResult;
+    private Set<CandidateResult> candidateResults;
 
-    public int getVotes() {
+    public float getVotes() {
         return votes;
     }
-
-    public void setVotes(int votes) {
+    public void setVotes(float votes) {
         this.votes = votes;
     }
-
-    public HashMap<String, Integer> getNumberOfVotesPerCandidate() {
-        return numberOfVotesPerCandidate;
-    }
-
-
-    public void setNumberOfVotesPerCandidate(HashMap<String, Integer> numberOfVotesPerCandidate) {
-        this.numberOfVotesPerCandidate = numberOfVotesPerCandidate;
-    }
-
     public String getPartyId() {
         return partyId;
     }
@@ -39,12 +31,20 @@ public class PartyResult {
         this.partyId = partyId;
     }
 
-    public HashMap<String, Float> getFinalPartyResult() {
-        return finalPartyResult;
+    public Float getPercentage() {
+        return percentage;
     }
 
-    public void setFinalPartyResult(HashMap<String, Float> finalPartyResult) {
-        this.finalPartyResult = finalPartyResult;
+    public void setPercentage(Float percentage) {
+        this.percentage = percentage;
+    }
+
+    public Set<CandidateResult> getCandidateResults() {
+        return candidateResults;
+    }
+
+    public void setCandidateResults(Set<CandidateResult> candidateResults) {
+        this.candidateResults = candidateResults;
     }
 
     @Override
@@ -52,8 +52,8 @@ public class PartyResult {
         return "{" +
                 "partyId='" + partyId + '\'' + "," +
                 "votes='" + votes + '\'' + "," +
-                "numberOfVotesPerCandidate='" + numberOfVotesPerCandidate + '\'' +
-                "finalPartyResult='" + finalPartyResult + '\'' +
+                "percentage='" + percentage + '\'' + "," +
+                "candidateResults=" + candidateResults +
                 '}';
     }
 }

@@ -47,8 +47,7 @@ public class CandidateController {
         return true;
     }
 
-
-    @GetMapping("/postman/candidate/delete/{candidateId}")
+    @DeleteMapping("/postman/candidate/delete/{candidateId}")
     public boolean deleteCandidate(@PathVariable String candidateId) {
         Optional<Candidate> candidateOptional= candidateRepository.findById(candidateId);
         if(candidateOptional.isPresent()) {

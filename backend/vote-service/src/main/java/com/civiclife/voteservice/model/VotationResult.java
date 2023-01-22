@@ -4,28 +4,24 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.HashMap;
 import java.util.Set;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 public class VotationResult {
 
-    private int numberOfVotes;
+    private float numberOfVotes;
 
     private Set<String> votersIdList;
 
-    // <PartyId : PartyResult>
     private Set<PartyResult> partyResults;
 
-    private HashMap<String, Float> finalResults;
-
-    public int getNumberOfVotes() {
+    public float getNumberOfVotes() {
         return numberOfVotes;
     }
 
-    public void setNumberOfVotes(int numberOfVotes) {
+    public void setNumberOfVotes(float numberOfVotes) {
         this.numberOfVotes = numberOfVotes;
     }
 
@@ -35,14 +31,6 @@ public class VotationResult {
 
     public void setVotersIdList(Set<String> votersIdList) {
         this.votersIdList = votersIdList;
-    }
-
-    public HashMap<String, Float> getFinalResults() {
-        return finalResults;
-    }
-
-    public void setFinalResults(HashMap<String, Float> finalResults) {
-        this.finalResults = finalResults;
     }
 
     public Set<PartyResult> getPartyResults() {
@@ -59,7 +47,6 @@ public class VotationResult {
                 ", numberOfVotes=" + numberOfVotes +
                 ", votersIdList=" + votersIdList +
                 ", partyResults=" + partyResults +
-                ", finalResults=" + finalResults +
                 '}';
     }
 }

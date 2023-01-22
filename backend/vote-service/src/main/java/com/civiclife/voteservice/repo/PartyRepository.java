@@ -10,6 +10,4 @@ import java.util.Optional;
 
 public interface PartyRepository extends MongoRepository<Party, String> {
 
-
-
 }

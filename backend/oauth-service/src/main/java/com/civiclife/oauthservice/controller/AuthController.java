@@ -72,7 +72,7 @@ public class AuthController {
     public ValidateCode validate(@PathVariable(value = "email") String email,
                                  @PathVariable(value = "token") String token,
                                  @PathVariable(value = "provider") TokenKey.OauthProvider provider) {
-        //System.out.println("SONO QUI PER VALIDARE");
+        System.out.println("SONO QUI PER VALIDARE");
         Optional<Token> optionalTokenBean = tokenRepository.findById(new TokenKey(email, provider));
         if (optionalTokenBean.isPresent()){
             Token tokenBean = optionalTokenBean.get();

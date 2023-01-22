@@ -10,12 +10,12 @@ import java.util.Set;
 
 @Data
 @Document(collection = "votations")
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class Votation {
 
     public enum VotationStatus {
-        OPEN, CLOSED, TERMINATED
+        ACTIVE, TERMINATED, PROGRAMMED
     }
 
     @Id
@@ -24,7 +24,7 @@ public class Votation {
     private long startDate;
     private long endDate;
     private VotationStatus status;
-    private Set<Party> parties;
+    private Set<String> partiesIds;
     private VotationResult votationResult;
 
     public String getTitle() {
@@ -75,12 +75,12 @@ public class Votation {
         this.votationResult = votationResult;
     }
 
-    public Set<Party> getParties() {
-        return parties;
+    public Set<String> getPartiesIds() {
+        return partiesIds;
     }
 
-    public void setParties(Set<Party> parties) {
-        this.parties = parties;
+    public void setPartiesIds(Set<String> partiesIds) {
+        this.partiesIds = partiesIds;
     }
 
     @Override
@@ -91,6 +91,8 @@ public class Votation {
                 ", startDate=" + startDate +
                 ", endDate=" + endDate +
                 ", status=" + status +
+                ", partiesIds=" + partiesIds +
+                ", votationResult=" + votationResult +
                 '}';
     }
 }

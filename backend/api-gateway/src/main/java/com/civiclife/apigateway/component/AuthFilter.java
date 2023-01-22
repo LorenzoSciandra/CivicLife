@@ -1,6 +1,8 @@
 package com.civiclife.apigateway.component;
 
+import com.civiclife.apigateway.service.AuthThread;
 import com.civiclife.apigateway.utils.ValidateCode;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.core.annotation.Order;
@@ -8,7 +10,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 import java.net.URI;
@@ -19,6 +20,7 @@ import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.G
 @Order(-1)
 @Component
 public class AuthFilter implements GatewayFilter {
+
 
     public enum OauthProvider {
         Google,
@@ -48,12 +50,12 @@ public class AuthFilter implements GatewayFilter {
             if(!email.equals("") && !token.equals("") && provider!=null){
                 System.out.println("I find: " + email + " " + token + " " + provider);
 
-                String AUTH_URL = "http://localhost:8080/authAPI/v1/validate/";
-                String validateUrl = AUTH_URL + email + "/" + token + "/" + provider;
+                String validateUrl = email + "/" + token + "/" + provider;
 
-                AuthThread authThread = new AuthThread(validateUrl);
+                AuthThread authThread = new AuthThread();
+                authThread.setCompleteLink(validateUrl);
                 authThread.start();
-                authThread.join(500);
+                authThread.join(3000);
 
                 if(authThread.isAlive()) {
                     authThread.interrupt();
@@ -102,26 +104,6 @@ public class AuthFilter implements GatewayFilter {
         }
 
     }
-
-    private static class AuthThread extends Thread{
-        private final String url;
-        private ValidateCode validateCode;
-
-        AuthThread(String url){
-            this.url = url;
-        }
-
-        @Override
-        public void run() {
-            validateCode =  new RestTemplate().getForObject(url, ValidateCode.class);
-        }
-
-        public ValidateCode getValidateCode(){
-            return validateCode;
-        }
-
-    }
-
     OauthProvider getProvider(String provider){
         return switch (provider) {
             case "Google" -> OauthProvider.Google;

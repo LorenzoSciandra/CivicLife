@@ -1,16 +1,17 @@
 package com.civiclife.voteservice.repo;
 
-import com.civiclife.voteservice.model.Party;
 import com.civiclife.voteservice.model.Votation;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
-
-import java.util.List;
-import java.util.Optional;
+import org.springframework.data.repository.query.Param;
+import java.util.Set;
 
 public interface VotationRepository extends MongoRepository<Votation, String> {
 
     @Query("{ 'status' : ?0 }")
-    List<Votation> votationsByStatus(Votation.VotationStatus status);
+    Set<Votation> votationsByStatus(@Param("status") Votation.VotationStatus status);
+
+    @Query("{'votationResult.votersIdList': {$elemMatch: {$eq: ?0}}}")
+    Set<Votation> votationsDoneByUser(@Param("idVoter") String idVoter);
 
 }

@@ -1,18 +1,18 @@
 package com.civiclife.voteservice.model;
 
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.List;
 import java.util.Set;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 @Document(collection = "parties")
+@AllArgsConstructor
+@NoArgsConstructor
 public class Party {
 
     @Id
@@ -67,8 +67,9 @@ public class Party {
         return "Party{" +
                 "name='" + name + "', " +
                 "description='" + description + "', " +
+                "leaderId='" + leaderId + "', " +
+                "logoLink='" + logoLink + "', " +
                 "candidateIdList=" + candidateIdList +
-                ", leader=" + leaderId +
                 "}";
     }
 }

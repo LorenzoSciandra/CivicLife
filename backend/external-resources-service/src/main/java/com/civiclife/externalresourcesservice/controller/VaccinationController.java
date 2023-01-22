@@ -34,12 +34,6 @@ public class VaccinationController {
         return optionalVaccination.orElse(null);
     }
 
-    @PostMapping("/vaccination/create")
-    public boolean createVaccination(@RequestBody Vaccination vaccination) {
-        vaccinationRepository.save(vaccination);
-        return true;
-    }
-
     @DeleteMapping("/vaccination/delete/{id}")
     public boolean deleteVaccination(@PathVariable String id) {
         vaccinationRepository.deleteById(id);
@@ -72,11 +66,10 @@ public class VaccinationController {
             Vaccination vaccinationToUpdate = optionalVaccination.get();
             vaccinationToUpdate.setDescription(vaccination.getDescription());
             vaccinationToUpdate.setDate(vaccination.getDate());
-            vaccinationToUpdate.setVaccine(vaccination.getVaccine());
+            vaccinationToUpdate.setDose(vaccination.getDose());
             vaccinationToUpdate.setDoctor(vaccination.getDoctor());
             vaccinationToUpdate.setLocation(vaccination.getLocation());
-            vaccinationToUpdate.setType(vaccination.getType());
-            vaccinationToUpdate.setName(vaccination.getName());
+            vaccinationToUpdate.setVaccineName(vaccination.getVaccineName());
             vaccinationToUpdate.setManufacturer(vaccination.getManufacturer());
             vaccinationToUpdate.setNurse(vaccination.getNurse());
             vaccinationRepository.save(vaccinationToUpdate);
