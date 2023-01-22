@@ -53,6 +53,7 @@ export const CssTextField = styled(TextField)({
     width:'100%'
 });
 
+
 export const Android12Switch = styled(Switch)(({ theme }) => ({
     padding: 8,
     '& .MuiSwitch-track': {
@@ -85,3 +86,17 @@ export const Android12Switch = styled(Switch)(({ theme }) => ({
         margin: 2,
     },
 }));
+
+export type ButtonStyleType = {
+    background: string,
+    color: string
+}
+export const activeButtonColor: ButtonStyleType = {
+    background: '#feac0d',
+    color: '#ffffff'
+}
+export const inactiveButtonColor: ButtonStyleType = {
+    background: '#ffffff',
+    color: '#feac0d'
+}
+

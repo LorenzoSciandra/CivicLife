@@ -67,7 +67,7 @@ const MainPage = () => {
             }
         }
         setFirstLoad(false)
-    })
+    }, [])
 
     const getUserData = async () => {
         if (tokenData !== null) {
@@ -110,16 +110,11 @@ const MainPage = () => {
     }
 
     const goToVotations = () => {
-
-        // if (isAdmin) {
-        //     navigate('/votationsAdmin', {state: {token: token, email: email, isAdmin: isAdmin}})
-        // } else {
-        //     if (isVisitor) {
-        //         navigate('/votations', {state: {isVisitor: isVisitor}})
-        //     } else {
-        //         navigate('/votations', {state: {token: token, email: email, isAdmin: isAdmin}})
-        //     }
-        // }
+        if (user && user.admin) {
+            navigate('/votationsAdmin', {state: {token: tokenData}})
+        } else {
+            navigate('/votations', {state: {token: tokenData, isVisitor: isVisitor, user: user}})
+        }
     }
 
     const goToData = () => {
@@ -136,9 +131,9 @@ const MainPage = () => {
     }
 
     const goToInitiatives = () => {
-            if((user && user.status!==UserStatus.BANNED)|| isVisitor){
-                navigate('/initiatives', {state: {token: tokenData, isVisitor: isVisitor, user: user}})
-            }
+        if ((user && user.status !== UserStatus.BANNED) || isVisitor) {
+            navigate('/initiatives', {state: {token: tokenData, isVisitor: isVisitor, user: user}})
+        }
     }
 
     return (
@@ -155,9 +150,9 @@ const MainPage = () => {
                                     aria-label="menu"
                                     sx={{mr: 2}}
                                 >
-                                    {user && user.admin ? <AdminPanelSettingsIcon sx={{color:'#feac0d'}}/>:
+                                    {user && user.admin ? <AdminPanelSettingsIcon sx={{color: '#feac0d'}}/> :
                                         <><HomeIcon sx={{color: 'white'}}/><CircleIcon
-                                            sx={{color: user? UserStatusColor[user.status]: null}}/></>
+                                            sx={{color: user ? UserStatusColor[user.status] : null}}/></>
                                     }
                                 </IconButton>
                                 {user && !isVisitor ?
@@ -174,22 +169,24 @@ const MainPage = () => {
                                         OSPITE
                                     </Typography>}
                                 <Button
-                                        onClick={isVisitor ? login : logout}
-                                        style={{
-                                        color:'white',
-                                        backgroundColor: isVisitor? "green" : "red",
+                                    onClick={isVisitor ? login : logout}
+                                    style={{
+                                        color: 'white',
+                                        backgroundColor: isVisitor ? "green" : "red",
                                     }}>
 
-                                        {isVisitor? "login" : "logout"}
-                                    </Button>
+                                    {isVisitor ? "login" : "logout"}
+                                </Button>
                             </Toolbar>
                         </AppBar>
                     </Box>
                 </Grid>
                 <Grid item xs={6} display="flex" justifyContent="center" alignItems="center">
-                    <Card sx={{width: '60%',"&:hover": {
+                    <Card sx={{
+                        width: '60%', "&:hover": {
                             background: "#d7d7d7"
-                        }}} onClick={goToVotations}>
+                        }
+                    }} onClick={goToVotations}>
                         <CardActionArea>
                             <Grid container direction="column">
                                 <Grid item display="flex" justifyContent="center" alignItems="center"
@@ -215,9 +212,11 @@ const MainPage = () => {
                     </Card>
                 </Grid>
                 <Grid item xs={6} display="flex" justifyContent="center" alignItems="center">
-                    <Card sx={{width: '60%',"&:hover": {
+                    <Card sx={{
+                        width: '60%', "&:hover": {
                             background: "#d7d7d7"
-                        }}} onClick={goToInitiatives}>
+                        }
+                    }} onClick={goToInitiatives}>
                         <CardActionArea>
                             <Grid container direction="column">
                                 <Grid item display="flex" justifyContent="center" alignItems="center"
@@ -246,9 +245,11 @@ const MainPage = () => {
                     <Grid item xs={12} display="flex" justifyContent="center" alignItems="center">
                         <Card
                             onClick={goToData}
-                            sx={{width: '30%',"&:hover": {
+                            sx={{
+                                width: '30%', "&:hover": {
                                     background: "#d7d7d7"
-                                }}}>
+                                }
+                            }}>
                             <CardActionArea>
                                 <Grid container direction="column">
                                     <Grid item display="flex" justifyContent="center" alignItems="center"

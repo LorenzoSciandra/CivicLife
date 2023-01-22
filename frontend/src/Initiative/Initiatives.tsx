@@ -29,19 +29,8 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import {isInstanceOfAuthError, logoutUser} from "../APIs/OauthAPI";
 import {ListItemText} from "@mui/material";
 import {UserStatus} from "../APIs/UsersAPI";
+import {activeButtonColor, ButtonStyleType, inactiveButtonColor} from "../Utils/CustomTextFields";
 
-type ButtonStyleType = {
-    background: string,
-    color: string
-}
-const activeButtonColor: ButtonStyleType = {
-    background: '#feac0d',
-    color: '#ffffff'
-}
-const inactiveButtonColor: ButtonStyleType = {
-    background: '#ffffff',
-    color: '#feac0d'
-}
 
 const Initiatives = () => {
     const navigate = useNavigate()

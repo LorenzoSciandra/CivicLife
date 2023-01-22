@@ -381,7 +381,9 @@ const InitiativeDetails = () => {
                                 </Toolbar>
                             </AppBar>
                         </Box>
-                    </Grid><Grid container display="flex" justifyContent="flex-start" alignItems="center"
+                    </Grid>
+
+                        <Grid container display="flex" justifyContent="flex-start" alignItems="center"
                                  sx={{width: '100%', marginTop: '65px'}} spacing={3}>
 
                         <Grid item xs={12}>
@@ -405,13 +407,18 @@ const InitiativeDetails = () => {
                         <Grid item xs={12}>
                             <Box sx={{width: '100%', height: '100%', border: '2.5px solid #feac0d',}}>
                                 <CssTextField
-                                    sx={{backgroundColor: 'white', width: '100%', height: '100%',}}
+                                    sx={ {width: '100%', height: '100%',}}
                                     value={modifiedDescription}
                                     maxRows={5}
                                     onChange={handleChange}
                                     multiline
                                     InputProps={{
                                         readOnly: isReadOnly(),
+                                        inputProps: {
+                                            style: {
+                                                color: 'white',
+                                            }
+                                        }
                                     }}/>
                             </Box>
                         </Grid>

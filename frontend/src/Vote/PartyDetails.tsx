@@ -1,148 +1,230 @@
-import {Button, Card, CardActionArea, CardActions, CardContent, CardMedia, Grid, Typography} from "@mui/material";
+import {
+    AppBar,
+    Button,
+    Card,
+    CardActionArea,
+    CardActions,
+    CardContent,
+    CardMedia,
+    Grid,
+    IconButton,
+    Typography,
+    List, Avatar
+} from "@mui/material";
 import Box from "@mui/material/Box";
 
 
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 
-import '../App.css'
 import personalData from "../imgs/personaldata.png"
 import {useLocation, useNavigate} from "react-router-dom";
+import Toolbar from "@mui/material/Toolbar";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import {isInstanceOfAuthError, logoutUser} from "../APIs/OauthAPI";
+import {CssTextField} from "../Utils/CustomTextFields";
+import {getCandidates} from "../APIs/VotationsAPI";
+import GroupsIcon from "@mui/icons-material/Groups";
 
 const PartyDetails = () => {
 
-    const [candidateList, setCandidateList] = useState(['candidato1', 'candidato2', 'candidato3', 'candidato4', 'candidato1', 'candidato2', 'candidato3', 'candidato4', 'candidato1', 'candidato2', 'candidato3', 'candidato4', 'candidato1', 'candidato2', 'candidato3', 'candidato4'])
-    const location= useLocation()
-    const navigate= useNavigate()
-    const party= location.state?.party
-    const isAdmin= location.state?.isAdmin
+    const [candidateList, setCandidateList] = useState<any[]|null>(null)
+    const location = useLocation()
+    const navigate = useNavigate()
+    const party = location.state.party
+    const tokenData = location.state.token
+    const isVisitor = location.state.isVisitor
+    const votation = location.state.votation
+    const user = location.state.user
 
-    const handleCandidateDetailsOpen=(value:any)=>{
-        console.log(value)
-        navigate('/votations/votationDetails/partyDetails/candidateDetails',{state: {token: location.state?.token, email: location.state?.email, isAdmin: isAdmin, votation:location.state?.votation, party:location.state?.party, candidate:value}})
+    const getCandidatesList = async () => {
+        const response= await getCandidates(party.name)
+        console.log(response)
+        if(isInstanceOfAuthError(response)) {
+            navigate('/error', {state: {error: response}})
+        }
+        else{
+            setCandidateList(response)
+        }
     }
 
-    const partyCards = candidateList.map((value, index) => {
-        return (
-            <>
-                <Card sx={{maxWidth: 345, margin: '20px'}}>
-                    <CardActionArea onClick={()=>{handleCandidateDetailsOpen(value)}}>
-                        <CardMedia
-                            component="img"
-                            height="140"
-                            image={personalData}
-                            alt={value}
-                        />
-                        <CardContent>
-                            <Typography gutterBottom variant="h5" component="div">
-                                {value}
-                            </Typography>
-                            <Typography variant="body2" color="text.secondary">
-                                Descrizione breve del candidato
-                                Impegnato nel sociale e attivo nella comunità
-                            </Typography>
-                        </CardContent>
-                    </CardActionArea>
-                    {
-                        isAdmin ? null : <CardActions style={{alignItems: 'center'}}>
-                            <Button size="large" style={{color: '#ff3823', width: '100%'}}>Vota Candidato</Button>
-                        </CardActions>
-                    }
-                </Card>
+    useEffect(() => {
+        if(party !== undefined && candidateList===null) {
+            getCandidatesList()
+        }
 
-            </>
-        );
-    })
-    const styleForFlexboxWithoutScrollbar = {
-        margin: 0,
-        width: "100%",
-    };
-    return (
-        <Grid container direction='row' spacing={5}>
-            {/*<Grid item xs={12} display="flex" sx={{*/}
-            {/*    width: '100%',*/}
-            {/*    margin: "auto",*/}
-            {/*    top: 0,*/}
-            {/*    right: 0*/}
-            {/*}}>*/}
-            {/*    <IconButton><KeyboardBackspaceIcon sx={{fontSize: 60, color: '#ffffff'}}/></IconButton>*/}
-            {/*</Grid>*/}
-            <Grid item xs={12} display="flex" justifyContent="center" alignItems="center" sx={{
-            width: '100%',
-            margin: "auto",
-            top: 150,
-            right: 0
-        }}>
-            <Typography style={{color: '#feac0d', textAlign: 'center', fontSize: '3rem'}}>{party}</Typography>
-        </Grid><Grid item xs={12} display="flex" justifyContent="center" alignItems="center" sx={{
-            width: '100%',
-            margin: "auto",
-            top: 65,
-            right: 0
-        }}>
-            <Typography style={{
-                color: '#ffffff',
-                textAlign: 'justify',
-                fontSize: '0.95rem',
-                paddingLeft: '120px',
-                paddingRight: '120px'
-            }}>orem ipsum dolor sit amet,
-                consectetur adipiscing elit. Curabitur quis interdum augue, et euismod lectus. Ut ac ultricies augue.
-                Praesent in ornare elit, a pellentesque libero. Nam euismod mi nec tortor elementum aliquet. Curabitur
-                dictum mi quis rutrum ultricies. Maecenas in diam ut mauris venenatis consectetur. Quisque eu neque ac
-                lacus laoreet tincidunt. Mauris vitae condimentum odio, nec cursus nisi. Sed efficitur ante eu iaculis
-                venenatis. Ut in dictum ante. Nunc eget bibendum ex. Suspendisse facilisis luctus nunc sed auctor. Nunc
-                tincidunt egestas enim, nec condimentum urna laoreet quis. Praesent commodo lacus in turpis maximus
-                sodales.
+    },[])
 
-                Nunc velit lectus, ultricies non consequat nec, egestas lobortis lectus. Sed vitae imperdiet augue, eget
-                pharetra arcu. Pellentesque fringilla magna non nisi euismod, ac feugiat sapien consectetur. Aliquam
-                imperdiet fermentum scelerisque. Nam tristique tincidunt ipsum, eget pharetra orci hendrerit sed.
-                Interdum et malesuada fames ac ante ipsum primis in faucibus. Nunc molestie semper lorem et vulputate.
-                Aliquam convallis ex sit amet eleifend pellentesque.ondimentum odio, nec cursus nisi. Sed efficitur ante
-                eu iaculis venenatis. Ut in dictum ante. Nunc eget bibendum ex. Suspendisse facilisis luctus nunc sed
-                auctor. Nunc tincidunt egestas enim, nec condimentum urna laoreet quis. Praesent commodo lacus in turpis
-                maximus sodales.
-
-                Nunc velit lectus, ultricies non consequat nec, egestas lobortis lectus. Sed vitae imperdiet augue, eget
-                pharetra arcu. Pellentesque fringilla magna non nisi euismod, ac feugiat sapien consectetur. Aliquam
-                imperdiet fermentum scelerisque. Nam tristique tincidunt ipsum, eget pharetra orci hendrerit sed.
-                Interdum et malesuada fames ac ante ipsum primis in faucibus. Nunc molestie semper lorem et vulputate.
-                Aliquam convallis ex sit amet eleifend pellentesque.</Typography>
-        </Grid>
-            {
-                isAdmin? null : <Grid item xs={12} display="flex" justifyContent='center' alignItems="right">
-                    <Button style={{
-                        borderRadius: 35,
-                        backgroundColor: "#ff3823",
-                        padding: "10px 20px",
-                        fontSize: "18px"
-                    }}
-                            variant="contained">
-                        VOTA Partito
-                    </Button>
-                </Grid>
+    const handleCandidateDetailsOpen = (value: any) => {
+        console.log(value)
+        navigate('/votations/votationDetails/partyDetails/candidateDetails', {
+            state: {
+                token: tokenData,
+                user: user,
+                votation: votation,
+                party: party,
+                candidate: value
             }
+        })
+    }
 
-            <Grid item xs={12} display="flex" justifyContent="center" alignItems="center" sx={{
-            width: '100%',
-            margin: "auto",
-            top: 280, right: 0
-        }}>
-            <Grid container direction="column" justifyContent="center" alignItems="center">
-                <Box sx={{width: '70%', height: '100%'}}>
-                    <Grid
-                        container
-                        spacing={1}
-                        alignContent="center"
-                        wrap="wrap"
-                        style={styleForFlexboxWithoutScrollbar}
-                    >
-                        {partyCards}
-                    </Grid>
+    const logout = async () => {
+        if (tokenData !== null) {
+            const response = await logoutUser(tokenData)
+            if (typeof response === 'boolean') {
+                if (response) {
+                    navigate('/')
+                } else {
+                    console.log('error')
+                }
+            } else {
+                navigate('/error', {state: {error: response}})
+            }
+        }
+    }
+
+
+
+    const goBack = () => {
+        navigate(-1)
+    }
+
+    const login = () => {
+        window.location.assign('http://localhost:8080/login')
+    }
+
+
+    return (
+        <>
+            <Grid container direction='row' spacing={5}>
+                <Box sx={{flexGrow: 1}}>
+                    <AppBar position="fixed" sx={{backgroundColor: '#3d4347'}}>
+                        <Toolbar>
+                            <IconButton
+                                size="small"
+                                edge="start"
+                                aria-label="menu"
+                                sx={{mr: 2}}
+                            >
+                                <ArrowBackIcon onClick={goBack} sx={{fontSize: '3rem', color: 'white'}}/>
+                            </IconButton>
+
+                            <Typography variant="h6" component="div" sx={{flexGrow: 1}}
+                                        style={{
+                                            justifyContent: 'center',
+                                            color: '#feac0d',
+                                            textAlign: 'center',
+                                            fontSize: '1.8rem',
+                                        }}>
+                                {party.name}
+                            </Typography>
+                            <Button
+                                onClick={isVisitor ? login : logout}
+                                style={{
+                                    color: 'white',
+                                    backgroundColor: isVisitor ? "green" : "red",
+                                }}>
+
+                                {isVisitor ? "login" : "logout"}
+                            </Button>
+                        </Toolbar>
+                    </AppBar>
                 </Box>
             </Grid>
-        </Grid>
-        </Grid>
+            <Grid container display="flex" justifyContent="flex-start" alignItems="center"
+                  sx={{width: '100%', marginTop: '80px'}} spacing={3}>
+
+                <Grid item xs={12} display="flex" justifyContent='center' alignItems="right">
+                        {
+                            party.logoLink ? <img style={{width:230, height:200}} alt={party.name} src={party.logoLink}/> :
+                                <GroupsIcon/>
+                        }
+                </Grid>
+                <Grid item xs={12}>
+                    <Box sx={{width: '100%', height: '100%', border: '2.5px solid #feac0d',}}>
+                        <CssTextField
+                            sx={{input: {color: 'white'}, width: '100%', height: '100%',}}
+                            value={party.description}
+                            maxRows={5}
+                            multiline
+                            InputProps={{
+                                readOnly: true,
+                                inputProps: {
+                                    style: {
+                                        color: 'white',
+                                    }
+                                }
+                            }}/>
+                    </Box>
+                </Grid>
+                <Grid item xs={12}>
+                    {
+                        (user && user.admin) ? null : user ?
+                            <Grid item xs={12} display="flex" justifyContent='center' alignItems="right">
+                                <Button style={{
+                                    borderRadius: 35,
+                                    backgroundColor: "#ff3823",
+                                    padding: "10px 20px",
+                                    fontSize: "18px"
+                                }}
+                                        variant="contained">
+                                    VOTA Partito
+                                </Button>
+                            </Grid> : null
+                    }
+                </Grid>
+                <Grid item xs={12} display="flex" justifyContent="center" alignItems="center">
+                    <List sx={{
+                        width: '100%',
+                        overflow: 'auto',
+                        maxHeight: 580,
+                    }}>
+                    <Grid container direction="column" justifyContent="center" alignItems="center">
+                        <Box sx={{width: '70%', height: '100%'}}>
+                            <Grid
+                                container
+                                spacing={1}
+                                alignContent="center"
+                                wrap="wrap"
+                                style={{width: '100%'}}
+                            >
+                                {candidateList ? candidateList.map((value, index) => {
+                                    return (
+                                        <>
+                                            <Card sx={{maxWidth: 345, margin: '20px'}}>
+                                                <CardActionArea onClick={() => {
+                                                    handleCandidateDetailsOpen(value)
+                                                }}>
+                                                    <CardMedia
+                                                        component="img"
+                                                        image={value.imageLink ? value.imageLink: personalData}
+                                                        alt={value.name}
+                                                    />
+                                                    <CardContent>
+                                                        <Typography gutterBottom variant="h5" component="div">
+                                                            {value.name} {value.surname}
+                                                        </Typography>
+                                                    </CardContent>
+                                                </CardActionArea>
+                                                {
+                                                    user && user.admin ? null : user ?
+                                                        <CardActions style={{alignItems: 'center'}}>
+                                                            <Button size="large"
+                                                                    style={{color: '#ff3823', width: '100%'}}>Vota
+                                                                Candidato</Button>
+                                                        </CardActions> : null
+                                                }
+                                            </Card>
+
+                                        </>
+                                    );
+                                }): null}
+                            </Grid>
+                        </Box>
+                    </Grid>
+                    </List>
+                </Grid>
+            </Grid>
+        </>
     );
 }
 
