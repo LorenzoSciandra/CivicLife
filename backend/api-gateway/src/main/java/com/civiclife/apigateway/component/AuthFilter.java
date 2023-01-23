@@ -32,11 +32,11 @@ public class AuthFilter implements GatewayFilter {
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         try {
             String path = exchange.getRequest().getURI().toString();
-            System.out.println("########################################################");
+            /*System.out.println("########################################################");
             System.out.println("Url iniziale: " + path );
             System.out.println("Params: "+ exchange.getRequest().getQueryParams());
             System.out.println("Headers: "+ exchange.getRequest().getHeaders());
-            System.out.println("-------------------------------------------------------");
+            System.out.println("-------------------------------------------------------");*/
 
             MultiValueMap<String, String> params = exchange.getRequest().getQueryParams();
             String final_url = "";
@@ -48,7 +48,7 @@ public class AuthFilter implements GatewayFilter {
             OauthProvider provider = getProvider(providerString);
 
             if(!email.equals("") && !token.equals("") && provider!=null){
-                System.out.println("I find: " + email + " " + token + " " + provider);
+                // System.out.println("I find: " + email + " " + token + " " + provider);
 
                 String validateUrl = email + "/" + token + "/" + provider;
 
@@ -64,7 +64,7 @@ public class AuthFilter implements GatewayFilter {
                     ValidateCode validateCode =  authThread.getValidateCode();
 
                     if(validateCode != null){
-                        System.out.println(validateCode);
+                        //System.out.println(validateCode);
 
                         if(validateCode == ValidateCode.ACTIVE){
                             final_url = path.split("\\?")[0] + "/" + email;
@@ -91,8 +91,8 @@ public class AuthFilter implements GatewayFilter {
             ServerHttpRequest request = exchange.getRequest().mutate().uri(URI.create(final_url)).build();
             exchange.getAttributes().put(GATEWAY_REQUEST_URL_ATTR, request.getURI());
 
-            System.out.println("Final url: " + final_url);
-            System.out.println("#####################################################");
+            /*System.out.println("Final url: " + final_url);
+            System.out.println("#####################################################");*/
 
             return chain.filter(exchange.mutate().request(request).build());
 

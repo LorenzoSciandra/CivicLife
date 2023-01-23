@@ -4,6 +4,7 @@ import com.civiclife.externalresourcesservice.model.Bonus;
 import com.civiclife.externalresourcesservice.repository.BonusRepository;
 import com.civiclife.externalresourcesservice.utils.ErrorMessage;
 import com.civiclife.externalresourcesservice.utils.ValidateCode;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.MediaType;
 
@@ -16,36 +17,9 @@ import java.util.Optional;
 @RequestMapping("/bonusAPI/v1")
 public class BonusController {
 
-    private final BonusRepository bonusRepository;
+    @Autowired
+    private BonusRepository bonusRepository;
 
-    public BonusController(BonusRepository bonusRepository) {
-        this.bonusRepository = bonusRepository;
-    }
-
-    @GetMapping("/bonus/all")
-    public List<Bonus> getAllBonuses() {
-        System.out.println("Get all Bonuses...");
-        return bonusRepository.findAll();
-    }
-
-
-    @GetMapping("/bonus/{id}")
-    public Bonus getBonusById(@PathVariable String id) {
-        Optional<Bonus> bonus = bonusRepository.findById(id);
-        return bonus.orElse(null);
-    }
-
-    @PostMapping("/bonus/create")
-    public boolean createBonus(@RequestBody Bonus bonus) {
-        bonusRepository.save(bonus);
-        return true;
-    }
-
-    @DeleteMapping("/bonus/delete/{id}")
-    public boolean deleteBonus(@PathVariable String id) {
-        bonusRepository.deleteById(id);
-        return true;
-    }
 
     @CrossOrigin(origins = "http://localhost:3000", maxAge = 600)
     @GetMapping(value = "/bonuses/{email_owner}/{email_richiedente}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -58,6 +32,7 @@ public class BonusController {
         return new ArrayList<>();
     }
 
+    @CrossOrigin(origins = "http://localhost:3000", maxAge = 600)
     @GetMapping(value = "/error/{code}/{path}/{method}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ErrorMessage error(@PathVariable(value = "code") ValidateCode code,
                               @PathVariable(value = "path") String path,
@@ -66,25 +41,35 @@ public class BonusController {
         return new ErrorMessage(code, pathUrl, method);
     }
 
-    @PostMapping("/bonus/update/{id}")
-    public boolean updateBonus(@PathVariable String id, @RequestBody  Bonus bonus) {
-        Optional<Bonus> optionalBonus = bonusRepository.findById(id);
-        if(optionalBonus.isPresent()){
-            Bonus bonusToUpdate = optionalBonus.get();
-            bonusToUpdate.setName(bonus.getName());
-            bonusToUpdate.setDescription(bonus.getDescription());
-            bonusToUpdate.setType(bonus.getType());
-            bonusToUpdate.setEnd_date(bonus.getEnd_date());
-            bonusRepository.save(bonusToUpdate);
-            return true;
-        }
-        return false;
-    }
+    // FOR POSTMAN TEST: CREATE AND DELETE
 
     @PostMapping(value="/postman/create", produces = MediaType.APPLICATION_JSON_VALUE)
     public boolean createBonusPostman(@RequestBody Bonus[] bonuses) {
         bonusRepository.saveAll(List.of(bonuses));
         return true;
+    }
+
+    @PostMapping("postman/bonus/create")
+    public boolean createBonus(@RequestBody Bonus[] bonuses) {
+        bonusRepository.saveAll(List.of(bonuses));
+        return true;
+    }
+
+    @DeleteMapping("postman/bonus/delete/{id}")
+    public boolean deleteBonus(@PathVariable String id) {
+        bonusRepository.deleteById(id);
+        return true;
+    }
+
+    @GetMapping("postman/bonus/all")
+    public List<Bonus> getAllBonuses() {
+        return bonusRepository.findAll();
+    }
+
+    @GetMapping(value = "postman/bonus/{id}")
+    public Bonus getBonusById(@PathVariable String id) {
+        Optional<Bonus> bonus = bonusRepository.findById(id);
+        return bonus.orElse(null);
     }
 
 }

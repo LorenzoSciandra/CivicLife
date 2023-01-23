@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class ProducerService {
 
-    private RabbitTemplate rabbitTemplate;
+    private final RabbitTemplate rabbitTemplate;
 
     @Autowired
     public ProducerService(RabbitTemplate rabbitTemplate) {

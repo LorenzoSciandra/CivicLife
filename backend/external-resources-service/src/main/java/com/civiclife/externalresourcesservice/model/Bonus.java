@@ -2,11 +2,16 @@ package com.civiclife.externalresourcesservice.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Data
 @Document(collection = "bonuses")
+@AllArgsConstructor
+@NoArgsConstructor
+@ToString
 public class Bonus {
 
     @Id
@@ -16,18 +21,6 @@ public class Bonus {
     private String description;
     private String type;
     private long end_date;
-
-    public Bonus() {
-    }
-
-    public Bonus(String id, String email_owner, String name, String description, String type, long end_date) {
-        this.id = id;
-        this.email_owner = email_owner;
-        this.name = name;
-        this.description = description;
-        this.type = type;
-        this.end_date = end_date;
-    }
 
     public String getId() {
         return id;
@@ -75,17 +68,5 @@ public class Bonus {
 
     public void setEnd_date(long end_date) {
         this.end_date = end_date;
-    }
-
-    @Override
-    public String toString() {
-        return "Bonus{" +
-                "id=" + id +
-                "emai_owner=" + email_owner +
-                ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", type='" + type + '\'' +
-                ", endDate=" + end_date +
-                '}';
     }
 }

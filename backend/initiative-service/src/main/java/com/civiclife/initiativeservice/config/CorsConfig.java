@@ -1,7 +1,6 @@
 package com.civiclife.initiativeservice.config;
 
 import com.mongodb.lang.NonNull;
-import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;

@@ -1,6 +1,5 @@
 package com.civiclife.voteservice.controller;
 import com.civiclife.voteservice.model.*;
-import com.civiclife.voteservice.repo.CandidateRepository;
 import com.civiclife.voteservice.repo.PartyRepository;
 import com.civiclife.voteservice.repo.VotationRepository;
 import com.civiclife.voteservice.service.ApiCall;
@@ -13,10 +12,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 
-
 @RestController
 @RequestMapping("/votationAPI/v1")
-@CrossOrigin(origins = "http://localhost:3000", maxAge = 600)
 @AllArgsConstructor
 public class VotationController {
 
@@ -26,22 +23,19 @@ public class VotationController {
     @Autowired
     private ApiCall apiCall;
 
-
-    @GetMapping(value = "/votations", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Set<Votation> getAllVotations() {
-        return (Set<Votation>) votationRepository.findAll();
-    }
-
+    @CrossOrigin(origins = "http://localhost:3000", maxAge = 600)
     @GetMapping(value = "/votations/active", produces = MediaType.APPLICATION_JSON_VALUE)
     public Set<Votation> getAllVotationsByStatus() {
         return votationRepository.votationsByStatus(Votation.VotationStatus.valueOf("ACTIVE"));
     }
 
+    @CrossOrigin(origins = "http://localhost:3000", maxAge = 600)
     @GetMapping(value = "/votations/terminated", produces = MediaType.APPLICATION_JSON_VALUE)
     public Set<Votation> getAllVotationsByStatusTerminated() {
         return votationRepository.votationsByStatus(Votation.VotationStatus.valueOf("TERMINATED"));
     }
 
+    @CrossOrigin(origins = "http://localhost:3000", maxAge = 600)
     @GetMapping(value= "/votations/programmed/{userId}/{emailRichiedente}", produces = MediaType.APPLICATION_JSON_VALUE)
     public Set<Votation> getAllVotationsByStatusProgrammed(@PathVariable String userId,
                                                             @PathVariable String emailRichiedente){
@@ -55,6 +49,7 @@ public class VotationController {
         return new HashSet<>();
     }
 
+    @CrossOrigin(origins = "http://localhost:3000", maxAge = 600)
     @GetMapping(value = "/votations/done/{userId}/{emailRichiedente}", produces = MediaType.APPLICATION_JSON_VALUE)
     public Set<Votation> getAllVotationsDoneByUser(@PathVariable String userId,
                                                    @PathVariable String emailRichiedente) {
@@ -66,9 +61,11 @@ public class VotationController {
         return new HashSet<>();
     }
 
+    @CrossOrigin(origins = "http://localhost:3000", maxAge = 600)
     @GetMapping(value = "/votation/get/parties/{votationId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Party> getAllPartiesFromVotation(@PathVariable String votationId){
-        Optional<Votation> optionalVotation = votationRepository.findById(votationId);
+        String votationIdDecoded = new String(Base64.getDecoder().decode(votationId));
+        Optional<Votation> optionalVotation = votationRepository.findById(votationIdDecoded);
         if(optionalVotation.isPresent()){
             Votation votation = optionalVotation.get();
             return partyRepository.findAllById(votation.getPartiesIds());
@@ -76,13 +73,7 @@ public class VotationController {
         return new ArrayList<>();
     }
 
-    @GetMapping(value = "votation/get/result/{votationId}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public VotationResult getResult(@PathVariable String votationId) {
-        String decodedVotationId = new String(Base64.getDecoder().decode(votationId));
-        Optional<Votation> optionalVotation = votationRepository.findById(decodedVotationId);
-        return optionalVotation.map(Votation::getVotationResult).orElse(null);
-    }
-
+    @CrossOrigin(origins = "http://localhost:3000", maxAge = 600)
     @GetMapping(value = "/error/{code}/{path}/{method}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ErrorMessage error(@PathVariable(value = "code") ValidateCode code,
                               @PathVariable(value = "path") String path,
@@ -91,37 +82,8 @@ public class VotationController {
         return new ErrorMessage(code, pathUrl, method);
     }
 
-    @PostMapping("/postman/votation/create")
-    public boolean createVotation(@RequestBody Votation[] votations) {
-        votationRepository.saveAll(Set.of(votations));
-        return true;
-    }
-
-    @DeleteMapping("/postman/votation/delete/{votationId}")
-    public boolean deleteVotation(@PathVariable String votationId) {
-        Optional<Votation> votation = votationRepository.findById(votationId);
-        if(votation.isPresent()) {
-            votationRepository.delete(votation.get());
-            return true;
-        }
-        return false;
-    }
-
-    @GetMapping("/postman/votationResult/delete/{votationId}")
-    public boolean deleteResult(@PathVariable String votationId) {
-
-        Optional<Votation> optionalVotation = votationRepository.findById(votationId);
-
-        if(optionalVotation.isPresent()) {
-            Votation votation = optionalVotation.get();
-            votation.setVotationResult(new VotationResult());
-            votationRepository.save(votation);
-            return true;
-        }
-        return false;
-    }
-
-    @GetMapping(value = "/votation/vote/{votationId}/{partyId}/{candidateId}/{voterId}/{emailRichiedente}",
+    @CrossOrigin(origins = "http://localhost:3000", maxAge = 600)
+    @GetMapping(value = "/votation/voteCandidate/{votationId}/{partyId}/{candidateId}/{voterId}/{emailRichiedente}",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public boolean voteCandidate(@PathVariable String votationId,
                                  @PathVariable String partyId,
@@ -163,7 +125,8 @@ public class VotationController {
         return false;
     }
 
-    @GetMapping(value = "/votation/vote/{votationId}/{partyId}/{voterId}/{emailRichiedente}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @CrossOrigin(origins = "http://localhost:3000", maxAge = 600)
+    @GetMapping(value = "/votation/voteParty/{votationId}/{partyId}/{voterId}/{emailRichiedente}", produces = MediaType.APPLICATION_JSON_VALUE)
     public boolean voteParty(@PathVariable String votationId,
                              @PathVariable String partyId,
                              @PathVariable String voterId,
@@ -185,7 +148,7 @@ public class VotationController {
                             for(CandidateResult candidateResult: partyResult.getCandidateResults()){
                                 if(candidateResult.isLeader()){
                                     candidateResult.setVotes(candidateResult.getVotes() + 1);
-                                    partyResult.setVotes(candidateResult.getVotes() + 1);
+                                    partyResult.setVotes(partyResult.getVotes() + 1);
                                     votationResult.setNumberOfVotes(votationResult.getNumberOfVotes() + 1);
                                     Set<String> voters = votationResult.getVotersIdList();
                                     voters.add(voterId);
@@ -204,9 +167,11 @@ public class VotationController {
     }
 
     private boolean checkDate(Votation votation){
-        return votation.getEndDate() > System.currentTimeMillis()/1000;
+        long now = System.currentTimeMillis()/1000;
+        return now < votation.getEndDate() && now > votation.getStartDate();
     }
 
+    @CrossOrigin(origins = "http://localhost:3000", maxAge = 600)
     @PostMapping(value = "/votation/updateStatus/{votationId}/{email}/{emailRichiedente}",
             consumes = MediaType.TEXT_PLAIN_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
@@ -263,5 +228,42 @@ public class VotationController {
             case TERMINATED -> false;
             case PROGRAMMED -> newStatus.equals(Votation.VotationStatus.ACTIVE);
         };
+    }
+
+    // POSTMAN TESTS
+
+    @GetMapping(value = "postman/votations", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<Votation> getAllVotations() {
+        return  votationRepository.findAll();
+    }
+
+    @PostMapping("/postman/votation/create")
+    public boolean createVotation(@RequestBody Votation[] votations) {
+        votationRepository.saveAll(Set.of(votations));
+        return true;
+    }
+
+    @DeleteMapping("/postman/votation/delete/{votationId}")
+    public boolean deleteVotation(@PathVariable String votationId) {
+        Optional<Votation> votation = votationRepository.findById(votationId);
+        if(votation.isPresent()) {
+            votationRepository.delete(votation.get());
+            return true;
+        }
+        return false;
+    }
+
+    @GetMapping("/postman/votationResult/delete/{votationId}")
+    public boolean deleteResult(@PathVariable String votationId) {
+
+        Optional<Votation> optionalVotation = votationRepository.findById(votationId);
+
+        if(optionalVotation.isPresent()) {
+            Votation votation = optionalVotation.get();
+            votation.setVotationResult(new VotationResult());
+            votationRepository.save(votation);
+            return true;
+        }
+        return false;
     }
 }

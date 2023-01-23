@@ -10,9 +10,8 @@ public class ApiCall {
     @Autowired
     private RestTemplate restTemplate;
 
-    private final String USER_API = "http://user-service/userAPI/v1/user/isAdmin/";
-
     public boolean isAdmin(String userId) {
+        String USER_API = "http://user-service/userAPI/v1/user/isAdmin/";
         String finalUrl = USER_API + userId + "/"+ userId;
         return Boolean.TRUE.equals(restTemplate.getForObject(finalUrl, Boolean.class));
     }

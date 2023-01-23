@@ -1,7 +1,7 @@
 package com.civiclife.oauthservice.controller;
 
-import com.civiclife.oauthservice.utility.AES;
-import com.civiclife.oauthservice.utility.ValidateCode;
+import com.civiclife.oauthservice.utils.AES;
+import com.civiclife.oauthservice.utils.ValidateCode;
 import com.civiclife.oauthservice.model.Token;
 import com.civiclife.oauthservice.model.TokenKey;
 import com.civiclife.oauthservice.repo.TokenRepository;
@@ -16,31 +16,28 @@ import java.util.*;
 
 @RequestMapping("/authAPI/v1")
 @RestController
-@CrossOrigin(origins = "http://localhost:3000", maxAge = 600)
+
 public class AuthController {
 
     @Autowired
     TokenRepository tokenRepository;
-    private final String secret = "!CivicLifeSecret2023!";
 
-    @GetMapping(value = "/token/{encrypToken}",
+    @CrossOrigin(origins = "http://localhost:3000", maxAge = 600)
+    @GetMapping(value = "/token/{encryptToken}",
             produces = MediaType.TEXT_PLAIN_VALUE)
-    public String token(@PathVariable(value = "encrypToken") String encrypToken){
+    public String token(@PathVariable(value = "encryptToken") String encryptToken){
         // Base64 to utf8
-        String encrypTokenUTF8 = new String(Base64.getDecoder().decode(encrypToken));
+        String encrypTokenUTF8 = new String(Base64.getDecoder().decode(encryptToken));
+        String secret = "!CivicLifeSecret2023!";
         String token = AES.decrypt(encrypTokenUTF8, secret);
         return Base64.getEncoder().encodeToString(token.getBytes());
     }
 
 
-    @GetMapping("/validationAuthorities")
-    public List<TokenKey.OauthProvider> getValidationAuthorities() {
-        return Arrays.asList(TokenKey.OauthProvider.values());
-    }
-
+    @CrossOrigin(origins = "http://localhost:3000", maxAge = 600)
     @GetMapping("/getAllTokens/{email}")
     public String getAllTokens(@PathVariable(value = "email") String email) {
-        ArrayList<Optional<Token>> tokens = tokenRepository.getOauthCredentialsByEmail(email);
+        List<Optional<Token>> tokens = tokenRepository.getOauthCredentialsByEmail(email);
         StringBuilder result = new StringBuilder();
         if(!tokens.isEmpty()){
             for (Optional<Token> optionalToken : tokens) {
@@ -54,6 +51,7 @@ public class AuthController {
         return result.toString();
     }
 
+    @CrossOrigin(origins = "http://localhost:3000", maxAge = 600)
     @GetMapping("/getToken/{email}/{provider}")
     public String getToken(@PathVariable(value = "email") String email,
                            @PathVariable(value = "provider") TokenKey.OauthProvider provider) {
@@ -67,6 +65,7 @@ public class AuthController {
         return result;
     }
 
+    @CrossOrigin(origins = "http://localhost:3000", maxAge = 600)
     @GetMapping(value = "/validate/{email}/{token}/{provider}",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ValidateCode validate(@PathVariable(value = "email") String email,
@@ -88,13 +87,14 @@ public class AuthController {
             return ValidateCode.INVALID_TOKEN;
         }
 
-        ArrayList<Optional<Token>> tokensByEmail = tokenRepository.getOauthCredentialsByEmail(email);
+        List<Optional<Token>> tokensByEmail = tokenRepository.getOauthCredentialsByEmail(email);
         if (tokensByEmail.isEmpty()){
             return ValidateCode.INVALID_EMAIL;
         }
         return ValidateCode.INVALID_PROVIDER;
     }
 
+    @CrossOrigin(origins = "http://localhost:3000", maxAge = 600)
     @PostMapping(value = "/deleteToken/{email}",
             consumes = MediaType.TEXT_PLAIN_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
@@ -166,7 +166,5 @@ public class AuthController {
             default -> null;
         };
     }
-
-
 
 }

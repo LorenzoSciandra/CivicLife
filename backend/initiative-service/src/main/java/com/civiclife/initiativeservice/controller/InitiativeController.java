@@ -15,7 +15,6 @@ import java.util.*;
 
 @RestController
 @RequestMapping("/initiativeAPI/v1")
-@CrossOrigin(origins = "http://localhost:3000", maxAge = 600)
 public class InitiativeController {
 
     @Autowired
@@ -24,6 +23,7 @@ public class InitiativeController {
     @Autowired
     private InitiativeRepository initiativeRepository;
 
+    @CrossOrigin(origins = "http://localhost:3000", maxAge = 600)
     @GetMapping(value="/getAllNamesDesc", produces = MediaType.APPLICATION_JSON_VALUE)
     public Set<InitiativeReadOnly> getAllInitiativesNamesAndDescriptions() {
         List<Initiative> initiatives = initiativeRepository.findAll();
@@ -40,7 +40,7 @@ public class InitiativeController {
         return initiativesReadOnly;
     }
 
-
+    @CrossOrigin(origins = "http://localhost:3000", maxAge = 600)
     @GetMapping(value = "/initiatives/{email}/{emailRichiedente}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Initiative> getInitiatives(@PathVariable String email, @PathVariable String emailRichiedente) {
 
@@ -52,7 +52,7 @@ public class InitiativeController {
         }
         return new ArrayList<>();
     }
-
+    @CrossOrigin(origins = "http://localhost:3000", maxAge = 600)
     @GetMapping(value = "/error/{code}/{path}/{method}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ErrorMessage error(@PathVariable(value = "code") ValidateCode code,
                               @PathVariable(value = "path") String path,
@@ -61,6 +61,7 @@ public class InitiativeController {
         return new ErrorMessage(code, pathUrl, method);
     }
 
+    @CrossOrigin(origins = "http://localhost:3000", maxAge = 600)
     @GetMapping(value = "/initiative/remove/{id}/{email_creator}/{emailRichiedente}", produces = MediaType.APPLICATION_JSON_VALUE)
     public boolean removeInitiative(@PathVariable(value = "id") String id,
                                     @PathVariable(value = "email_creator") String email_creator,
@@ -80,6 +81,7 @@ public class InitiativeController {
         return false;
     }
 
+    @CrossOrigin(origins = "http://localhost:3000", maxAge = 600)
     @GetMapping(value = "/initiative/subscribe/{idInitiative}/{email_user}/{emailRichiedente}")
     public boolean subscribeInitiative(@PathVariable(value = "idInitiative") String idInitiative,
                                        @PathVariable(value = "email_user") String email_user,
@@ -107,6 +109,7 @@ public class InitiativeController {
 
     }
 
+    @CrossOrigin(origins = "http://localhost:3000", maxAge = 600)
     @GetMapping(value = "/initiative/unsubscribe/{idInitiative}/{email_user}/{emailRichiedente}", produces = MediaType.APPLICATION_JSON_VALUE)
     public boolean unsubscribeInitiative(@PathVariable(value = "idInitiative") String idInitiative,
                                          @PathVariable(value = "email_user") String email_user,
@@ -132,6 +135,7 @@ public class InitiativeController {
         return false;
     }
 
+    @CrossOrigin(origins = "http://localhost:3000", maxAge = 600)
     @PostMapping(value= "/initiative/changeOrganizers/{idInitiative}/{emailUser}/{emailRichiedente}",
             consumes=MediaType.TEXT_PLAIN_VALUE,
             produces= MediaType.APPLICATION_JSON_VALUE)
@@ -160,6 +164,7 @@ public class InitiativeController {
         return false;
     }
 
+    @CrossOrigin(origins = "http://localhost:3000", maxAge = 600)
     @GetMapping(value = "/initiative/addOrganizer/{idInitiative}/{new_org}/{email_org}/{emailRichiedente}", produces = MediaType.APPLICATION_JSON_VALUE)
     public boolean addOrganizerInitiative(@PathVariable(value = "idInitiative") String idInitiative,
                                           @PathVariable(value = "new_org") String new_org,
@@ -187,6 +192,7 @@ public class InitiativeController {
         return false;
     }
 
+    @CrossOrigin(origins = "http://localhost:3000", maxAge = 600)
     @GetMapping(value = "/initiative/removeOrganizer/{idInitiative}/{email_org}/{email_user}/{emailRichiedente}", produces = MediaType.APPLICATION_JSON_VALUE)
     public boolean removeOrganizerInitiative(@PathVariable(value = "idInitiative") String idInitiative,
                                              @PathVariable(value = "email_org") String email_org,
@@ -215,6 +221,7 @@ public class InitiativeController {
 
     }
 
+    @CrossOrigin(origins = "http://localhost:3000", maxAge = 600)
     @GetMapping(value="initiative/getInitiative/{idInitiative}/{email_user}/{emailRichiedente}", produces = MediaType.APPLICATION_JSON_VALUE)
     public Initiative getInitiative(@PathVariable(value = "idInitiative") String idInitiative, @PathVariable(value = "email_user") String email_user,
                                     @PathVariable(value = "emailRichiedente") String emailRichiedente){
@@ -230,6 +237,7 @@ public class InitiativeController {
         return null;
     }
 
+    @CrossOrigin(origins = "http://localhost:3000", maxAge = 600)
     @GetMapping(value = "/initiative/getOrganizedInitiatives/{email_user}/{emailRichiedente}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Initiative> getOrganizedInitiatives(@PathVariable(value = "email_user") String email_user,
                                                     @PathVariable(value = "emailRichiedente") String emailRichiedente){
@@ -243,6 +251,7 @@ public class InitiativeController {
         return new ArrayList<>();
     }
 
+    @CrossOrigin(origins = "http://localhost:3000", maxAge = 600)
     @GetMapping(value = "/initiative/getCreatedInitiatives/{email_user}/{emailRichiedente}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Initiative> getCreatedInitiatives(@PathVariable(value = "email_user") String email_user,
                                                   @PathVariable(value = "emailRichiedente") String emailRichiedente){
@@ -256,6 +265,7 @@ public class InitiativeController {
         return new ArrayList<>();
     }
 
+    @CrossOrigin(origins = "http://localhost:3000", maxAge = 600)
     @GetMapping(value = "/initiative/getMySubscribedInitiatives/{email_user}/{emailRichiedente}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Initiative> getMySubscribedInitiatives(@PathVariable(value = "email_user") String email_user,
                                                        @PathVariable(value = "emailRichiedente") String emailRichiedente){
@@ -269,12 +279,7 @@ public class InitiativeController {
         return new ArrayList<>();
     }
 
-    @PostMapping(value = "/postman/create")
-    public boolean createInitiativePostman(@RequestBody Initiative[] initiatives){
-        initiativeRepository.saveAll(Arrays.asList(initiatives));
-        return true;
-    }
-
+    @CrossOrigin(origins = "http://localhost:3000", maxAge = 600)
     @PostMapping(value = "/initiative/create/{email_creator}/{emailRichiedente}",
             consumes = MediaType.TEXT_PLAIN_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
@@ -298,6 +303,7 @@ public class InitiativeController {
         return false;
     }
 
+    @CrossOrigin(origins = "http://localhost:3000", maxAge = 600)
     @PostMapping(value = "/initiative/modify/{id}/{email_org}/{emailRichiedente}",
             consumes = MediaType.TEXT_PLAIN_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
@@ -306,7 +312,7 @@ public class InitiativeController {
                                     @PathVariable(value = "email_org") String email_org,
                                     @PathVariable(value = "emailRichiedente") String emailRichiedente) {
 
-        System.out.println("Iniziative che mi è arrivata: " + updateInitiative);
+        // System.out.println("Iniziative che mi è arrivata: " + updateInitiative);
 
         if (emailRichiedente.equals(email_org)) {
             Optional<Initiative> optionalOriginalInitiative = initiativeRepository.findById(id);
@@ -318,7 +324,7 @@ public class InitiativeController {
                             originalInitiative.getIdCreator().equals(emailRichiedente)) &&
                             checkDateForOpOnInitative(originalInitiative.getStartDate(), originalInitiative.getEndDate())) {
                         Initiative newInitiative = parseInitiative(updateInitiative.replace("{", "").replace("}", "").replace("\"", ""));
-                        System.out.println("Iniziative che mi è arrivata dopo il parsing: " + newInitiative);
+                        //System.out.println("Iniziative che mi è arrivata dopo il parsing: " + newInitiative);
                         boolean update = modifyInitiative(newInitiative, originalInitiative);
                         if(update){
                             initiativeRepository.save(originalInitiative);
@@ -428,7 +434,6 @@ public class InitiativeController {
         };
     }
 
-
     // non posso creare un'iniziativa che inizi nel passato e che finisca prima che inizi
     private boolean checkDatesInitiative(long startDate, long endDate){
         long now = System.currentTimeMillis()/1000;
@@ -450,4 +455,31 @@ public class InitiativeController {
         }
         return new HashSet<>(Arrays.asList(organizersArray));
     }
+
+    // POSTMAN TEST: ADD AND DELETE INITIATIVES
+
+    @PostMapping(value = "/postman/create")
+    public boolean createInitiativePostman(@RequestBody Initiative[] initiatives){
+        initiativeRepository.saveAll(Arrays.asList(initiatives));
+        return true;
+    }
+
+    @DeleteMapping(value = "/postman/delete/{id}")
+    public boolean deleteInitiativePostman(@PathVariable String id){
+        Optional<Initiative> optionalInitiative = initiativeRepository.findById(id);
+        if(optionalInitiative.isPresent()){
+            initiativeRepository.delete(optionalInitiative.get());
+            return true;
+        }
+        return false;
+    }
+
+    @GetMapping(value = "/postman/getAll")
+    public List<Initiative> getAllInitiativesPostman(){
+        return initiativeRepository.findAll();
+    }
+
 }
+
+
+

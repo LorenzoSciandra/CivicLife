@@ -13,8 +13,6 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RabbitConfig {
 
-    private final String queue = "oauth-queue";
-
     @Value("${spring.rabbitmq.template.exchange}")
     private String exchange;
 
@@ -32,6 +30,7 @@ public class RabbitConfig {
 
     @Bean
     Queue queue() {
+        String queue = "oauth-queue";
         return new Queue(queue, true);
     }
 

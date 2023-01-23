@@ -3,10 +3,12 @@ package com.civiclife.voteservice.model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 public class CandidateResult {
 
     private String candidateId;
@@ -39,13 +41,13 @@ public class CandidateResult {
         this.percentage = percentage;
     }
 
-    @Override
-    public String toString() {
-        return "CandidateResult{" +
-                "candidateId=" + candidateId  +
-                "isLeader=" + isLeader +
-                ", votes=" + votes +
-                ", percentage=" + percentage +
-                '}';
+    public boolean isLeader() {
+        return isLeader;
     }
+
+    public void setLeader(boolean isLeader) {
+        this.isLeader = isLeader;
+    }
+
+
 }

@@ -11,7 +11,6 @@ import java.util.List;
 @Repository
 public interface VaccinationRepository extends MongoRepository<Vaccination, String> {
 
-
     @Query("{ 'email_owner' : ?0 }")
     List<Vaccination> getVaccinationByEmail(
             @Param("email_owner") String email_owner

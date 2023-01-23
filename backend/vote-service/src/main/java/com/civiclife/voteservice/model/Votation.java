@@ -3,6 +3,7 @@ package com.civiclife.voteservice.model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -12,6 +13,7 @@ import java.util.Set;
 @Document(collection = "votations")
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class Votation {
 
     public enum VotationStatus {
@@ -83,16 +85,5 @@ public class Votation {
         this.partiesIds = partiesIds;
     }
 
-    @Override
-    public String toString() {
-        return "Votation{" +
-                ", title='" + title + '\'' +
-                ", description='" + description + '\'' +
-                ", startDate=" + startDate +
-                ", endDate=" + endDate +
-                ", status=" + status +
-                ", partiesIds=" + partiesIds +
-                ", votationResult=" + votationResult +
-                '}';
-    }
+
 }

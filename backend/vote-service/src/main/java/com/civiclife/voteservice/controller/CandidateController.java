@@ -15,18 +15,18 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/candidateAPI/v1")
-@CrossOrigin(origins = "http://localhost:3000", maxAge = 600)
 public class CandidateController {
 
     @Autowired
     private CandidateRepository candidateRepository;
 
-
+    @CrossOrigin(origins = "http://localhost:3000", maxAge = 600)
     @GetMapping(value = "/candidates", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Candidate> getAllCandidates() {
         return candidateRepository.findAll();
     }
 
+    @CrossOrigin(origins = "http://localhost:3000", maxAge = 600)
     @GetMapping(value = "/error/{code}/{path}/{method}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ErrorMessage error(@PathVariable(value = "code") ValidateCode code,
                               @PathVariable(value = "path") String path,
@@ -35,11 +35,15 @@ public class CandidateController {
         return new ErrorMessage(code, pathUrl, method);
     }
 
+    @CrossOrigin(origins = "http://localhost:3000", maxAge = 600)
     @GetMapping(value = "/candidate/get/{candidateId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public Candidate getCandidateById(@PathVariable String candidateId) {
         Optional<Candidate> candidateOptional = candidateRepository.findById(candidateId);
         return candidateOptional.orElse(null);
     }
+
+
+    // POSTMAN TESTS
 
     @PostMapping("/postman/candidate/create")
     public boolean createCandidate(@RequestBody Candidate[] candidate) {

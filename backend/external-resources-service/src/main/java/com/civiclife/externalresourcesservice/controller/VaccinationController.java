@@ -5,6 +5,7 @@ import com.civiclife.externalresourcesservice.model.Vaccination;
 import com.civiclife.externalresourcesservice.repository.VaccinationRepository;
 import com.civiclife.externalresourcesservice.utils.ErrorMessage;
 import com.civiclife.externalresourcesservice.utils.ValidateCode;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,28 +18,8 @@ import java.util.Optional;
 @RequestMapping("/vaccinationAPI/v1")
 public class VaccinationController {
 
-    private final VaccinationRepository vaccinationRepository;
-
-    public VaccinationController(VaccinationRepository vaccinationRepository) {
-        this.vaccinationRepository = vaccinationRepository;
-    }
-
-    @GetMapping("/vaccination/all")
-    public List<Vaccination> getAllVaccinations() {
-        return vaccinationRepository.findAll();
-    }
-
-    @GetMapping("/vaccination/{id}")
-    public Vaccination getVaccinationsById(@PathVariable String id) {
-        Optional<Vaccination> optionalVaccination = vaccinationRepository.findById(id);
-        return optionalVaccination.orElse(null);
-    }
-
-    @DeleteMapping("/vaccination/delete/{id}")
-    public boolean deleteVaccination(@PathVariable String id) {
-        vaccinationRepository.deleteById(id);
-        return true;
-    }
+    @Autowired
+    private VaccinationRepository vaccinationRepository;
 
     @CrossOrigin(origins = "http://localhost:3000", maxAge = 600)
     @GetMapping(value = "/vaccinations/{email_owner}/{email_richiedente}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -51,6 +32,7 @@ public class VaccinationController {
         return new ArrayList<>();
     }
 
+    @CrossOrigin(origins = "http://localhost:3000", maxAge = 600)
     @GetMapping(value = "/error/{code}/{path}/{method}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ErrorMessage error(@PathVariable(value = "code") ValidateCode code,
                               @PathVariable(value = "path") String path,
@@ -59,29 +41,29 @@ public class VaccinationController {
         return new ErrorMessage(code, pathUrl, method);
     }
 
-    @PostMapping("/vaccination/update/{id}")
-    public boolean updateVaccination(@PathVariable String id, @RequestBody Vaccination vaccination) {
-        Optional<Vaccination> optionalVaccination = vaccinationRepository.findById(id);
-        if(optionalVaccination.isPresent()){
-            Vaccination vaccinationToUpdate = optionalVaccination.get();
-            vaccinationToUpdate.setDescription(vaccination.getDescription());
-            vaccinationToUpdate.setDate(vaccination.getDate());
-            vaccinationToUpdate.setDose(vaccination.getDose());
-            vaccinationToUpdate.setDoctor(vaccination.getDoctor());
-            vaccinationToUpdate.setLocation(vaccination.getLocation());
-            vaccinationToUpdate.setVaccineName(vaccination.getVaccineName());
-            vaccinationToUpdate.setManufacturer(vaccination.getManufacturer());
-            vaccinationToUpdate.setNurse(vaccination.getNurse());
-            vaccinationRepository.save(vaccinationToUpdate);
-            return true;
-        }
-        return false;
-    }
+    // FOR POSTMAN TEST: CREATE AND DELETE
 
     @PostMapping(value="/postman/create", produces = MediaType.APPLICATION_JSON_VALUE)
     public boolean createVaccinationPostman(@RequestBody Vaccination[] vaccinations) {
         vaccinationRepository.saveAll(List.of(vaccinations));
         return true;
+    }
+
+    @GetMapping("postman/vaccination/all")
+    public List<Vaccination> getAllVaccinations() {
+        return vaccinationRepository.findAll();
+    }
+
+    @DeleteMapping("postman/vaccination/delete/{id}")
+    public boolean deleteVaccination(@PathVariable String id) {
+        vaccinationRepository.deleteById(id);
+        return true;
+    }
+
+    @GetMapping("postman/vaccination/{id}")
+    public Vaccination getVaccinationsById(@PathVariable String id) {
+        Optional<Vaccination> optionalVaccination = vaccinationRepository.findById(id);
+        return optionalVaccination.orElse(null);
     }
 
 }

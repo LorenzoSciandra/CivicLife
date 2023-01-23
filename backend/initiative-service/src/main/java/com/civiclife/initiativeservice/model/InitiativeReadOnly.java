@@ -3,10 +3,12 @@ package com.civiclife.initiativeservice.model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 public class InitiativeReadOnly {
     private String name;
     private String description;
@@ -45,13 +47,4 @@ public class InitiativeReadOnly {
         this.type = type;
     }
 
-    @Override
-    public String toString() {
-        return "InitiativeReadOnly{" +
-                "name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", location='" + location + '\'' +
-                ", type=" + type +
-                '}';
-    }
 }

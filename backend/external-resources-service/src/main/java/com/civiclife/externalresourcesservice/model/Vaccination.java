@@ -1,11 +1,16 @@
 package com.civiclife.externalresourcesservice.model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Data
 @Document(collection = "vaccinations")
+@AllArgsConstructor
+@NoArgsConstructor
+@ToString
 public class Vaccination {
 
     @Id
@@ -19,20 +24,6 @@ public class Vaccination {
     private String manufacturer;
     private String doctor;
     private String nurse;
-
-    public Vaccination() {
-    }
-
-    public Vaccination(String id, String email_owner, Long date, String location, String description, String manufacturer, String doctor, String nurse) {
-        this.id = id;
-        this.email_owner = email_owner;
-        this.date = date;
-        this.location = location;
-        this.description = description;
-        this.manufacturer = manufacturer;
-        this.doctor = doctor;
-        this.nurse = nurse;
-    }
 
     public String getId() {
         return id;
@@ -112,21 +103,5 @@ public class Vaccination {
 
     public void setDose(String dose) {
         this.dose = dose;
-    }
-
-    @Override
-    public String toString(){
-        return "Vaccination= {" +
-                "id=" + id +
-                "owner = " + email_owner + '\'' +
-                ", vaccineName = " + vaccineName + '\'' +
-                ", dose = " + dose + '\'' +
-                ", description='" + description + '\'' +
-                ", date='" + date + '\'' +
-                ", location='" + location + '\'' +
-                ", manufacturer='" + manufacturer + '\'' +
-                ", doctor='" + doctor + '\'' +
-                ", nurse='" + nurse + '\'' +
-                '}';
     }
 }

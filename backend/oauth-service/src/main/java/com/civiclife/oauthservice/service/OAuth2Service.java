@@ -46,42 +46,41 @@ public class OAuth2Service {
         System.out.println(principal.getAttributes().toString());
 
         switch (TokenKey.OauthProvider.valueOf(oauth2ProviderName)) {
-            case Google:
+            case Google -> {
                 oauth2UserEmail = principal.getAttribute("email");
                 oauth2UserName = principal.getAttribute("given_name");
                 oauth2UserSurname = principal.getAttribute("family_name");
                 token = principal.getAttribute("at_hash");
-                break;
-            case Github:
+            }
+            case Github -> {
                 oauth2UserEmail = principal.getAttribute("email");
-                oauth2UserName =  Objects.requireNonNull(principal.getAttribute("name"));
+                oauth2UserName = Objects.requireNonNull(principal.getAttribute("name"));
                 oauth2UserSurname = "";
-                details  = authData.getDetails().toString();
+                details = authData.getDetails().toString();
                 System.out.println("values: " + details);
-                token= details.substring(details.indexOf("SessionId="))
+                token = details.substring(details.indexOf("SessionId="))
                         .replaceAll("]", "")
                         .replaceAll(",", "")
                         .replaceAll("SessionId=", "");
-
-                break;
-            case Facebook:
-                oauth2UserName =  Objects.requireNonNull(principal.getAttribute("name"));
+            }
+            case Facebook -> {
+                oauth2UserName = Objects.requireNonNull(principal.getAttribute("name"));
                 oauth2UserSurname = "";
                 oauth2UserEmail = principal.getAttribute("email");
                 token = "";
-                details  = authData.getDetails().toString();
+                details = authData.getDetails().toString();
                 System.out.println("values: " + details);
-                token= details.substring(details.indexOf("SessionId="))
+                token = details.substring(details.indexOf("SessionId="))
                         .replaceAll("]", "")
                         .replaceAll(",", "")
                         .replaceAll("SessionId=", "");
-                break;
-            default:
+            }
+            default -> {
                 oauth2UserEmail = "";
                 oauth2UserName = "";
                 oauth2UserSurname = "";
                 token = "";
-                break;
+            }
         }
 
 
@@ -113,26 +112,3 @@ public class OAuth2Service {
         return "email: " + oauth2UserEmail + ",provider: " + oauth2ProviderName + ",token: " + token;
     }
 }
-
-
-/*
-            String uri = "http://localhost:8080/userAPI/v1/user/createFromLogin/" + oauth2UserEmail + "/" + oauth2UserName + "/" + oauth2UserSurname;
-            RestTemplate restTemplate = new RestTemplate();
-            boolean result = Boolean.TRUE.equals(restTemplate.getForObject(uri, boolean.class));
-
-            if (result) {
-                HashMap<String, Instant> tokens_time = new HashMap<>();
-                tokens_time.put(token, Instant.now());
-                tokenRepository.save(new Token(new TokenKey(oauth2UserEmail, oauth2Provider), tokens_time));
-                return "http://localhost:8080/authAPI/v1/getToken/" + oauth2UserEmail + "/" + oauth2Provider;
-            }
-            else{
-                throw new ResponseStatusException(
-                        HttpStatus.BAD_REQUEST,
-                        String.format("%s non è un provider Oauth2 autorizzato per questo account.",
-                                oauth2ProviderName)
-                );
-            }
-            HashMap<String, Instant> tokens_time = new HashMap<>();
-            tokens_time.put(token, Instant.now());
-            tokenRepository.save(new Token(new TokenKey(oauth2UserEmail, oauth2Provider), tokens_time));*/

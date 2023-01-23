@@ -16,7 +16,6 @@ import java.util.*;
 
 @RestController
 @RequestMapping("/partyAPI/v1")
-@CrossOrigin(origins = "http://localhost:3000", maxAge = 600)
 @AllArgsConstructor
 public class PartyController {
 
@@ -25,12 +24,13 @@ public class PartyController {
 
     private CandidateRepository candidateRepository;
 
-
+    @CrossOrigin(origins = "http://localhost:3000", maxAge = 600)
     @GetMapping(value = "/parties", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Party> getAllParties() {
         return partyRepository.findAll();
     }
 
+    @CrossOrigin(origins = "http://localhost:3000", maxAge = 600)
     @GetMapping(value = "/error/{code}/{path}/{method}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ErrorMessage error(@PathVariable(value = "code") ValidateCode code,
                               @PathVariable(value = "path") String path,
@@ -39,6 +39,7 @@ public class PartyController {
         return new ErrorMessage(code, pathUrl, method);
     }
 
+    @CrossOrigin(origins = "http://localhost:3000", maxAge = 600)
     @GetMapping(value = "/party/get/{partyId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public Party getPartyById(@PathVariable String partyId) {
         String decodedPartyId = new String(Base64.getDecoder().decode(partyId));
@@ -46,7 +47,7 @@ public class PartyController {
         return partyOptional.orElse(null);
     }
 
-
+    @CrossOrigin(origins = "http://localhost:3000", maxAge = 600)
     @GetMapping(value = "/party/get/allCandidates/{partyId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Candidate> getAllCandidatesFromParty(@PathVariable String partyId) {
         String decodedPartyId = new String(Base64.getDecoder().decode(partyId));
@@ -57,6 +58,8 @@ public class PartyController {
         }
         return new ArrayList<>();
     }
+
+    // POSTMAN TESTS
 
     @PostMapping("/postman/party/create")
     public boolean createParty(@RequestBody Party[] party) {
@@ -73,7 +76,6 @@ public class PartyController {
         }
         return false;
     }
-
 
     @GetMapping("/postman/party/setLeader/{partyId}/{candidateId}")
     public boolean setLeaderIdFromParty(@PathVariable String partyId, @PathVariable String candidateId) {

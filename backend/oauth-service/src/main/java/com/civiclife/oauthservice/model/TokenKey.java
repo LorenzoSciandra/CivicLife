@@ -1,10 +1,14 @@
 package com.civiclife.oauthservice.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
+@ToString
 public class TokenKey {
 
     public enum OauthProvider {
@@ -15,11 +19,6 @@ public class TokenKey {
 
     private String email;
     private OauthProvider provider;
-
-    public TokenKey(String email, OauthProvider provider) {
-        this.email = email;
-        this.provider = provider;
-    }
 
     public String getEmail() {
         return email;
@@ -37,11 +36,5 @@ public class TokenKey {
         this.provider = provider;
     }
 
-    @Override
-    public String toString() {
-        return "{" +
-                "email='" + email + '\'' + "," +
-                "provider=" + provider +
-                '}';
-    }
+
 }

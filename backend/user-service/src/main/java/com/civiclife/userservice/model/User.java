@@ -1,12 +1,17 @@
 package com.civiclife.userservice.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-
 @Data
 @Document(collection = "users")
+@AllArgsConstructor
+@NoArgsConstructor
+@ToString
 public class User {
 
     @Id
@@ -22,25 +27,6 @@ public class User {
     private long telephonNumber;
     private boolean authorizeBonus;
     private boolean authorizeVaccine;
-
-    public User(){
-
-    }
-
-    public User(String email, boolean admin, String name, String surname, String fiscalCode, String residence, String domicile, long birthDate, UserStatus status, long telephonNumber, boolean authorizeBonus, boolean authorizeVaccine) {
-        this.email = email;
-        this.admin = admin;
-        this.name = name;
-        this.surname = surname;
-        this.fiscalCode = fiscalCode;
-        this.residence = residence;
-        this.domicile = domicile;
-        this.birthDate = birthDate;
-        this.status = status;
-        this.telephonNumber = telephonNumber;
-        this.authorizeBonus = authorizeBonus;
-        this.authorizeVaccine = authorizeVaccine;
-    }
 
     public boolean isAdmin() {
         return admin;
@@ -136,23 +122,5 @@ public class User {
 
     public void setAuthorizeVaccine(boolean authorizeVaccine) {
         this.authorizeVaccine = authorizeVaccine;
-    }
-
-    @Override
-    public String toString(){
-        return "User{" +
-                "email='" + email + '\'' +
-                ", admin=" + admin +
-                ", name='" + name + '\'' +
-                ", surname='" + surname + '\'' +
-                ", fiscalCode='" + fiscalCode + '\'' +
-                ", residence='" + residence + '\'' +
-                ", domicile='" + domicile + '\'' +
-                ", birthDate=" + birthDate +
-                ", status=" + status +
-                ", telephonNumber=" + telephonNumber +
-                ", authorizeBonus=" + authorizeBonus +
-                ", authorizeVaccine=" + authorizeVaccine +
-                '}';
     }
 }

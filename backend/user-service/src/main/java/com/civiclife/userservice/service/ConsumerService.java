@@ -43,11 +43,15 @@ public class ConsumerService {
 
     @RabbitListener(queues = "oauth-queue")
     public void receivedMessage(UserComponent userComponent) {
+        createFromLogin(userComponent.getMail(), userComponent.getName(), userComponent.getSurname());
+        /*
         System.out.println("Messaggio ricevuto dalla coda Rabbit");
         if(createFromLogin(userComponent.getMail(), userComponent.getName(), userComponent.getSurname()))
             System.out.println("Utente creato: " + userComponent.getMail());
         else
             System.out.println("Utente già esistente: " + userComponent.getMail());
+
+         */
     }
 }
 

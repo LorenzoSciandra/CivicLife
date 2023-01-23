@@ -17,6 +17,8 @@ public class UserComponent implements Serializable {
     private String mail;
     private String name;
 
+    private String surname;
+
     public String getMail() {
         return mail;
     }
@@ -40,6 +42,4 @@ public class UserComponent implements Serializable {
     public void setSurname(String surname) {
         this.surname = surname;
     }
-
-    private String surname;
 }

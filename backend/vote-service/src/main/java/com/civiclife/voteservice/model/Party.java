@@ -4,6 +4,7 @@ package com.civiclife.voteservice.model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -13,6 +14,7 @@ import java.util.Set;
 @Document(collection = "parties")
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 public class Party {
 
     @Id
@@ -42,8 +44,8 @@ public class Party {
         return leaderId;
     }
 
-    public void setLeaderId(String leader) {
-        this.leaderId = leader;
+    public void setLeaderId(String leaderId) {
+        this.leaderId = leaderId;
     }
 
     public String getLogoLink() {
@@ -62,14 +64,5 @@ public class Party {
         this.candidateIdList = candidateIdList;
     }
 
-    @Override
-    public String toString() {
-        return "Party{" +
-                "name='" + name + "', " +
-                "description='" + description + "', " +
-                "leaderId='" + leaderId + "', " +
-                "logoLink='" + logoLink + "', " +
-                "candidateIdList=" + candidateIdList +
-                "}";
-    }
+
 }

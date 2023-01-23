@@ -27,7 +27,8 @@ public class RouteConfig {
                 .route(r-> r.path("/userAPI/**")
                         .filters(f -> f.filter(new AuthFilter()))
                             .uri("lb://USER-SERVICE"))
-                .route(r -> r.path("/votationAPI/v1/votation/vote/**",
+                .route(r -> r.path("/votationAPI/v1/votation/voteCandidate/**",
+                                "/votationAPI/v1/votation/voteParty/**",
                                 "/votationAPI/v1/votation/updateStatus/**",
                                 "/votationAPI/v1/votations/done/**",
                                 "/votationAPI/v1/votations/programmed/**")

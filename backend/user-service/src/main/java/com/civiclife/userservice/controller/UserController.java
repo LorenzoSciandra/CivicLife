@@ -5,7 +5,6 @@ import com.civiclife.userservice.model.User;
 import com.civiclife.userservice.repo.UserRepository;
 import com.civiclife.userservice.utils.ErrorMessage;
 import com.civiclife.userservice.utils.ValidateCode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -16,12 +15,12 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/userAPI/v1")
-@CrossOrigin(origins = "http://localhost:3000", maxAge = 600)
 public class UserController {
 
     @Autowired
     UserRepository userRepository;
 
+    @CrossOrigin(origins = "http://localhost:3000", maxAge = 600)
     @GetMapping(value = "/users/{email}/{emailRichiedente}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<User> getAllUtenti(@PathVariable(value = "email") String email,
                                    @PathVariable(value = "emailRichiedente") String emailRichiedente) {
@@ -36,6 +35,7 @@ public class UserController {
         return new ArrayList<>();
     }
 
+    @CrossOrigin(origins = "http://localhost:3000", maxAge = 600)
     @GetMapping(value = "/users/emails/{email}/{emailRichiedente}", produces = MediaType.APPLICATION_JSON_VALUE)
     public Set<String> getAllUtentiEmail(@PathVariable(value = "email") String email,
                                          @PathVariable(value = "emailRichiedente") String emailRichiedente) {
@@ -47,14 +47,15 @@ public class UserController {
         return new HashSet<>();
     }
 
+    @CrossOrigin(origins = "http://localhost:3000", maxAge = 600)
     @GetMapping(value = "/user/getStatus/{email}", produces = MediaType.APPLICATION_JSON_VALUE)
     public UserStatus getStatus(@PathVariable(value = "email") String email) {
-        System.out.println("Il coglione vuole sapere lo stato di " + email);
         Optional<User> optionalUser = userRepository.findById(email);
         return optionalUser.map(User::getStatus).orElse(null);
 
     }
 
+    @CrossOrigin(origins = "http://localhost:3000", maxAge = 600)
     @GetMapping(value = "/user/get/{email}/{emailRichiedente}",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public User getUser(@PathVariable(value = "email") String email,
@@ -74,6 +75,7 @@ public class UserController {
         return null;
     }
 
+    @CrossOrigin(origins = "http://localhost:3000", maxAge = 600)
     @GetMapping(value = "/user/isAdmin/{email}/{emailRichiedente}", produces = MediaType.APPLICATION_JSON_VALUE)
     public boolean isAdmin(@PathVariable(value = "email") String email,
                            @PathVariable(value = "emailRichiedente") String emailRichiedente) {
@@ -90,6 +92,7 @@ public class UserController {
         return false;
     }
 
+    @CrossOrigin(origins = "http://localhost:3000", maxAge = 600)
     @GetMapping(value = "/user/authorizeBonus/{email}/{emailRichiedente}",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public boolean authorizeBonus(@PathVariable(value = "email") String email,
@@ -106,6 +109,7 @@ public class UserController {
         return false;
     }
 
+    @CrossOrigin(origins = "http://localhost:3000", maxAge = 600)
     @GetMapping(value = "/user/authorizeVaccine/{email}/{emailRichiedente}",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public boolean authorizeVaccine(@PathVariable(value = "email") String email,
@@ -122,25 +126,7 @@ public class UserController {
         return false;
     }
 
-    @DeleteMapping("/user/delete/{email}/{emailUser}/{emailRichiedente}")
-    public boolean deleteUser(@PathVariable(value = "email") String email,
-                              @PathVariable(value = "emailUser") String emailUser,
-                              @PathVariable(value = "emailRichiedente") String emailRichiedente) {
-        Optional<User> optionalAdmin = userRepository.findById(email);
-
-        if (optionalAdmin.isPresent() && email.equals(emailRichiedente)) {
-            User admin = optionalAdmin.get();
-            if (admin.isAdmin()) {
-                Optional<User> optionalUser = userRepository.findById(emailUser);
-                if (optionalUser.isPresent()) {
-                    userRepository.deleteById(emailUser);
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
+    @CrossOrigin(origins = "http://localhost:3000", maxAge = 600)
     @GetMapping(value = "/error/{code}/{path}/{method}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ErrorMessage error(@PathVariable(value = "code") ValidateCode code,
                               @PathVariable(value = "path") String path,
@@ -149,27 +135,7 @@ public class UserController {
         return new ErrorMessage(code, pathUrl, method);
     }
 
-    //only for testing from postman
-    @GetMapping("/postman/setAdmin/{email}")
-    public boolean setAdmin(@PathVariable String email) {
-        Optional<User> optionalUser = userRepository.findById(email);
-        if (optionalUser.isPresent()) {
-            User user = optionalUser.get();
-            user.setAdmin(true);
-            userRepository.save(user);
-            return true;
-        }
-        return false;
-    }
-
-    //only for testing with postman
-    @PostMapping("/postman/create")
-    public boolean createUser(@RequestBody User[] users) {
-        userRepository.saveAll(Arrays.asList(users));
-        return true;
-    }
-
-
+    @CrossOrigin(origins = "http://localhost:3000", maxAge = 600)
     @PostMapping(value = "/user/update/{email}/{emailRichiedente}",
             consumes = MediaType.TEXT_PLAIN_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
@@ -185,7 +151,7 @@ public class UserController {
     }
 
     public boolean updateUser(User user) {
-        System.out.println("Modifico utente come: " + user);
+        // System.out.println("Modifico utente come: " + user);
         Optional<User> optionalUser = userRepository.findById(user.getEmail());
         if (optionalUser.isPresent()) {
             User userToUpdate = optionalUser.get();
@@ -205,7 +171,7 @@ public class UserController {
     }
 
     private User parseUser(String new_user) {
-        System.out.println("Parsing: " + new_user);
+        // System.out.println("Parsing: " + new_user);
         User user = new User();
         String[] campi = new_user.split(",");
         for (String campo : campi) {
@@ -238,9 +204,8 @@ public class UserController {
                         user.setBirthDate(Long.parseLong(value));
                     }
                 }
-                case "status" -> {
-                    user.setStatus(parseStatus(value));
-                }
+                case "status" ->  user.setStatus(parseStatus(value));
+
                 case "telephonNumber" -> {
                     if (value.equals("")) {
                         user.setTelephonNumber(0);
@@ -276,7 +241,7 @@ public class UserController {
                                 @RequestBody String status) {
 
         String decodedStatus = new String(Base64.getDecoder().decode(status));
-        System.out.println("Cambio stato utente a: " + emailToUpdate + " richiesto da: " + emailRichiedente + " a: " + decodedStatus);
+        // System.out.println("Cambio stato utente a: " + emailToUpdate + " richiesto da: " + emailRichiedente + " a: " + decodedStatus);
         UserStatus newStatus = parseStatus(decodedStatus);
         if(emailAdmin.equals(emailRichiedente)) {
             Optional<User> optionalAdmin = userRepository.findById(emailRichiedente);
@@ -303,12 +268,40 @@ public class UserController {
             case "ACTIVE" -> newStatus = UserStatus.ACTIVE;
             case "BANNED" -> newStatus = UserStatus.BANNED;
             case "SUSPENDED" -> newStatus = UserStatus.SUSPENDED;
-            default -> {
-                newStatus = UserStatus.ACTIVE;
-            }
+            default -> newStatus = UserStatus.ACTIVE;
         }
 
         return newStatus;
+    }
+
+    // POSTMAN TESTS
+
+    @GetMapping("/postman/setAdmin/{email}")
+    public boolean setAdmin(@PathVariable String email) {
+        Optional<User> optionalUser = userRepository.findById(email);
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            user.setAdmin(true);
+            userRepository.save(user);
+            return true;
+        }
+        return false;
+    }
+
+    @PostMapping("/postman/create")
+    public boolean createUser(@RequestBody User[] users) {
+        userRepository.saveAll(Arrays.asList(users));
+        return true;
+    }
+
+    @DeleteMapping("/postman/delete/{email}")
+    public boolean deleteUser(@PathVariable String email) {
+        Optional<User> optionalUser = userRepository.findById(email);
+        if (optionalUser.isPresent()) {
+            userRepository.delete(optionalUser.get());
+            return true;
+        }
+        return false;
     }
 
 

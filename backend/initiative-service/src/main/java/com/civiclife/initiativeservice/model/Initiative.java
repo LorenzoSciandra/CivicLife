@@ -3,6 +3,7 @@ package com.civiclife.initiativeservice.model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import java.util.Set;
@@ -11,6 +12,7 @@ import java.util.Set;
 @Document(collection = "initiatives")
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class Initiative {
 
     public enum InitiativeType {
@@ -109,11 +111,5 @@ public class Initiative {
         this.location = location;
     }
 
-    @Override
-    public String toString() {
-        return "Initiative{" +
-                "id='" + id + '\'' + ", name='" + name + '\'' + ", description='" + description + '\'' +
-                ", type='" + type + '\'' + ", idCreator=" + idCreator + ", idOrganizers=" + idOrganizers + ", idMembers=" + idMembers + ", startDate=" + startDate + ", endDate=" + endDate + ", location='" + location + '\'' + '}';
-    }
 
 }

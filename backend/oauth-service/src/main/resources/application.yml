@@ -13,7 +13,6 @@ spring:
     template:
       exchange: oauth-exchange
       routing-key: oauth-key
-
   application:
     name: oauth-service
   data:

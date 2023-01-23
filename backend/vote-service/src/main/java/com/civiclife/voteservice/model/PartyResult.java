@@ -3,13 +3,14 @@ package com.civiclife.voteservice.model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
-import java.util.HashMap;
 import java.util.Set;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 public class PartyResult {
     private String partyId;
     private float votes;
@@ -45,15 +46,5 @@ public class PartyResult {
 
     public void setCandidateResults(Set<CandidateResult> candidateResults) {
         this.candidateResults = candidateResults;
-    }
-
-    @Override
-    public String toString() {
-        return "{" +
-                "partyId='" + partyId + '\'' + "," +
-                "votes='" + votes + '\'' + "," +
-                "percentage='" + percentage + '\'' + "," +
-                "candidateResults=" + candidateResults +
-                '}';
     }
 }

@@ -1,7 +1,9 @@
 package com.civiclife.oauthservice.config;
 
-import com.civiclife.oauthservice.utility.AES;
+import com.civiclife.oauthservice.utils.AES;
 import com.civiclife.oauthservice.service.OAuth2Service;
+import com.civiclife.oauthservice.utils.ErrorMessage;
+import com.civiclife.oauthservice.utils.ValidateCode;
 import com.mongodb.lang.NonNull;
 import lombok.AllArgsConstructor;
 import org.apache.hc.core5.http.HttpStatus;
@@ -18,7 +20,6 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.Base64;
-import java.util.Collections;
 import java.util.Objects;
 
 
@@ -32,7 +33,7 @@ public class SecurityConfig {
     private final String secret = "!CivicLifeSecret2023!";
 
 
-    // definire il Bean per la configurazione della sicurezza
+    // Bean per la configurazione della sicurezza
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
@@ -44,9 +45,6 @@ public class SecurityConfig {
                 .oauth2Login(customizer -> customizer
                                             .loginPage("/login")
                                             .successHandler(oauth2SuccessHandler()))
-                /*.exceptionHandling()
-                .authenticationEntryPoint((request, response, authException) -> response.sendError(HttpStatus.SC_UNAUTHORIZED))
-                .and()*/
                 .authorizeRequests(requests -> requests
                                                 .requestMatchers(  "/authAPI/**",
                                                                             "/resources/templates/**",
@@ -97,10 +95,12 @@ public class SecurityConfig {
                     response.sendRedirect("http://localhost:3000/home?token=" + base64Token);
                 }
                 else {
-                    response.sendRedirect("http://localhost:3000/error?errorReason=" + tokenData);
+                    ErrorMessage errorMessage = new ErrorMessage(ValidateCode.AUTH_SERVER_ERROR, "http://localhost:8080/login","GET");
+                    response.sendRedirect("http://localhost:3000/error?errorReason=" + errorMessage.toString());
                 }
             } catch (ResponseStatusException ex) {
-                response.sendRedirect("http://localhost:3000/error?errorReason="+ex.getReason());
+                ErrorMessage errorMessage = new ErrorMessage(ValidateCode.AUTH_SERVER_ERROR, "http://localhost:8080/login","GET");
+                response.sendRedirect("http://localhost:3000/error?errorReason="+errorMessage.toString());
             }
         };
     }

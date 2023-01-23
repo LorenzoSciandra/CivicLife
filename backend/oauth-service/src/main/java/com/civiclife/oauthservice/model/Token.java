@@ -1,9 +1,6 @@
 package com.civiclife.oauthservice.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -16,21 +13,14 @@ import java.util.Set;
 
 @Data
 @Document(collection = "tokens")
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString
 public class Token {
 
     @Id
     private TokenKey tokenKey;
-
     private HashMap<String, Instant> tokens;
-
-    public Token(){
-
-    }
-
-    public Token(TokenKey tokenKey, HashMap<String, Instant> tokens) {
-        this.tokenKey = tokenKey;
-        this.tokens = tokens;
-    }
 
     public void removeExpired(){
         Instant now = Instant.now();

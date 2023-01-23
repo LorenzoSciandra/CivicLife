@@ -43,24 +43,24 @@ services:
   #  ----------------------------------------------
   #  APPLICATION SERVICES
 
-#  user-service:
-#    build: user-service
-#    image: user-service-1.0
-#    container_name: user-service
-#    ports:
-#      - "8083:8083"
-#    links:
-#      - user-db
-#    depends_on:
-#      - user-db
-#      - service-discovery
-#      - rabbitmq
-#      - oauth-service
-#    deploy:
-#      restart_policy:
-#        condition: on-failure
-#    networks:
-#      - clnet
+  user-service:
+    build: user-service
+    image: user-service-1.0
+    container_name: user-service
+    ports:
+      - "8083:8083"
+    links:
+      - user-db
+    depends_on:
+      - user-db
+      - service-discovery
+      - rabbitmq
+      - oauth-service
+    deploy:
+      restart_policy:
+        condition: on-failure
+    networks:
+      - clnet
 
   oauth-service:
     build: oauth-service
@@ -80,22 +80,22 @@ services:
     networks:
       - clnet
 
-  vote-service:
-    build: vote-service
-    image: vote-service-1.0
-    container_name: vote-service
-    ports:
-      - "8084:8084"
-    links:
-      - vote-db
-    depends_on:
-      - vote-db
-      - service-discovery
-    deploy:
-      restart_policy:
-        condition: on-failure
-    networks:
-      - clnet
+#  vote-service:
+#    build: vote-service
+#    image: vote-service-1.0
+#    container_name: vote-service
+#    ports:
+#      - "8084:8084"
+#    links:
+#      - vote-db
+#    depends_on:
+#      - vote-db
+#      - service-discovery
+#    deploy:
+#      restart_policy:
+#        condition: on-failure
+#    networks:
+#      - clnet
 
  # external-resources-service:
  #   build: external-resources-service
@@ -115,19 +115,19 @@ services:
   #  ----------------------------------------------
   #  DATABASES
 
-#  user-db:
-#    image: mongo:latest
-#    container_name: user-db
-#    restart: unless-stopped
-#    volumes:
-#      - user-db:/var/lib/userDB/data
-#    ports:
-#      - "27019:27017"
-#    deploy:
-#      restart_policy:
-#        condition: on-failure
-#    networks:
-#      - clnet
+  user-db:
+    image: mongo:latest
+    container_name: user-db
+    restart: unless-stopped
+    volumes:
+      - user-db:/var/lib/userDB/data
+    ports:
+      - "27019:27017"
+    deploy:
+      restart_policy:
+        condition: on-failure
+    networks:
+      - clnet
 
   token-db:
     image: mongo:latest
@@ -143,19 +143,19 @@ services:
     networks:
       - clnet
 
-  vote-db:
-    image: mongo:latest
-    container_name: vote-db
-    restart: unless-stopped
-    volumes:
-      - vote-db:/var/lib/voteDB/data
-    ports:
-      - "27020:27017"
-    deploy:
-      restart_policy:
-        condition: on-failure
-    networks:
-      - clnet
+#  vote-db:
+#    image: mongo:latest
+#    container_name: vote-db
+#    restart: unless-stopped
+#    volumes:
+#      - vote-db:/var/lib/voteDB/data
+#    ports:
+#      - "27020:27017"
+#    deploy:
+#      restart_policy:
+#        condition: on-failure
+#    networks:
+#      - clnet
 
  # external-resources-db:
  #   image: mongo:latest
@@ -171,8 +171,8 @@ services:
 
 volumes:
 #  external-resources-db:
-#  user-db:
-  vote-db:
+  user-db:
+#  vote-db:
   token-db:
 networks:
   clnet:
