@@ -6,11 +6,11 @@ import {CssTextField} from "../Utils/CustomComponents";
 import {useLocation, useNavigate} from "react-router-dom";
 import Toolbar from "@mui/material/Toolbar";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import {isInstanceOfAuthError, logoutUser} from "../APIs/OauthAPI";
+import {isInstanceOfAuthError, logoutUser, TokenData} from "../APIs/OauthAPI";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import FormControl from "@mui/material/FormControl";
 import MenuItem from "@mui/material/MenuItem";
-import {getAllUsersEmail, UserStatus} from "../APIs/UsersAPI";
+import {getAllUsersEmail, User, UserStatus} from "../APIs/UsersAPI";
 import dayjs, {Dayjs} from "dayjs";
 import {
     changeOrganizers,
@@ -32,25 +32,20 @@ import Stack from "@mui/material/Stack";
 
 const InitiativeDetails = () => {
     const location = useLocation()
-    const initiativePassed = location.state.initiative
-    const tokenData = location.state.token
-    const user = location.state.user
-    const isVisitor = location.state.isVisitor
+    const initiativePassed : Initiative= location.state.initiative
+    const tokenData: TokenData = location.state.token
+    const user :User= location.state.user
+    const isVisitor : boolean= location.state.isVisitor
     const navigate = useNavigate()
 
-    const [initiative, setInitiative] = useState<Initiative|null>(null)
+    const [initiative, setInitiative] = useState<Initiative | null>(null)
 
-    const [modifiedDescription, setModifiedDescription] = useState<string|null>(null)
-    const [usersList, setUsersList] = useState<string[]| null>(null)
-    const [modifiedSelectedUsers, setModifiedSelectedUsers] = useState<string[]|null>(null)
+    const [modifiedDescription, setModifiedDescription] = useState<string | null>(null)
+    const [usersList, setUsersList] = useState<string[] | null>(null)
+    const [modifiedSelectedUsers, setModifiedSelectedUsers] = useState<string[] | null>(null)
     const [modifiedStartDate, setModifiedStartDate] = useState<Dayjs | null>(null)
     const [modifiedEndDate, setModifiedEndDate] = useState<Dayjs | null>(null)
     const [initiativeType, setInitiativeType] = useState<InitiativeType | null>(null)
-
-    // DESCRIZIONE
-    // DATA INIZIO
-    // DATA FINE
-    // ORGANIZZATORI
 
     const getUsers = async () => {
         const response = await getAllUsersEmail(tokenData)
@@ -65,8 +60,7 @@ const InitiativeDetails = () => {
         const response = await getInitiativeByID(tokenData, initiativePassed.id)
         if (isInstanceOfAuthError(response)) {
             navigate('/error', {state: {error: response}})
-        }
-        else {
+        } else {
             setModifiedDescription(response.description)
             setModifiedSelectedUsers(response.idOrganizers)
             setModifiedStartDate(dayjs.unix(response.startDate))
@@ -80,31 +74,31 @@ const InitiativeDetails = () => {
     }
 
     useEffect(() => {
-        if(!initiative){
+        if (!initiative) {
             getInitiative()
         }
-    },[])
+    }, [])
 
     useEffect(() => {
-        if(initiative){
+        if (initiative) {
             //set all
 
 
-            if(usersList === null && !isVisitor && user.email===initiative.idCreator){
+            if (usersList === null && !isVisitor && user.email === initiative.idCreator) {
                 getUsers()
             }
         }
 
-    },[initiative])
+    }, [initiative])
 
-    const somethingChanged = async (message?:string) => {
-        const response= await getInitiative()
-        if (response){
+    const somethingChanged = async (message?: string) => {
+        const response = await getInitiative()
+        if (response) {
             if (message) {
                 setOpen(true)
                 setMessage(message)
             }
-        } else if(!response){
+        } else if (!response) {
             setOpenError(true)
             setMessageError("Errore nel caricamento dei dati")
         } else {
@@ -113,20 +107,18 @@ const InitiativeDetails = () => {
     }
 
 
-    const handleStartDateChanged = (newValue: Dayjs|null) => {
+    const handleStartDateChanged = (newValue: Dayjs | null) => {
         if (dayjs(newValue, 'DD/MM/YYYY', true).isValid()) {
             setModifiedStartDate(newValue);
-        }
-        else{
+        } else {
             console.log("Invalid date")
         }
     }
 
-    const handleEndDateChanged = (newValue: Dayjs|null) => {
+    const handleEndDateChanged = (newValue: Dayjs | null) => {
         if (dayjs(newValue, 'DD/MM/YYYY', true).isValid()) {
             setModifiedEndDate(newValue);
-        }
-        else{
+        } else {
             console.log("Invalid date")
         }
     }
@@ -139,11 +131,10 @@ const InitiativeDetails = () => {
     }
 
     const isReadOnly = () => {
-        if(initiative){
-            if(userIsOrganizer()){
+        if (initiative) {
+            if (userIsOrganizer()) {
                 return false
-            }
-            else return user.email !== initiative.idCreator;
+            } else return user.email !== initiative.idCreator;
         }
     }
 
@@ -151,22 +142,21 @@ const InitiativeDetails = () => {
         setModifiedDescription(event.target.value)
     }
 
-    function toTimestamp(strDate: string){
+    function toTimestamp(strDate: string) {
         const datum = Date.parse(strDate);
-        return datum/1000;
+        return datum / 1000;
     }
 
-    function checkDataChanged(date: Dayjs | null, oldDate: number){
-        if(date === null){
+    function checkDataChanged(date: Dayjs | null, oldDate: number) {
+        if (date === null) {
             return false
-        }
-        else{
+        } else {
             return date.unix() !== oldDate
         }
     }
 
     const handleModify = async () => {
-        if(initiative){
+        if (initiative) {
             if (!isReadOnly()) {
                 if (initiative.description !== modifiedDescription ||
                     checkDataChanged(modifiedStartDate, initiative.startDate) ||
@@ -176,7 +166,7 @@ const InitiativeDetails = () => {
                         id: initiative.id,
                         idCreator: initiative.idCreator,
                         idOrganizers: initiative.idOrganizers,
-                        description: modifiedDescription && (initiative.description !== modifiedDescription) ? modifiedDescription: initiative.description,
+                        description: modifiedDescription && (initiative.description !== modifiedDescription) ? modifiedDescription : initiative.description,
                         startDate: modifiedStartDate && checkDataChanged(modifiedStartDate, initiative.startDate) ? toTimestamp(modifiedStartDate.toString()) : initiative.startDate,
                         endDate: modifiedEndDate && checkDataChanged(modifiedEndDate, initiative.endDate) ? toTimestamp(modifiedEndDate.toString()) : initiative.endDate,
                         type: initiative.type,
@@ -185,33 +175,30 @@ const InitiativeDetails = () => {
                         name: initiative.name,
                     }
                     const response = await modifyInitiative(tokenData, newInitiative)
-                    if ( typeof response === 'boolean') {
-                        if(response){
+                    if (typeof response === 'boolean') {
+                        if (response) {
                             somethingChanged("Dati iniziative modificati con successo")
-                        }else{
+                        } else {
                             setOpenError(true)
                             setMessageError("Non è stato possibile modificare gli organizzatori")
                         }
-                    }
-                    else {
+                    } else {
                         navigate('/error', {state: {error: response}})
 
                     }
                 }
-                if(modifiedSelectedUsers && modifiedSelectedUsers.length > 0) {
+                if (modifiedSelectedUsers && modifiedSelectedUsers.length > 0) {
                     if (initiative.idOrganizers !== modifiedSelectedUsers) {
                         if (user.email === initiative.idCreator || userIsOrganizer()) {
                             const response = await changeOrganizers(tokenData, initiative.id, modifiedSelectedUsers)
-                            if(typeof response === 'boolean'){
+                            if (typeof response === 'boolean') {
                                 if (response) {
                                     somethingChanged("Organizzatori modificati con successo")
-                                }
-                                else{
+                                } else {
                                     setOpenError(true)
                                     setMessageError("Non è stato possibile modificare gli organizzatori")
                                 }
-                            }
-                            else {
+                            } else {
                                 navigate('/error', {state: {error: response}})
                             }
                         } else {
@@ -244,7 +231,7 @@ const InitiativeDetails = () => {
     }
 
     const handleUserAdd = (user: any) => {
-        if(modifiedSelectedUsers){
+        if (modifiedSelectedUsers) {
             if (!modifiedSelectedUsers.includes(user)) {
                 setModifiedSelectedUsers([...modifiedSelectedUsers, user])
             }
@@ -252,25 +239,23 @@ const InitiativeDetails = () => {
     }
 
     const handleDelete = (userToDelete: any) => () => {
-        if(modifiedSelectedUsers){
+        if (modifiedSelectedUsers) {
             setModifiedSelectedUsers(modifiedSelectedUsers.filter((user) => user !== userToDelete))
         }
     };
 
     const handleSubscribe = async () => {
 
-        if(initiative){
+        if (initiative) {
             const response = await subscribeInitiative(tokenData, initiative.id)
-            if(typeof response === 'boolean'){
-                if(response){
+            if (typeof response === 'boolean') {
+                if (response) {
                     somethingChanged('Iscrizione avvenuta con successo')
-                }
-                else{
+                } else {
                     setOpenError(true)
                     setMessageError('Non è stato possibile iscriverti')
                 }
-            }
-            else{
+            } else {
                 navigate('/error', {state: {error: response}})
             }
         }
@@ -278,18 +263,16 @@ const InitiativeDetails = () => {
     }
 
     const handleUnSubscribe = async () => {
-        if(initiative){
+        if (initiative) {
             const response = await unsubscribeInitiative(tokenData, initiative.id)
-            if(typeof response === 'boolean'){
-                if(response){
+            if (typeof response === 'boolean') {
+                if (response) {
                     somethingChanged('Sei stato rimosso dall\'iniziative')
+                } else {
+                    setOpenError(true)
+                    setMessageError("Non è stato possibile cancellare la tua iscrizione")
                 }
-                else{
-                   setOpenError(true)
-                     setMessageError("Non è stato possibile cancellare la tua iscrizione")
-                }
-            }
-            else{
+            } else {
                 navigate('/error', {state: {error: response}})
             }
         }
@@ -305,9 +288,9 @@ const InitiativeDetails = () => {
         setOpenError(true);
     }
 
-    const handleCloseError = (event?: React.SyntheticEvent| Event, reason?: string) => {
+    const handleCloseError = (event?: React.SyntheticEvent | Event, reason?: string) => {
         if (reason === 'clickaway') {
-          return;
+            return;
         }
         setOpenError(false);
     }
@@ -327,18 +310,16 @@ const InitiativeDetails = () => {
     });
 
     const handleDeleteInitiative = async () => {
-        if(initiative){
-            const response= await deleteInitiative(tokenData, initiative.id)
-            if(typeof response === 'boolean'){
-                if(response){
+        if (initiative) {
+            const response = await deleteInitiative(tokenData, initiative.id)
+            if (typeof response === 'boolean') {
+                if (response) {
                     navigate(-1)
-                }
-                else{
+                } else {
                     setOpenError(true)
                     setMessageError("Non è stato possibile eliminare l'iniziativa")
                 }
-            }
-            else{
+            } else {
                 navigate('/error', {state: {error: response}})
             }
         }
@@ -379,195 +360,216 @@ const InitiativeDetails = () => {
                     </Grid>
 
                         <Grid container display="flex" justifyContent="flex-start" alignItems="center"
-                                 sx={{width: '100%', marginTop: '65px'}} spacing={3}>
+                              sx={{width: '100%', marginTop: '65px'}} spacing={3}>
 
-                        <Grid item xs={12}>
-                            <Typography
-                                style={{
-                                    justifyContent: 'center',
-                                    color: 'white',
-                                    textAlign: 'center',
-                                    fontSize: '1.8rem',
-                                }}>{initiative.name}
-                            </Typography>
-                        </Grid>
-                        <Grid item xs={12}>
-                            <Typography sx={{
-                                color: initiativeType? InitiativeTypeColor[initiativeType]: null,
-                                fontWeight: 'bold',
-                                fontSize: '1.2rem'
-                            }}>{initiative.type}</Typography>
-                        </Grid>
+                            <Grid item xs={12}>
+                                <Typography
+                                    style={{
+                                        justifyContent: 'center',
+                                        color: 'white',
+                                        textAlign: 'center',
+                                        fontSize: '1.8rem',
+                                    }}>{initiative.name}
+                                </Typography>
+                            </Grid>
+                            <Grid item xs={12}>
+                                <Typography sx={{
+                                    color: initiativeType ? InitiativeTypeColor[initiativeType] : null,
+                                    fontWeight: 'bold',
+                                    fontSize: '1.2rem'
+                                }}>{initiative.type}</Typography>
+                            </Grid>
 
-                        <Grid item xs={12}>
-                            <Box sx={{width: '100%', height: '100%', border: '2.5px solid #feac0d',}}>
-                                <CssTextField
-                                    sx={ {width: '100%', height: '100%',}}
-                                    value={modifiedDescription}
-                                    maxRows={5}
-                                    onChange={handleChange}
-                                    multiline
-                                    InputProps={{
-                                        readOnly: isReadOnly(),
-                                        inputProps: {
-                                            style: {
-                                                color: 'white',
+                            <Grid item xs={12}>
+                                <Box sx={{width: '100%', height: '100%', border: '2.5px solid #feac0d',}}>
+                                    <CssTextField
+                                        sx={{width: '100%', height: '100%',}}
+                                        value={modifiedDescription}
+                                        maxRows={5}
+                                        onChange={handleChange}
+                                        multiline
+                                        InputProps={{
+                                            readOnly: isReadOnly(),
+                                            inputProps: {
+                                                style: {
+                                                    color: 'white',
+                                                }
                                             }
-                                        }
-                                    }}/>
-                            </Box>
-                        </Grid>
+                                        }}/>
+                                </Box>
+                            </Grid>
 
-                        <Grid item xs={12}>
-                            <Box sx={{width: 1}}>
-                                <Box display="grid" gridTemplateColumns="repeat(12, 1fr)" gap={2}>
-                                    <Box gridColumn="span 6">
-                                        <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                            <DatePicker
-                                                inputFormat="DD/MM/YYYY"
-                                                label='Data inizio'
-                                                value={modifiedStartDate}
-                                                onChange={!isReadOnly() ? (newValue) => {
-                                                    handleStartDateChanged(newValue);
-                                                } : () => {
-                                                    console.log('non puoi');
-                                                }}
-                                                renderInput={(params) => <CssTextField {...params} sx={{
-                                                    input: {color: 'white'},
-                                                    style: {color: 'white'}
-                                                }}/>}/>
-                                        </LocalizationProvider>
-                                    </Box>
-                                    <Box gridColumn="span 6">
-                                        <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                            <DatePicker
-                                                inputFormat="DD/MM/YYYY"
-                                                label="Data fine"
-                                                value={modifiedEndDate}
-                                                onChange={!isReadOnly() ? (newValue) => {
-                                                    handleEndDateChanged(newValue);
-                                                } : () => {
-                                                    console.log('non puoi');
-                                                }}
-                                                renderInput={(params) => <CssTextField {...params} sx={{
-                                                    input: {color: 'white'},
-                                                    style: {color: 'white'}
-                                                }}/>}/>
-                                        </LocalizationProvider>
+                            <Grid item xs={12}>
+                                <Box sx={{width: 1}}>
+                                    <Box display="grid" gridTemplateColumns="repeat(12, 1fr)" gap={2}>
+                                        <Box gridColumn="span 6">
+                                            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                                <DatePicker
+                                                    inputFormat="DD/MM/YYYY"
+                                                    label='Data inizio'
+                                                    value={modifiedStartDate}
+                                                    onChange={!isReadOnly() ? (newValue) => {
+                                                        handleStartDateChanged(newValue);
+                                                    } : () => {
+                                                        console.log('non puoi');
+                                                    }}
+                                                    renderInput={(params) => <CssTextField {...params} sx={{
+                                                        input: {color: 'white'},
+                                                        style: {color: 'white'}
+                                                    }}/>}/>
+                                            </LocalizationProvider>
+                                        </Box>
+                                        <Box gridColumn="span 6">
+                                            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                                <DatePicker
+                                                    inputFormat="DD/MM/YYYY"
+                                                    label="Data fine"
+                                                    value={modifiedEndDate}
+                                                    onChange={!isReadOnly() ? (newValue) => {
+                                                        handleEndDateChanged(newValue);
+                                                    } : () => {
+                                                        console.log('non puoi');
+                                                    }}
+                                                    renderInput={(params) => <CssTextField {...params} sx={{
+                                                        input: {color: 'white'},
+                                                        style: {color: 'white'}
+                                                    }}/>}/>
+                                            </LocalizationProvider>
+                                        </Box>
                                     </Box>
                                 </Box>
-                            </Box>
-                        </Grid>
+                            </Grid>
 
-                        <Grid item xs={12}>
-                            <Typography sx={{textAlign: "center"}}>Creatore: </Typography>
-                        </Grid>
-                        <Grid item xs={12} display="flex" justifyContent="center" alignItems="center">
-                            <Chip sx={{backgroundColor: '#feac0d'}}
-                                  icon={<AccountCircleIcon sx={{color: 'white'}}/>}
-                                  label={initiative.idCreator}/>
-                        </Grid>
-                        <Grid item xs={12}>
-                            <Typography sx={{textAlign: "center"}}>Organizzatori: </Typography>
-                        </Grid>
-                        <Grid item xs={12}>
-                            {modifiedSelectedUsers? modifiedSelectedUsers.map((organizer: string) => {
-                                return (
-                                    <Grid item display="flex" xs={12} justifyContent="center" alignItems="center">
-                                        <Chip sx={{backgroundColor: '#feac0d', marginTop: '10px', textAlign: 'center'}}
-                                              icon={<AccountCircleIcon sx={{color: 'white'}}/>}
-                                              label={organizer}
-                                              onDelete={organizer === user.email || user.email === initiative.idCreator ? handleDelete(organizer) : undefined}/>
-                                    </Grid>);
-                            }): null}
-                        </Grid>
-                        <Grid item xs={12}>
-                            <Typography sx={{textAlign: "center"}}>Sottoscrizioni: </Typography>
-                        </Grid>
-                        <Grid item xs={12}>
-                            {initiative.idMembers.map((member: string) => {
-                                return (
-                                    <Grid item display="flex" xs={12} justifyContent="center" alignItems="center">
-                                        <Chip sx={{backgroundColor: '#feac0d', marginTop: '10px', textAlign: 'center'}}
-                                              icon={<AccountCircleIcon sx={{color: 'white'}}/>}
-                                              label={member}/>
-                                    </Grid>);
-                            })}
-                        </Grid>
-                        {user && user.email === initiative.idCreator && !isVisitor ?
+                            <Grid item xs={12}>
+                                <Typography sx={{textAlign: "center"}}>Creatore: </Typography>
+                            </Grid>
                             <Grid item xs={12} display="flex" justifyContent="center" alignItems="center">
-                                <FormControl sx={{width: '70%'}}>
-                                    <CssTextField sx={{input: {color: 'white'}, style: {color: 'white'}}}
-                                                  select
-                                                  label='Organizzatori'>
-                                        {usersList ? usersList.map((user) => {
-                                            return <MenuItem onClick={() => {
-                                                handleUserAdd(user);
-                                            }} value={user}>{user}</MenuItem>;
-                                        }) : null}
-                                    </CssTextField>
-                                </FormControl>
-                            </Grid> : null}
-                        <Grid item xs={12} display="flex" justifyContent="center" alignItems="center">
-                            {isVisitor ? null : initiative.idCreator===user.email ?
-                                <><Button
-                                    disabled={user.status === UserStatus.SUSPENDED}
-                                    style={{
-                                        borderRadius: 35,
-                                        backgroundColor: "#92d36e",
-                                        padding: "18px 36px",
-                                        fontSize: "15px",
-                                    }}
-                                    onClick={handleModify} variant="contained">
-                                    Modifica
-                                </Button>
-                                    <Button style={{
-                                        borderRadius: 35,
-                                        backgroundColor: "red",
-                                        padding: "18px 36px",
-                                        fontSize: "15px",
-                                        marginLeft: '30px'
-                                    }} disabled={user.status === UserStatus.SUSPENDED }
-                                            variant="contained"
-                                            onClick={handleDeleteInitiative}
-                                    >
-                                        Cancella
-                                    </Button></>
-                                : userIsOrganizer()?
-                                    <Button
-                                        disabled={user.status === UserStatus.SUSPENDED}
-                                        style={{
-                                            borderRadius: 35,
-                                            backgroundColor: "#92d36e",
-                                            padding: "18px 36px",
-                                            fontSize: "15px",
-                                        }}
-                                        onClick={handleModify} variant="contained">
-                                        Modifica
-                                    </Button>:
-                                !initiative.idMembers.includes(user.email) ?
-                                    <Button style={{
-                                        borderRadius: 35,
-                                        backgroundColor: "#92d36e",
-                                        padding: "18px 36px",
-                                        fontSize: "15px",
-                                    }}
-                                            onClick={handleSubscribe}
-                                            variant="contained">
-                                        Partecipa
-                                    </Button> :
-                                    <Button style={{
-                                        borderRadius: 35,
-                                        backgroundColor: "#92d36e",
-                                        padding: "18px 36px",
-                                        fontSize: "15px",
-                                    }}
-                                            onClick={handleUnSubscribe}
-                                            variant="contained">
-                                        Disiscriviti
-                                    </Button>}
-                        </Grid>
-                    </Grid></>: null
+                                <Chip sx={{backgroundColor: '#feac0d'}}
+                                      icon={<AccountCircleIcon sx={{color: 'white'}}/>}
+                                      label={initiative.idCreator}/>
+                            </Grid>
+                            <Grid item xs={12}>
+                                <Typography sx={{textAlign: "center"}}>Organizzatori: </Typography>
+                            </Grid>
+                            <Grid item xs={12}>
+                                {modifiedSelectedUsers ? modifiedSelectedUsers.map((organizer: string) => {
+                                    return (
+                                        <Grid item display="flex" xs={12} justifyContent="center" alignItems="center">
+                                            <Chip sx={{
+                                                backgroundColor: '#feac0d',
+                                                marginTop: '10px',
+                                                textAlign: 'center'
+                                            }}
+                                                  icon={<AccountCircleIcon sx={{color: 'white'}}/>}
+                                                  label={organizer}
+                                                  onDelete={organizer === user.email || user.email === initiative.idCreator ? handleDelete(organizer) : undefined}/>
+                                        </Grid>);
+                                }) : null}
+                            </Grid>
+                            <Grid item xs={12}>
+                                <Typography sx={{textAlign: "center"}}>Sottoscrizioni: </Typography>
+                            </Grid>
+                            <Grid item xs={12}>
+                                {initiative.idMembers.map((member: string) => {
+                                    return (
+                                        <Grid item display="flex" xs={12} justifyContent="center" alignItems="center">
+                                            <Chip sx={{
+                                                backgroundColor: '#feac0d',
+                                                marginTop: '10px',
+                                                textAlign: 'center'
+                                            }}
+                                                  icon={<AccountCircleIcon sx={{color: 'white'}}/>}
+                                                  label={member}/>
+                                        </Grid>);
+                                })}
+                            </Grid>
+                            {user && user.email === initiative.idCreator && !isVisitor ?
+                                <Grid item xs={12} display="flex" justifyContent="center" alignItems="center">
+                                    <FormControl sx={{width: '70%'}}>
+                                        <CssTextField sx={{input: {color: 'white'}, style: {color: 'white'}}}
+                                                      select
+                                                      label='Organizzatori' InputProps={{inputProps: {style: {color: 'white',}}}}>
+
+                                            {usersList ? usersList.map((user) => {return (<MenuItem onClick={() => {handleUserAdd(user);}} value={user}>{user}</MenuItem>)}) : null}
+                                        </CssTextField>
+                                    </FormControl>
+                                </Grid>
+                                :
+                                null
+                            }
+                            <Grid item xs={12} display="flex" justifyContent="center" alignItems="center">
+                                {isVisitor ? null : user.admin ?
+                                    null
+                                    :
+                                    initiative.idCreator === user.email ?
+                                        <>
+                                            <Button
+                                                disabled={user.status === UserStatus.SUSPENDED}
+                                                style={{
+                                                    borderRadius: 35,
+                                                    backgroundColor: "#92d36e",
+                                                    padding: "10px 20px",
+                                                    fontSize: "15px",
+                                                    marginBottom: '20px'
+                                                }}
+                                                onClick={handleModify} variant="contained">
+                                                Modifica
+                                            </Button>
+                                            <Button style={{
+                                                borderRadius: 35,
+                                                backgroundColor: "red",
+                                                padding: "10px 20px",
+                                                fontSize: "15px",
+                                                marginLeft: '30px',
+                                                marginBottom: '20px'
+                                            }} disabled={user.status === UserStatus.SUSPENDED}
+                                                    variant="contained"
+                                                    onClick={handleDeleteInitiative}
+                                            >
+                                                Cancella
+                                            </Button>
+                                        </>
+                                        :
+                                        userIsOrganizer() ?
+                                            <Button
+                                                disabled={user.status === UserStatus.SUSPENDED}
+                                                style={{
+                                                    borderRadius: 35,
+                                                    backgroundColor: "#92d36e",
+                                                    padding: "10px 20px",
+                                                    fontSize: "15px",
+                                                    marginBottom: '20px'
+                                                }}
+                                                onClick={handleModify} variant="contained">
+                                                Modifica
+                                            </Button>
+                                            :
+                                            !initiative.idMembers.includes(user.email) ?
+                                                <Button style={{
+                                                    borderRadius: 35,
+                                                    backgroundColor: "#92d36e",
+                                                    padding: "10px 20px",
+                                                    fontSize: "15px",
+                                                    marginBottom: '20px'
+                                                }}
+                                                        onClick={handleSubscribe}
+                                                        variant="contained">
+                                                    Partecipa
+                                                </Button>
+                                                :
+                                                <Button style={{
+                                                    borderRadius: 35,
+                                                    backgroundColor: "#92d36e",
+                                                    padding: "10px 20px",
+                                                    fontSize: "15px",
+                                                    marginBottom: '20px'
+                                                }}
+                                                        onClick={handleUnSubscribe}
+                                                        variant="contained">
+                                                    Disiscriviti
+                                                </Button>}
+                            </Grid>
+                        </Grid></> : null
             }
             <Stack spacing={2} sx={{width: '100%'}}>
                 <Snackbar open={open} autoHideDuration={3000} onClose={handleClose}

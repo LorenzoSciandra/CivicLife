@@ -1,6 +1,8 @@
 version: '3.7'
 services:
+
   #  ARCHITECTURAL SERVICES
+
   service-discovery:
     container_name: service-discovery
     image: lorenzos98/civiclife:service-discovery
@@ -39,8 +41,22 @@ services:
     networks:
       - clnet
 
+  frontend:
+    build: frontend
+    container_name: frontend
+    ports:
+      - "3000:3000"
+    stdin_open: true
+    tty: true
+    deploy:
+      restart_policy:
+        condition: on-failure
+    networks:
+      - clnet
+
   #  ----------------------------------------------
   #  APPLICATION SERVICES
+
   user-service:
     #build: user-service
     image: lorenzos98/civiclife:user-service
@@ -126,6 +142,8 @@ services:
     deploy:
       restart_policy:
         condition: on-failure
+    networks:
+      - clnet
 
   #  ----------------------------------------------
   #  DATABASES
@@ -197,6 +215,8 @@ services:
     deploy:
       restart_policy:
         condition: on-failure
+    networks:
+      - clnet
 
 volumes:
   external-resources-db:

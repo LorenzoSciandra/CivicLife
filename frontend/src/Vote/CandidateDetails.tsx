@@ -5,32 +5,26 @@ import {useLocation, useNavigate} from "react-router-dom";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import {logoutUser} from "../APIs/OauthAPI";
-import {voteForCandidate} from "../APIs/VotationsAPI";
+import {logoutUser, TokenData} from "../APIs/OauthAPI";
+import {Candidate, Party, Votation, voteForCandidate} from "../APIs/VotationsAPI";
 import Stack from "@mui/material/Stack";
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert, {AlertProps} from "@mui/material/Alert";
+import {User} from "../APIs/UsersAPI";
 
 const CandidateDetails = () => {
     const location = useLocation()
     const navigate = useNavigate()
-    const candidate = location.state.candidate
-    const tokenData = location.state.token
-    const isVisitor = location.state.isVisitor
-    const user = location.state.user
-    const votation = location.state.votation
-    const party = location.state.party
-    const hasVoted = location.state.hasVoted
+    const candidate : Candidate= location.state.candidate
+    const tokenData : TokenData= location.state.token
+    const isVisitor : boolean= location.state.isVisitor
+    const user : User= location.state.user
+    const votation : Votation= location.state.votation
+    const party : Party= location.state.party
+    const hasVoted : boolean= location.state.hasVoted
 
     const [open, setOpen] = useState(false);
-    const [message, setMessage] = useState<string>('')
     const [openError, setOpenError] = useState(false);
-    const [messageError, setMessageError] = useState<string>('')
-
-
-    const handleClickError = () => {
-        setOpenError(true);
-    }
 
     const handleCloseError = (event?: React.SyntheticEvent| Event, reason?: string) => {
         if (reason === 'clickaway') {

@@ -18,29 +18,30 @@ import '../App.css'
 import {useLocation, useNavigate} from "react-router-dom";
 import Toolbar from "@mui/material/Toolbar";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import {isInstanceOfAuthError, logoutUser} from "../APIs/OauthAPI";
+import {isInstanceOfAuthError, logoutUser, TokenData} from "../APIs/OauthAPI";
 import {CssTextField} from "../Utils/CustomComponents";
 import List from "@mui/material/List";
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import Chip from "@mui/material/Chip";
 import dayjs from "dayjs";
-import {CandidateResult, getParties, Party, PartyResult} from "../APIs/VotationsAPI";
+import {CandidateResult, getParties, Party, PartyResult, Votation} from "../APIs/VotationsAPI";
 import GroupsIcon from '@mui/icons-material/Groups';
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
+import {User} from "../APIs/UsersAPI";
 
 
 const VotationDetails = () => {
     const [partyList, setPartyList] = useState<Party[] | null>(null)
     const [resultsDialogOpen, setResultsDialogOpen] = useState(false)
     const location = useLocation()
-    const tokenData = location.state.token
-    const isVisitor = location.state.isVisitor
+    const tokenData : TokenData= location.state.token
+    const isVisitor : boolean= location.state.isVisitor
     const navigate = useNavigate()
-    const votation = location.state.votation
-    const user = location.state.user
+    const votation : Votation= location.state.votation
+    const user : User = location.state.user
     const showDialog = () => {
         setResultsDialogOpen(true)
     }

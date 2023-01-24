@@ -20,35 +20,28 @@ import personalData from "../imgs/personaldata.png"
 import {useLocation, useNavigate} from "react-router-dom";
 import Toolbar from "@mui/material/Toolbar";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import {isInstanceOfAuthError, logoutUser} from "../APIs/OauthAPI";
+import {isInstanceOfAuthError, logoutUser, TokenData} from "../APIs/OauthAPI";
 import {CssTextField} from "../Utils/CustomComponents";
-import {Candidate, getCandidates, Votation, voteForCandidate, voteForParty} from "../APIs/VotationsAPI";
+import {Candidate, getCandidates, Party, Votation, voteForCandidate, voteForParty} from "../APIs/VotationsAPI";
 import GroupsIcon from "@mui/icons-material/Groups";
-import {Simulate} from "react-dom/test-utils";
 import Stack from "@mui/material/Stack";
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert, {AlertProps} from "@mui/material/Alert";
+import {User} from "../APIs/UsersAPI";
 
 const PartyDetails = () => {
 
     const [candidateList, setCandidateList] = useState<any[]|null>(null)
     const location = useLocation()
     const navigate = useNavigate()
-    const party = location.state.party
-    const tokenData = location.state.token
-    const isVisitor = location.state.isVisitor
+    const party : Party= location.state.party
+    const tokenData : TokenData= location.state.token
+    const isVisitor : boolean= location.state.isVisitor
     const votation :Votation= location.state.votation
-    const user = location.state.user
+    const user : User = location.state.user
 
     const [open, setOpen] = useState(false);
-    const [message, setMessage] = useState<string>('')
     const [openError, setOpenError] = useState(false);
-    const [messageError, setMessageError] = useState<string>('')
-
-
-    const handleClickError = () => {
-        setOpenError(true);
-    }
 
     const handleCloseError = (event?: React.SyntheticEvent| Event, reason?: string) => {
         if (reason === 'clickaway') {
@@ -71,9 +64,8 @@ const PartyDetails = () => {
         return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
     });
 
-
     const hasAlreadyVoted = () : boolean=> {
-        return votation.votationResult.votersIdList.includes(user.email)
+        return !isVisitor && votation.votationResult.votersIdList.includes(user.email)
     }
 
     const getCandidatesList = async () => {
@@ -102,6 +94,7 @@ const PartyDetails = () => {
                 party: party,
                 candidate: value,
                 hasVoted: hasAlreadyVoted(),
+                isVisitor: isVisitor
             }
         })
     }

@@ -27,17 +27,17 @@ import {
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import {isInstanceOfAuthError, logoutUser} from "../APIs/OauthAPI";
-import {UserStatus} from "../APIs/UsersAPI";
+import {isInstanceOfAuthError, logoutUser, TokenData} from "../APIs/OauthAPI";
+import {User, UserStatus} from "../APIs/UsersAPI";
 import {activeButtonColor, ButtonStyleType, inactiveButtonColor} from "../Utils/CustomComponents";
 
 
 const Initiatives = () => {
     const navigate = useNavigate()
     const location = useLocation()
-    const tokenData = location.state.token
-    const isVisitor = location.state.isVisitor
-    const user = location.state.user
+    const tokenData: TokenData = location.state.token
+    const isVisitor: boolean = location.state.isVisitor
+    const user : User= location.state.user
     const buttons = ['Tutte', 'Mie', 'Sottoscritte', 'Organizzate']
     const [allInitiativesList, setAllInitiativesList] = useState<Initiative[] | null>(null)
     const [myInitiativesList, setMyInitiativesList] = useState<Initiative[] | null>(null)
@@ -58,6 +58,7 @@ const Initiatives = () => {
         if (isInstanceOfAuthError(response)) {
             navigate('/error', {state: {error: response}})
         } else {
+            console.log(response)
             setAllInitiativesList(response)
         }
     }
@@ -223,7 +224,7 @@ const Initiatives = () => {
                                                 textAlign: 'center',
                                                 fontSize: '1.8rem',
                                             }}>
-                                    {user && user.isAdmin ? 'Amministrazione iniziative' : 'Iniziative'}
+                                    {user && user.admin ? 'Amministrazione iniziative' : 'Iniziative'}
                                 </Typography>
                                 <Button
                                     onClick={isVisitor ? login : logout}
@@ -303,7 +304,7 @@ const Initiatives = () => {
                                     )
                                 })
                                 :
-                            activeButton === buttons[0] && allInitiativesList ?
+                            (activeButton === buttons[0]) && allInitiativesList ?
                                 allInitiativesList.map((value) => {
                                     return (
                                         <Card sx={{maxWidth:'100%', margin:'50px',"&:hover": {
@@ -397,7 +398,7 @@ const Initiatives = () => {
                             null
                             :
                             <Button
-                                disabled={user.state===UserStatus.SUSPENDED}
+                                disabled={user.status===UserStatus.SUSPENDED}
                                 onClick={handleCreateInitiative}
                                 style={{
                                     position: 'fixed',

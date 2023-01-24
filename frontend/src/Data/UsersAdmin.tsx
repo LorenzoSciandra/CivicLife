@@ -16,7 +16,7 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import {getAllUsers, updateUserStatus, User, UserStatus} from "../APIs/UsersAPI";
 import {useLocation, useNavigate} from "react-router-dom";
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
-import {isInstanceOfAuthError, logoutUser} from "../APIs/OauthAPI";
+import {isInstanceOfAuthError, logoutUser, TokenData} from "../APIs/OauthAPI";
 import DeselectIcon from '@mui/icons-material/Deselect';
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import Box from "@mui/material/Box";
@@ -25,7 +25,7 @@ import Toolbar from "@mui/material/Toolbar";
 const UsersAdmin = () => {
     const location = useLocation();
     const navigate = useNavigate()
-    const tokenData = location.state.token;
+    const tokenData : TokenData= location.state.token;
     const [usersList, setUsersList] = useState<User[]>([])
     const [selectedUser, setSelectedUser] = useState<User | null>(null)
     const [firstLoad, setFirstLoad] = useState(true)

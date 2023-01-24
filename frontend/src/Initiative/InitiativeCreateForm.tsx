@@ -16,7 +16,7 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import {isInstanceOfAuthError, logoutUser} from "../APIs/OauthAPI";
+import {isInstanceOfAuthError, logoutUser, TokenData} from "../APIs/OauthAPI";
 import {useLocation, useNavigate} from "react-router-dom";
 import {createInitiative, Initiative, InitiativeType} from "../APIs/InitiativeAPI";
 import {getAllUsersEmail} from "../APIs/UsersAPI";
@@ -36,7 +36,7 @@ const InitiativeCreateForm = () => {
     const [open, setOpen] =  useState(false);
     const [errorOpen, setErrorOpen] = useState<any>(null)
     const [errors, setErrors] = useState<any>([])
-    const tokenData = location.state.token;
+    const tokenData : TokenData= location.state.token;
 
     function toTimestamp(strDate: string){
         const datum = Date.parse(strDate);
@@ -82,8 +82,8 @@ const InitiativeCreateForm = () => {
     }
 
     const makeid = (length: number) => {
-        let result           = '';
-        let characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        let result = '';
+        let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
         let charactersLength = characters.length;
         for ( let i = 0; i < length; i++ ) {
             result += characters.charAt(Math.floor(Math.random() * charactersLength));
@@ -227,6 +227,7 @@ const InitiativeCreateForm = () => {
                                   value={selectedType}
                                   label='Tipo'
                                   onChange={handleTypeChange}
+                                  InputProps={{inputProps: {style: {color: 'white',}}}}
                     >
                         {
                             types.map((type) => {
@@ -258,13 +259,10 @@ const InitiativeCreateForm = () => {
                     <FormControl sx={{width: '70%'}}>
                         <CssTextField sx={{input: {color: 'white'}, style: {color: 'white'}}}
                                       select
-                                      label='Organizzatori'>
+                                      label='Organizzatori' InputProps={{inputProps: {style: {color: 'white',}}}}>
                             {
                                 usersList ? usersList.map((user) => {
-                                    return <MenuItem onClick={() => {
-                                        handleUserAdd(user)
-                                    }} value={user}>{user}</MenuItem>
-                                }): null
+                                    return <MenuItem onClick={() => {handleUserAdd(user)}} value={user}>{user}</MenuItem> }): null
                             }
                         </CssTextField>
                     </FormControl>

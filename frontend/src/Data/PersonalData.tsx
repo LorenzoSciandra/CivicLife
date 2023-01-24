@@ -27,7 +27,7 @@ import Snackbar from '@mui/material/Snackbar';
 import MuiAlert, {AlertProps} from '@mui/material/Alert';
 import AddBoxIcon from '@mui/icons-material/AddBox';
 import VaccinesIcon from '@mui/icons-material/Vaccines';
-import {AuthError, isInstanceOfAuthError, logoutUser} from "../APIs/OauthAPI";
+import {AuthError, isInstanceOfAuthError, logoutUser, TokenData} from "../APIs/OauthAPI";
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from "@mui/material/FormControl";
@@ -41,7 +41,7 @@ const PersonalData = () => {
     const location = useLocation()
     const navigate = useNavigate()
     const [user, setUser] = useState<User | null>(null)
-    const tokenData = location.state.token
+    const tokenData : TokenData= location.state.token
     const buttons = ['Dati', 'Vaccini', 'Bonus']
     const [dataList, setDataList] = useState([])
     const [vaccinesList, setVaccinesList] = useState<VaccineType[]>([])

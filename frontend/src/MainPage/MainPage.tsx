@@ -24,13 +24,14 @@ import Toolbar from "@mui/material/Toolbar";
 import HomeIcon from '@mui/icons-material/Home';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import CircleIcon from '@mui/icons-material/Circle';
+import LockIcon from '@mui/icons-material/Lock';
 
 
 const MainPage = () => {
 
     const location = useLocation();
-    const isVisitor = location.state?.isVisitor
-    const tokenData = location.state?.tokenData
+    const isVisitor :boolean = location.state.isVisitor
+    const tokenData = location.state.tokenData
     const navigate = useNavigate();
     const [firstLoad, setFirstLoad] = useState(true);
     const [user, setUser] = useState<User | null>(null);
@@ -177,6 +178,7 @@ const MainPage = () => {
                         background: "#d7d7d7"
                     }
                 }} onClick={goToInitiatives}>
+                    {user && user.status===UserStatus.BANNED ? <LockIcon sx={{position:'absolute', margin: 1}}/>: null}
                         <Grid item display="flex" justifyContent="center" alignItems="center" sx={{backgroundColor:'#f1f6be'}}>
                             <CardMedia
                                 sx={{ maxWidth: 320, maxHeight:200, backgroundColor:'#f1f6be' }}

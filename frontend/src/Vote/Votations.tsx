@@ -8,17 +8,18 @@ import {useLocation, useNavigate} from "react-router-dom";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import {isInstanceOfAuthError, logoutUser} from "../APIs/OauthAPI";
+import {isInstanceOfAuthError, logoutUser, TokenData} from "../APIs/OauthAPI";
 import {activeButtonColor, ButtonStyleType, inactiveButtonColor} from "../Utils/CustomComponents";
 import {getActiveVotations, getDoneVotations, getEndedVotations} from "../APIs/VotationsAPI";
+import {User} from "../APIs/UsersAPI";
 
 
 const Votations = () => {
     const navigate = useNavigate()
     const location = useLocation()
-    const tokenData = location.state.token
-    const isVisitor = location.state.isVisitor
-    const user = location.state.user
+    const tokenData : TokenData = location.state.token
+    const isVisitor: boolean = location.state.isVisitor
+    const user : User= location.state.user
     const buttons = ['Attive', 'Concluse', 'Votate']
     const [activeList, setActiveList] = useState<any[] | null>(null)
     const [endedList, setEndedList] = useState<any[] | null>(null)
