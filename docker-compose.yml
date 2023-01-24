@@ -42,7 +42,8 @@ services:
       - clnet
 
   frontend:
-    build: frontend
+#    build: frontend
+    image: lorenzos98/civiclife:frontend
     container_name: frontend
     ports:
       - "3000:3000"
