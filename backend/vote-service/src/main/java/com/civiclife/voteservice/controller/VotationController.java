@@ -214,10 +214,13 @@ public class VotationController {
 
     private void finalizeResults(Votation votation) {
         VotationResult votationResult = votation.getVotationResult();
-        for(PartyResult partyResult: votationResult.getPartyResults()){
-            partyResult.setPercentage(partyResult.getVotes()/votationResult.getNumberOfVotes());
-            for(CandidateResult candidateResult: partyResult.getCandidateResults()){
-                candidateResult.setPercentage(candidateResult.getVotes()/votationResult.getNumberOfVotes());
+
+        if(votationResult.getNumberOfVotes() != 0) {
+            for (PartyResult partyResult : votationResult.getPartyResults()) {
+                partyResult.setPercentage(partyResult.getVotes() / votationResult.getNumberOfVotes());
+                for (CandidateResult candidateResult : partyResult.getCandidateResults()) {
+                    candidateResult.setPercentage(candidateResult.getVotes() / votationResult.getNumberOfVotes());
+                }
             }
         }
     }

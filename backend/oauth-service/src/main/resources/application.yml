@@ -1,7 +1,5 @@
 server:
   port: 8085
-  error:
-    include-message: always
   forward-headers-strategy: framework
 
 spring:

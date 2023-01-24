@@ -92,15 +92,15 @@ public class SecurityConfig {
                     String encryptedToken = AES.encrypt(tokenData, secret);
                     String base64Token = Base64.getEncoder().encodeToString(Objects.requireNonNull(encryptedToken).getBytes());
 
-                    response.sendRedirect("http://localhost:3000/home?token=" + base64Token);
+                    response.sendRedirect("http://localhost:3000/?token=" + base64Token);
                 }
                 else {
-                    ErrorMessage errorMessage = new ErrorMessage(ValidateCode.AUTH_SERVER_ERROR, "http://localhost:8080/login","GET");
-                    response.sendRedirect("http://localhost:3000/error?errorReason=" + errorMessage.toString());
+                    ErrorMessage errorMessage = new ErrorMessage(ValidateCode.AUTH_SERVER_ERROR, "http://localhost:8080/authAPI/v1/login","GET");
+                    response.sendRedirect("http://localhost:3000/error?errorReason=" + errorMessage);
                 }
             } catch (ResponseStatusException ex) {
-                ErrorMessage errorMessage = new ErrorMessage(ValidateCode.AUTH_SERVER_ERROR, "http://localhost:8080/login","GET");
-                response.sendRedirect("http://localhost:3000/error?errorReason="+errorMessage.toString());
+                ErrorMessage errorMessage = new ErrorMessage(ValidateCode.AUTH_SERVER_ERROR, "http://localhost:8080/authAPI/v1/login","GET");
+                response.sendRedirect("http://localhost:3000/error?errorReason="+errorMessage);
             }
         };
     }

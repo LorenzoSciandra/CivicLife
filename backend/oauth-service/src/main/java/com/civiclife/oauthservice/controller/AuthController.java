@@ -30,6 +30,9 @@ public class AuthController {
         String encrypTokenUTF8 = new String(Base64.getDecoder().decode(encryptToken));
         String secret = "!CivicLifeSecret2023!";
         String token = AES.decrypt(encrypTokenUTF8, secret);
+        if(token == null){
+            return "";
+        }
         return Base64.getEncoder().encodeToString(token.getBytes());
     }
 
@@ -71,7 +74,6 @@ public class AuthController {
     public ValidateCode validate(@PathVariable(value = "email") String email,
                                  @PathVariable(value = "token") String token,
                                  @PathVariable(value = "provider") TokenKey.OauthProvider provider) {
-        System.out.println("SONO QUI PER VALIDARE");
         Optional<Token> optionalTokenBean = tokenRepository.findById(new TokenKey(email, provider));
         if (optionalTokenBean.isPresent()){
             Token tokenBean = optionalTokenBean.get();
@@ -106,8 +108,11 @@ public class AuthController {
             Optional<Token> optionalTokenBean = tokenRepository.findById(tokenkey);
             if (optionalTokenBean.isPresent()){
                 Token tokenBean = optionalTokenBean.get();
-                tokenRepository.delete(tokenBean);
-                return true;
+                if(tokenBean.getTokenKey().getEmail().equals(email)){
+                    tokenBean.removeToken(token);
+                    tokenRepository.save(tokenBean);
+                    return true;
+                }
             }
         }
         return false;

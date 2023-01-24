@@ -47,6 +47,10 @@ public class Token {
         return token;
     }
 
+    public void removeToken(String token){
+        tokens.remove(token);
+    }
+
     public TokenKey getTokenKey() {
         return tokenKey;
     }

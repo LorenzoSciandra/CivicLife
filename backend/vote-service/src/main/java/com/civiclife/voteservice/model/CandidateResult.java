@@ -13,9 +13,12 @@ public class CandidateResult {
 
     private String candidateId;
 
+    private String name;
+
+    private String surname;
     private boolean isLeader;
     private float votes;
-    private Float percentage;
+    private float percentage;
 
     public String getCandidateId() {
         return candidateId;
@@ -33,11 +36,11 @@ public class CandidateResult {
         this.votes = votes;
     }
 
-    public Float getPercentage() {
+    public float getPercentage() {
         return percentage;
     }
 
-    public void setPercentage(Float percentage) {
+    public void setPercentage(float percentage) {
         this.percentage = percentage;
     }
 
@@ -49,5 +52,19 @@ public class CandidateResult {
         this.isLeader = isLeader;
     }
 
+    public String getName() {
+        return name;
+    }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getSurname() {
+        return surname;
+    }
+
+    public void setSurname(String surname) {
+        this.surname = surname;
+    }
 }
