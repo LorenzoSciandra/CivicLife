@@ -1,6 +1,6 @@
 import {AppBar, Button, Chip, Dialog, Divider, Grid, IconButton, Typography} from "@mui/material";
 import React, {useEffect, useState} from "react";
-import {CssTextField} from "../Utils/CustomTextFields";
+import {CssTextField} from "../Utils/CustomComponents";
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
@@ -63,26 +63,21 @@ const InitiativeCreateForm = () => {
         let errors = []
         if (name && description && place && startDate && endDate && selectedType) {
             if (!startDate.isBefore(endDate)) {
-                console.log('DATA INIZIO DOPO DATA FINE')
                 errors.push('La data di inizio deve essere precedente alla data di fine')
             }
             if (description.length < 150) {
-                console.log('DESCRIZIONE TROPPO CORTA')
                 errors.push('La descrizione deve essere lunga almeno 150 caratteri')
             }
             if(name.length>50){
-                console.log('NOME TROPPO LUNGO')
                 errors.push('Il nome deve essere lungo al massimo 50 caratteri')
             }
             if(name.length<5){
-                console.log('NOME TROPPO CORTO')
                 errors.push('Il nome deve essere lungo almeno 5 caratteri')
             }
         } else {
-            console.log('DATI MANCANTI')
             errors.push('Compila tutti i campi')
         }
-        console.log(errors)
+
         return errors
     }
 
@@ -100,7 +95,7 @@ const InitiativeCreateForm = () => {
         const errorsChecked = errorsCheck()
         setErrors(errorsChecked)
         if (errorsChecked.length === 0) {
-            console.log('CREO INIZIATIVA')
+
             const newInitiative: Initiative = {
                 id: makeid(15),
                 name: name,
@@ -113,7 +108,6 @@ const InitiativeCreateForm = () => {
                 endDate: endDate !== null ? toTimestamp(endDate.toString()) : 0,
                 location: place,
             }
-            console.log(newInitiative)
             const creation_response= await createInitiative(tokenData, newInitiative)
             if( typeof creation_response === 'boolean'){
                 if(creation_response===true){

@@ -1,11 +1,15 @@
 import {AppBar, Button, Card, CardMedia, Grid, IconButton, Typography} from "@mui/material";
-import React from "react";
+import React, {useState} from "react";
 import personalData from "../imgs/personaldata.png";
 import {useLocation, useNavigate} from "react-router-dom";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import {logoutUser} from "../APIs/OauthAPI";
+import {voteForCandidate} from "../APIs/VotationsAPI";
+import Stack from "@mui/material/Stack";
+import Snackbar from "@mui/material/Snackbar";
+import MuiAlert, {AlertProps} from "@mui/material/Alert";
 
 const CandidateDetails = () => {
     const location = useLocation()
@@ -15,6 +19,39 @@ const CandidateDetails = () => {
     const isVisitor = location.state.isVisitor
     const user = location.state.user
     const votation = location.state.votation
+    const party = location.state.party
+    const hasVoted = location.state.hasVoted
+
+    const [open, setOpen] = useState(false);
+    const [message, setMessage] = useState<string>('')
+    const [openError, setOpenError] = useState(false);
+    const [messageError, setMessageError] = useState<string>('')
+
+
+    const handleClickError = () => {
+        setOpenError(true);
+    }
+
+    const handleCloseError = (event?: React.SyntheticEvent| Event, reason?: string) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setOpenError(false);
+    }
+
+    const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setOpen(false);
+    };
+
+    const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
+        props,
+        ref,
+    ) {
+        return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+    });
 
     const logout = async () => {
         if (tokenData !== null) {
@@ -31,7 +68,6 @@ const CandidateDetails = () => {
         }
     }
 
-
     const goBack = () => {
         navigate(-1)
     }
@@ -39,6 +75,22 @@ const CandidateDetails = () => {
     const login = () => {
         window.location.assign('http://localhost:8080/login')
     }
+
+    const voteCandidate = async () => {
+        const response = await voteForCandidate(tokenData, votation.title, party.name, candidate.id)
+        if(typeof response === 'boolean') {
+            if(response) {
+                setOpen(true)
+                navigate('/votations/', {state: {token: tokenData, user: user, isVisitor: isVisitor}})
+            }
+            else{
+                setOpenError(true)
+            }
+        }else{
+            navigate('/error', {state: {error: response}})
+        }
+    }
+
     return (
         <>
             <Grid container direction='row' spacing={5}>
@@ -76,7 +128,7 @@ const CandidateDetails = () => {
                     </AppBar>
                 </Box>
             </Grid>
-            <Grid container direction='row' alignItems="center" justifyContent="flex-start" spacing={12}>
+            <Grid container sx={{marginTop:'40px'}} direction='row' alignItems="center" justifyContent="flex-start" spacing={12}>
 
                 <Grid item xs={12} display="flex" alignItems="center" justifyContent="center">
                     <Card>
@@ -97,21 +149,38 @@ const CandidateDetails = () => {
                         paddingRight: '20px'
                     }}> {candidate.description}</Typography>
                 </Grid>
-                {user && user.admin ? null : user ?
+                {user && user.admin ? null : user && !hasVoted ?
                     <Grid item xs={12} display="flex" justifyContent='center' alignItems="right">
                         <Button style={{
-                            marginTop: '15px',
+                            marginBottom: '15px',
                             borderRadius: 35,
                             backgroundColor: "#ff3823",
                             padding: "18px 36px",
                             fontSize: "15px"
                         }}
+                                onClick={voteCandidate}
                                 variant="contained">
                             VOTA candidato
                         </Button>
                     </Grid> : null}
 
             </Grid>
+            <Stack spacing={2} sx={{width: '100%'}}>
+                <Snackbar open={open} autoHideDuration={3000} onClose={handleClose}
+                          anchorOrigin={{vertical: "bottom", horizontal: 'center'}}>
+                    <Alert onClose={handleClose} severity="success" sx={{width: '100%'}}>
+                        Voto registrato con successo!
+                    </Alert>
+                </Snackbar>
+            </Stack>
+            <Stack spacing={2} sx={{width: '100%'}}>
+                <Snackbar open={openError} autoHideDuration={3000} onClose={handleCloseError}
+                          anchorOrigin={{vertical: "bottom", horizontal: 'center'}}>
+                    <Alert onClose={handleCloseError} severity="warning" sx={{width: '100%'}}>
+                        Non è stato possibile registrare il voto! Riprova più tardi.
+                    </Alert>
+                </Snackbar>
+            </Stack>
         </>
     );
 }

@@ -35,7 +35,7 @@ export const getLoggedUser = (tokenData: TokenData) : Promise<User | AuthError>=
     const tokenBase64= Base64.encode(tokenData.token)
     const url = 'http://localhost:8080/userAPI/v1/user/get/' + tokenData.email+ '?email='+ emailBase64 + '&provider=' + providerBase64 + '&token=' + tokenBase64
     return axios.get<User | AuthError>(url).then((response) => {
-        console.log('response', response.data)
+        // console.log('response', response.data)
         return response.data
     }).catch(() => {
             const authError: AuthError = {
@@ -68,7 +68,6 @@ export const updateUser=async (tokenData: TokenData, newUser: User): Promise<boo
         .then(value => {
             return value.data;
         }).catch(function (error) {
-            console.log(error)
             const authError: AuthError = {
                 code: ValidateCode.UPDATE_FAIL,
                 method: 'POST',
@@ -86,7 +85,7 @@ export const authorizeBonusAccess=async (tokenData: TokenData): Promise<boolean 
     const url = 'http://localhost:8080/userAPI/v1/user/authorizeBonus/' + tokenData.email + '?email=' + emailBase64 + '&provider=' + providerBase64 + '&token=' + tokenBase64
 
     return await axios.get(url).then((response) => {
-        console.log('response', response.data)
+        // console.log('response', response.data)
         return response.data
     }).catch(() => {
             const authError: AuthError = {
@@ -106,7 +105,7 @@ export const authorizeVaccineAccess=async (tokenData: TokenData): Promise<boolea
     const url = 'http://localhost:8080/userAPI/v1/user/authorizeVaccine/' + tokenData.email + '?email=' + emailBase64 + '&provider=' + providerBase64 + '&token=' + tokenBase64
 
     return await axios.get(url).then((response) => {
-        console.log('response', response.data)
+        // console.log('response', response.data)
         return response.data
     }).catch(() => {
         const authError: AuthError = {
@@ -126,7 +125,7 @@ export const getAllUsersEmail=async (tokenData: TokenData): Promise<string[] | A
     const url = 'http://localhost:8080/userAPI/v1/users/emails/' +tokenData.email +'?email=' + emailBase64 + '&provider=' + providerBase64 + '&token=' + tokenBase64
 
     return await axios.get(url).then((response) => {
-        console.log('response', response.data)
+        // console.log('response', response.data)
         return response.data
     }).catch(() => {
         const authError: AuthError = {
@@ -147,14 +146,13 @@ export const updateUserStatus = async (tokenData:TokenData, newStatus:UserStatus
     const tokenBase64 = Base64.encode(tokenData.token)
 
     const url = 'http://localhost:8080/userAPI/v1/user/update/status/' + emailToUpdate +'/'+ tokenData.email+ '?email=' + emailBase64 + '&provider=' + providerBase64 + '&token=' + tokenBase64
-    console.log(url)
     return await axios.post<boolean | AuthError>(url,
         Base64.encode(newStatus),
         {
             headers: {"Content-Type": "text/plain"}
         })
         .then((response) => {
-        console.log('response', response.data)
+        // console.log('response', response.data)
         return response.data
     }).catch(() => {
             const authError: AuthError = {
@@ -172,7 +170,7 @@ export const getAllUsers = (tokenData: TokenData): Promise<User[] | AuthError> =
     const tokenBase64= Base64.encode(tokenData.token)
     const url = 'http://localhost:8080/userAPI/v1/users/'+tokenData.email+'?email='+ emailBase64 + '&provider=' + providerBase64 + '&token=' + tokenBase64
     return axios.get<User[] | AuthError>(url).then((response) => {
-        console.log('response', response.data)
+        // console.log('response', response.data)
         return response.data
     }).catch(() => {
         const authError: AuthError = {

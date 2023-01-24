@@ -5,7 +5,8 @@ import {
     Divider,
     Grid,
     IconButton,
-    ListItemSecondaryAction, ListItemText,
+    ListItemSecondaryAction,
+    ListItemText,
     ToggleButton,
     ToggleButtonGroup,
     Typography
@@ -22,7 +23,7 @@ import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import {isInstanceOfAuthError, logoutUser} from "../APIs/OauthAPI";
-import {activeButtonColor, ButtonStyleType, inactiveButtonColor} from "../Utils/CustomTextFields";
+import {activeButtonColor, ButtonStyleType, inactiveButtonColor} from "../Utils/CustomComponents";
 import {
     changeVotationStatus,
     getActiveVotations,
@@ -31,7 +32,6 @@ import {
     Votation,
     VotationStatus
 } from "../APIs/VotationsAPI";
-
 
 
 const VotationsAdmin = () => {
@@ -80,7 +80,6 @@ const VotationsAdmin = () => {
     useEffect(() => {
         if (firstLoad) {
             if (activeVotations === null) {
-                console.log('first load getting active votations')
                 getActives()
             }
         }
@@ -90,15 +89,12 @@ const VotationsAdmin = () => {
     useEffect(() => {
         if (buttonChanged) {
             if (activeButton === buttons[0]) {
-                console.log('Attive')
                 getActives()
             }
             if (activeButton === buttons[1]) {
-                console.log('Concluse')
                 getEndeds()
             }
             if(activeButton === buttons[2]){
-                console.log('Programmate')
                 getProgrammed()
             }
         }
@@ -111,12 +107,26 @@ const VotationsAdmin = () => {
     }
 
     const handleDisable = async (value: any) => {
-        console.log('Disabilita', value)
-        // const result = await changeVotationStatus(tokenData, value.title, VotationStatus.TERMINATED)
+        const result = await changeVotationStatus(tokenData, value.title, VotationStatus.TERMINATED)
+        if(typeof result === 'boolean'){
+            if(result){
+                handleDialogClose()
+                getActives()
+            }
+        }else{
+            navigate('/error', {state: {error: result}})
+        }
     }
     const handleEnable = async (value: any) => {
-        console.log('Abilita', value)
-        // const result = await changeVotationStatus(tokenData, value.title, VotationStatus.ACTIVE)
+        const result = await changeVotationStatus(tokenData, value.title, VotationStatus.ACTIVE)
+        if(typeof result === 'boolean'){
+            if(result){
+                handleDialogClose()
+                getProgrammed()
+            }
+        }else{
+            navigate('/error', {state: {error: result}})
+        }
     }
 
     const handleVotationClick = (value: any) => {

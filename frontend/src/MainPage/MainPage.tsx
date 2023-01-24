@@ -5,19 +5,18 @@ import {
     CardActionArea,
     CardContent,
     CardMedia,
-    Divider,
     Grid,
     IconButton,
     Typography
 } from "@mui/material";
 import React, {useEffect, useState} from "react";
 import '../App.css';
-import vote from "../imgs/vote.png"
-import personalData from "../imgs/personaldata.png"
-import iniziative from "../imgs/iniziative.png"
+import vote from "../imgs/voteResize.png"
+import iniziative from "../imgs/iniziativeResize.png"
+import personaldata from "../imgs/personaldataResize.png"
 import "@fontsource/ubuntu-mono";
 import {useLocation, useNavigate} from "react-router-dom";
-import {exchangeToken, isInstanceOfAuthError, logoutUser, TokenData} from "../APIs/OauthAPI";
+import {isInstanceOfAuthError, logoutUser} from "../APIs/OauthAPI";
 import type {User} from "../APIs/UsersAPI";
 import {getLoggedUser, UserStatus, UserStatusColor} from "../APIs/UsersAPI";
 import Box from "@mui/material/Box";
@@ -26,48 +25,15 @@ import HomeIcon from '@mui/icons-material/Home';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import CircleIcon from '@mui/icons-material/Circle';
 
+
 const MainPage = () => {
 
     const location = useLocation();
     const isVisitor = location.state?.isVisitor
+    const tokenData = location.state?.tokenData
     const navigate = useNavigate();
-    const [tokenData, setTokenData] = useState<TokenData | null>(null);
     const [firstLoad, setFirstLoad] = useState(true);
     const [user, setUser] = useState<User | null>(null);
-
-    const getTokenData = async (token_cifrato: string) => {
-        const tokenResponse = await exchangeToken(token_cifrato);
-        if (isInstanceOfAuthError(tokenResponse)) {
-            navigate('/error', {state: {error: tokenResponse}})
-        } else {
-            if (tokenResponse) {
-                setTokenData(tokenResponse)
-            } else {
-                console.log('error')
-            }
-
-        }
-    }
-
-    useEffect(() => {
-        if (firstLoad) {
-            if (isVisitor === undefined) {
-                if (window.location.href.includes('token=') && tokenData === null) {
-                    const token_cifrato = window.location.href.split("token=")[1].toString()
-                    if (token_cifrato !== "") {
-                        getTokenData(token_cifrato)
-
-                    }
-                } else {
-                    console.log("token non presente")
-                    returnToLogin()
-                }
-            } else {
-                console.log('utente visitatore')
-            }
-        }
-        setFirstLoad(false)
-    }, [])
 
     const getUserData = async () => {
         if (tokenData !== null) {
@@ -81,14 +47,11 @@ const MainPage = () => {
     }
 
     useEffect(() => {
-        if (tokenData !== null) {
+        if (tokenData !== null && firstLoad) {
             getUserData()
         }
-    }, [tokenData])
-
-    const returnToLogin = () => {
-        return (navigate("/"))
-    }
+        setFirstLoad(false)
+    }, [])
 
     const login = () => {
         window.location.assign('http://localhost:8080/login')
@@ -118,9 +81,7 @@ const MainPage = () => {
     }
 
     const goToData = () => {
-        console.log('lo porto ai dati')
         if (user !== null) {
-            console.log('lo porto ai dati di ', user)
             if (user.admin) {
                 navigate('/usersAdmin', {state: {token: tokenData}})
             } else {
@@ -181,104 +142,188 @@ const MainPage = () => {
                         </AppBar>
                     </Box>
                 </Grid>
-                <Grid item xs={6} display="flex" justifyContent="center" alignItems="center">
-                    <Card sx={{
-                        width: '60%', "&:hover": {
-                            background: "#d7d7d7"
-                        }
-                    }} onClick={goToVotations}>
-                        <CardActionArea>
-                            <Grid container direction="column">
-                                <Grid item display="flex" justifyContent="center" alignItems="center"
-                                      style={{backgroundColor: '#ff5d55'}}>
-                                    <CardMedia
-                                        component="img"
-                                        image={vote}
-                                        sx={{
-                                            width: '45%',
-                                        }}
-                                        alt="vote"/>
-                                </Grid>
-                                <Divider style={{marginTop: '5px'}}/>
-                                <Grid item display="flex" justifyContent="center" alignItems="center">
-                                    <CardContent>
-                                        <Typography gutterBottom variant="h5" component="div">
-                                            {user && user.admin ? 'Inserisci Votazioni' : 'Votazioni'}
-                                        </Typography>
-                                    </CardContent>
-                                </Grid>
-                            </Grid>
-                        </CardActionArea>
-                    </Card>
-                </Grid>
-                <Grid item xs={6} display="flex" justifyContent="center" alignItems="center">
-                    <Card sx={{
-                        width: '60%', "&:hover": {
-                            background: "#d7d7d7"
-                        }
-                    }} onClick={goToInitiatives}>
-                        <CardActionArea>
-                            <Grid container direction="column">
-                                <Grid item display="flex" justifyContent="center" alignItems="center"
-                                      style={{backgroundColor: '#f1f6be'}}>
-                                    <CardMedia
-                                        component="img"
-                                        image={iniziative}
-                                        sx={{
-                                            width: '70%',
-                                        }}
-                                        alt="iniziative"/>
-                                </Grid>
-                                <Divider style={{marginTop: '5px'}}/>
-                                <Grid item display="flex" justifyContent="center" alignItems="center">
-                                    <CardContent>
-                                        <Typography gutterBottom variant="h5" component="div">
-                                            {user && user.admin ? 'Gestisci iniziative' : 'Iniziative'}
-                                        </Typography>
-                                    </CardContent>
-                                </Grid>
-                            </Grid>
-                        </CardActionArea>
-                    </Card>
-                </Grid>
-                {isVisitor ? null :
-                    <Grid item xs={12} display="flex" justifyContent="center" alignItems="center">
-                        <Card
-                            onClick={goToData}
-                            sx={{
-                                width: '30%', "&:hover": {
-                                    background: "#d7d7d7"
-                                }
-                            }}>
-                            <CardActionArea>
-                                <Grid container direction="column">
-                                    <Grid item display="flex" justifyContent="center" alignItems="center"
-                                          style={{backgroundColor: '#d4e3fc'}}>
-                                        <CardMedia
-                                            component="img"
-                                            image={personalData}
-                                            sx={{
-                                                width: '60%',
-                                            }}
-                                            alt="personalData"/>
-                                    </Grid>
-                                    <Divider style={{marginTop: '5px'}}/>
-                                    <Grid item display="flex" justifyContent="center" alignItems="center">
-                                        <CardContent>
-                                            <Typography gutterBottom variant="h5" component="div">
-                                                {user && user.admin ? 'Modera utenti' : 'I tuoi Dati'}
-                                            </Typography>
-                                        </CardContent>
-                                    </Grid>
-                                </Grid>
-                            </CardActionArea>
-                        </Card>
+            </Grid>
+
+            <Grid xs={8} container direction="column" display="flex" justifyContent="space-around" alignItems="stretch"
+                  sx={{marginTop: '80px'}}>
+                <Card sx={{
+                    maxHeight: '300px', margin: '20px', "&:hover": {
+                        background: "#d7d7d7"
+                    }
+                }} onClick={goToVotations}>
+                    <Grid item display="flex" justifyContent="center" alignItems="center" sx={{backgroundColor:'#ff5d55'}}>
+                    <CardMedia
+                        sx={{backgroundColor: '#ff5d55', maxWidth: 200, maxHeight: 200}}
+                        component="img"
+                        alt="vote img"
+                        height="200"
+                        image={vote}
+                    />
                     </Grid>
+                    <CardActionArea>
+                        <Grid container direction="column">
+                            <Grid item display="flex" justifyContent="center" alignItems="center">
+                                <CardContent>
+                                <Typography gutterBottom variant="h5" component="div">
+                                    {user && user.admin ? 'Inserisci Votazioni' : 'Votazioni'}
+                                </Typography>
+                                </CardContent>
+                            </Grid>
+                        </Grid>
+                    </CardActionArea>
+                </Card>
+                <Card sx={{
+                    maxHeight: '300px', margin: '20px', "&:hover": {
+                        background: "#d7d7d7"
+                    }
+                }} onClick={goToInitiatives}>
+                        <Grid item display="flex" justifyContent="center" alignItems="center" sx={{backgroundColor:'#f1f6be'}}>
+                            <CardMedia
+                                sx={{ maxWidth: 320, maxHeight:200, backgroundColor:'#f1f6be' }}
+                                component="img"
+                                alt="vote img"
+                                height="200"
+                                image={iniziative}
+                            />
+                        </Grid>
+                        <CardActionArea>
+                            <Grid item display="flex" justifyContent="center" alignItems="center">
+                                <CardContent>
+                                    <Typography gutterBottom variant="h5" component="div">
+                                        {user && user.admin ? 'Gestisci iniziative' : 'Iniziative'}
+                                    </Typography>
+                                </CardContent>
+                            </Grid>
+
+                        </CardActionArea>
+                </Card>
+                {isVisitor ? null :
+                    <Card
+                        onClick={goToData}
+                        sx={{
+                            maxHeight: '300px', margin: '20px', "&:hover": {
+                                background: "#d7d7d7"
+                            }
+                        }}>
+                        <Grid item display="flex" justifyContent="center" alignItems="center" sx={{backgroundColor:'#d4e3fc'}}>
+                            <CardMedia
+                                sx={{backgroundColor: '#d4e3fc', maxWidth: 269, maxHeight:200}}
+                                component="img"
+                                alt="vote img"
+                                height="200"
+                                image={personaldata}
+                            />
+                        </Grid>
+
+
+                        <CardActionArea>
+                            <Grid item display="flex" justifyContent="center" alignItems="center">
+                                <CardContent>
+                                    <Typography gutterBottom variant="h5" component="div">
+                                        {user && user.admin ? 'Modera utenti' : 'I tuoi Dati'}
+                                    </Typography>
+                                </CardContent>
+                            </Grid>
+                        </CardActionArea>
+                    </Card>
                 }
             </Grid>
+            {/*<Grid item xs={12} alignContent='center'>*/}
+            {/*    <Card sx={{*/}
+            {/*        width: '60%', "&:hover": {*/}
+            {/*            background: "#d7d7d7"*/}
+            {/*        }*/}
+            {/*    }} onClick={goToVotations}>*/}
+            {/*        <CardActionArea>*/}
+            {/*            <Grid container direction="column">*/}
+            {/*                <Grid item display="flex" justifyContent="center" alignItems="center"*/}
+            {/*                      style={{backgroundColor: '#ff5d55'}}>*/}
+            {/*                    <CardMedia*/}
+            {/*                        component="img"*/}
+            {/*                        image={vote}*/}
+            {/*                        sx={{*/}
+            {/*                            width: '45%',*/}
+            {/*                        }}*/}
+            {/*                        alt="vote"/>*/}
+            {/*                </Grid>*/}
+            {/*                <Divider style={{marginTop: '5px'}}/>*/}
+            {/*                <Grid item display="flex" justifyContent="center" alignItems="center">*/}
+            {/*                    <CardContent>*/}
+            {/*                        <Typography gutterBottom variant="h5" component="div">*/}
+            {/*                            {user && user.admin ? 'Inserisci Votazioni' : 'Votazioni'}*/}
+            {/*                        </Typography>*/}
+            {/*                    </CardContent>*/}
+            {/*                </Grid>*/}
+            {/*            </Grid>*/}
+            {/*        </CardActionArea>*/}
+            {/*    </Card>*/}
+            {/*</Grid>*/}
+            {/*<Grid item xs={12} alignContent="center">*/}
+            {/*    <Card sx={{*/}
+            {/*        width: '60%', "&:hover": {*/}
+            {/*            background: "#d7d7d7"*/}
+            {/*        }*/}
+            {/*    }} onClick={goToInitiatives}>*/}
+            {/*        <CardActionArea>*/}
+            {/*            <Grid container direction="column">*/}
+            {/*                <Grid item display="flex" justifyContent="center" alignItems="center"*/}
+            {/*                      style={{backgroundColor: '#f1f6be'}}>*/}
+            {/*                    <CardMedia*/}
+            {/*                        component="img"*/}
+            {/*                        image={iniziative}*/}
+            {/*                        sx={{*/}
+            {/*                            width: '70%',*/}
+            {/*                        }}*/}
+            {/*                        alt="iniziative"/>*/}
+            {/*                </Grid>*/}
+            {/*                <Divider style={{marginTop: '5px'}}/>*/}
+            {/*                <Grid item display="flex" justifyContent="center" alignItems="center">*/}
+            {/*                    <CardContent>*/}
+            {/*                        <Typography gutterBottom variant="h5" component="div">*/}
+            {/*                            {user && user.admin ? 'Gestisci iniziative' : 'Iniziative'}*/}
+            {/*                        </Typography>*/}
+            {/*                    </CardContent>*/}
+            {/*                </Grid>*/}
+            {/*            </Grid>*/}
+            {/*        </CardActionArea>*/}
+            {/*    </Card>*/}
+            {/*</Grid>*/}
+            {/*{isVisitor ? null :*/}
+            {/*    <Grid item xs={12} alignContent='center'>*/}
+            {/*        <Card*/}
+            {/*            onClick={goToData}*/}
+            {/*            sx={{*/}
+            {/*                width: '60%', "&:hover": {*/}
+            {/*                    background: "#d7d7d7"*/}
+            {/*                }*/}
+            {/*            }}>*/}
+            {/*            <CardActionArea>*/}
+            {/*                <Grid container direction="column">*/}
+            {/*                    <Grid item display="flex" justifyContent="center" alignItems="center"*/}
+            {/*                          style={{backgroundColor: '#d4e3fc'}}>*/}
+            {/*                        <CardMedia*/}
+            {/*                            component="img"*/}
+            {/*                            image={personalData}*/}
+            {/*                            sx={{*/}
+            {/*                                width: '60%',*/}
+            {/*                            }}*/}
+            {/*                            alt="personalData"/>*/}
+            {/*                    </Grid>*/}
+            {/*                    <Divider style={{marginTop: '5px'}}/>*/}
+            {/*                    <Grid item display="flex" justifyContent="center" alignItems="center">*/}
+            {/*                        <CardContent>*/}
+            {/*                            <Typography gutterBottom variant="h5" component="div">*/}
+            {/*                                {user && user.admin ? 'Modera utenti' : 'I tuoi Dati'}*/}
+            {/*                            </Typography>*/}
+            {/*                        </CardContent>*/}
+            {/*                    </Grid>*/}
+            {/*                </Grid>*/}
+            {/*            </CardActionArea>*/}
+            {/*        </Card>*/}
+            {/*    </Grid>*/}
+            {/*}*/}
         </>
     );
-
 }
 
 export default MainPage;

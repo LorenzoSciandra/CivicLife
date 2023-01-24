@@ -12,17 +12,15 @@ export type BonusType={
 }
 
 export type VaccineType={
-     id:string;//ok
-     email_owner:string;//ok
-     type:string; //ok
+     email_owner:string;
      date:number;
-     location:string;//ok
-     description:string;//ok
-     name:string;//ok
-     vaccine:string;
-     manufacturer:string;//ok
-     doctor:string;//ok
-     nurse:string;//ok
+     location:string;
+     description:string;
+     vaccineName:string;
+     dose:string;
+     manufacturer:string;
+     doctor:string;
+     nurse:string;
 }
 
 export const getAllBonuses=(tokenData: TokenData): Promise<BonusType[]|AuthError>=>{
@@ -32,7 +30,7 @@ export const getAllBonuses=(tokenData: TokenData): Promise<BonusType[]|AuthError
     const tokenBase64= Base64.encode(tokenData.token)
     const url = 'http://localhost:8080/bonusAPI/v1/bonuses/'+ tokenData.email+'/?email='+ emailBase64 + '&provider=' + providerBase64 + '&token=' + tokenBase64
     return axios.get(url).then((response) => {
-        console.log('response', response.data)
+        // console.log('response', response.data)
         return response.data
     }).catch(() => {
         const authError: AuthError = {
@@ -51,7 +49,7 @@ export const getAllVaccines=(tokenData: TokenData): Promise<VaccineType[]|AuthEr
     const tokenBase64= Base64.encode(tokenData.token)
     const url = 'http://localhost:8080/vaccinationAPI/v1/vaccinations/'+ tokenData.email+'/?email='+ emailBase64 + '&provider=' + providerBase64 + '&token=' + tokenBase64
     return axios.get(url).then((response) => {
-        console.log('response', response.data)
+        // console.log('response', response.data)
         return response.data
     }).catch(() => {
         const authError: AuthError = {

@@ -1,6 +1,5 @@
 import axios from 'axios';
 import {Base64} from "js-base64";
-import {User} from "./UsersAPI";
 
 export type TokenData= {
     email:string,
@@ -21,6 +20,7 @@ export enum ValidateCode{
     LOGIN_FAIL = 'LOGIN_FAIL',
     GET_FAIL = 'GET_FAIL',
     DELETE_FAIL = 'DELETE_FAIL',
+
 }
 
 export interface AuthError{
@@ -34,12 +34,11 @@ export function isInstanceOfAuthError(object:any): object is AuthError {
 }
 
 export const exchangeToken = async (token: string):Promise<TokenData|AuthError>=> {
-    console.log('qui ho questo',token)
+
     let url = 'http://localhost:8080/authAPI/v1/token/'+ token
     return await axios.get(url).then((response) => {
         const data = Base64.decode(response.data);
         const values = data.split(",")
-        console.log('values trovati',values)
         for(let i = 0; i < values.length; i++){
             values[i] = values[i].split(": ")[1]
         }

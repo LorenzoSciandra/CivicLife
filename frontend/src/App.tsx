@@ -1,5 +1,4 @@
 import {Route, Routes} from 'react-router-dom';
-import Login from './Login/Login';
 import MainPage from "./MainPage/MainPage";
 import PersonalData from "./Data/PersonalData";
 import UsersAdmin from "./Data/UsersAdmin";
@@ -15,14 +14,9 @@ import LoginChoser from "./Login/LoginChoser";
 import VotationsAdmin from "./Vote/VotationsAdmin";
 import Error from "./Error";
 
-type AppPropsType= {
-        isMobile: boolean
-}
-
-const App = (props: AppPropsType) => {
+const App = () => {
     return (
         <Routes>
-            <Route path="/login" element={<Login/>}/>
             <Route path="/home" element={<MainPage/>}/>
             <Route path="/myData" element={<PersonalData/>}/>
             <Route path="/usersAdmin" element={<UsersAdmin/>}/>
@@ -34,7 +28,7 @@ const App = (props: AppPropsType) => {
             <Route path='/votations/votationDetails/partyDetails' element={<PartyDetails/>}/>
             <Route path='/votations/votationDetails/partyDetails/candidateDetails' element={<CandidateDetails/>}/>
             <Route path='/votationsAdmin' element={<VotationsAdmin/>}/>
-            <Route path="/" element={<LoginChoser isMobile={props.isMobile}/>}/>
+            <Route path="/" element={<LoginChoser/>}/>
             <Route path='/error' element={<Error/>}/>
             <Route path='*' element={<Typography>ERROR 404</Typography>}/>
         </Routes>

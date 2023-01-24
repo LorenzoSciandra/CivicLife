@@ -43,7 +43,7 @@ export const getAllInitiatives = async (tokenData: TokenData): Promise<Initiativ
     const tokenBase64 = Base64.encode(tokenData.token)
     const url = 'http://localhost:8080/initiativeAPI/v1/initiatives/' + tokenData.email + '?email=' + emailBase64 + '&provider=' + providerBase64 + '&token=' + tokenBase64
     return await axios.get(url).then((response) => {
-        console.log('response', response.data)
+        // console.log('response', response.data)
         return response.data
     }).catch(() => {
         const authError: AuthError = {
@@ -61,7 +61,7 @@ export const getMyInitiatives = async (tokenData: TokenData): Promise<Initiative
     const tokenBase64 = Base64.encode(tokenData.token)
     const url = 'http://localhost:8080/initiativeAPI/v1/initiative/getCreatedInitiatives/' + tokenData.email + '?email=' + emailBase64 + '&provider=' + providerBase64 + '&token=' + tokenBase64
     return await axios.get(url).then((response) => {
-        console.log('response', response.data)
+        // console.log('response', response.data)
         return response.data
     }).catch(() => {
         const authError: AuthError = {
@@ -79,7 +79,7 @@ export const getSubscribedInitiatives = async (tokenData: TokenData): Promise<In
     const tokenBase64 = Base64.encode(tokenData.token)
     const url = 'http://localhost:8080/initiativeAPI/v1/initiative/getMySubscribedInitiatives/' + tokenData.email + '?email=' + emailBase64 + '&provider=' + providerBase64 + '&token=' + tokenBase64
     return await axios.get(url).then((response) => {
-        console.log('response', response.data)
+        // console.log('response', response.data)
         return response.data
     }).catch(() => {
         const authError: AuthError = {
@@ -97,7 +97,7 @@ export const getOrganizedInitiatives = async (tokenData: TokenData): Promise<Ini
     const tokenBase64 = Base64.encode(tokenData.token)
     const url = 'http://localhost:8080/initiativeAPI/v1/initiative/getOrganizedInitiatives/' + tokenData.email + '?email=' + emailBase64 + '&provider=' + providerBase64 + '&token=' + tokenBase64
     return await axios.get(url).then((response) => {
-        console.log('response', response.data)
+        // console.log('response', response.data)
         return response.data
     }).catch(() => {
         const authError: AuthError = {
@@ -125,7 +125,6 @@ export const createInitiative = async (tokenData: TokenData, initiative: Initiat
         .then(value => {
             return value.data;
         }).catch(function (error) {
-            console.log(error)
             const authError: AuthError = {
                 code: ValidateCode.UPDATE_FAIL,
                 method: 'POST',
@@ -145,7 +144,7 @@ export interface InitiativeNameDesc {
 export const getInitiativesForVisitor = async (): Promise<InitiativeNameDesc[] | AuthError> => {
     const url = 'http://localhost:8080/initiativeAPI/v1/getAllNamesDesc'
     return await axios.get(url).then((response) => {
-        console.log('response', response.data)
+        // console.log('response', response.data)
         return response.data
     }).catch(() => {
         const authError: AuthError = {
@@ -173,7 +172,6 @@ export const modifyInitiative = async (tokenData: TokenData, initiative: Initiat
         .then(value => {
             return value.data;
         }).catch(function (error) {
-            console.log(error)
             const authError: AuthError = {
                 code: ValidateCode.UPDATE_FAIL,
                 method: 'POST',
@@ -195,7 +193,6 @@ export const deleteInitiative= async (tokenData: TokenData, initiativeId: string
         .then(value => {
             return value.data;
         }).catch(function (error) {
-            console.log(error)
             const authError: AuthError = {
                 code: ValidateCode.DELETE_FAIL,
                 method: 'DELETE',
@@ -217,7 +214,6 @@ export const subscribeInitiative = async (tokenData: TokenData, initiativeId: st
         .then(value => {
             return value.data;
         }).catch(function (error) {
-            console.log(error)
             const authError: AuthError = {
                 code: ValidateCode.UPDATE_FAIL,
                 method: 'POST',
@@ -239,7 +235,6 @@ export const unsubscribeInitiative = async (tokenData: TokenData, initiativeId: 
         .then(value => {
             return value.data;
         }).catch(function (error) {
-            console.log(error)
             const authError: AuthError = {
                 code: ValidateCode.UPDATE_FAIL,
                 method: 'POST',
@@ -261,7 +256,6 @@ export const getInitiativeByID = async (tokenData: TokenData,initiativeID: strin
         .then(value => {
             return value.data;
         }).catch(function (error) {
-            console.log(error)
             const authError: AuthError = {
                 code: ValidateCode.GET_FAIL,
                 method: 'GET',
@@ -287,7 +281,6 @@ export const changeOrganizers = async (tokenData: TokenData, initiativeId: strin
         .then(value => {
             return value.data;
         }).catch(function (error) {
-            console.log(error)
             const authError: AuthError = {
                 code: ValidateCode.UPDATE_FAIL,
                 method: 'POST',

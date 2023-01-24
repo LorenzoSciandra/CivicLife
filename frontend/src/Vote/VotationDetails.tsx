@@ -1,4 +1,16 @@
-import {AppBar, Button, Divider, Grid, IconButton, ListItem, ListItemButton, Typography} from "@mui/material";
+import {
+    AppBar,
+    Avatar,
+    Button,
+    Dialog,
+    Divider,
+    Grid,
+    IconButton,
+    ListItem,
+    ListItemButton,
+    ListItemText,
+    Typography
+} from "@mui/material";
 import Box from "@mui/material/Box";
 
 import React, {useEffect, useState} from "react";
@@ -7,43 +19,61 @@ import {useLocation, useNavigate} from "react-router-dom";
 import Toolbar from "@mui/material/Toolbar";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import {isInstanceOfAuthError, logoutUser} from "../APIs/OauthAPI";
-import {CssTextField} from "../Utils/CustomTextFields";
+import {CssTextField} from "../Utils/CustomComponents";
 import List from "@mui/material/List";
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import Chip from "@mui/material/Chip";
 import dayjs from "dayjs";
-import {getParties, Party} from "../APIs/VotationsAPI";
+import {CandidateResult, getParties, Party, PartyResult} from "../APIs/VotationsAPI";
 import GroupsIcon from '@mui/icons-material/Groups';
-import {Avatar} from "@mui/material";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
 
 
 const VotationDetails = () => {
-    const [partyList, setPartyList] = useState<Party[]|null>(null)
-
+    const [partyList, setPartyList] = useState<Party[] | null>(null)
+    const [resultsDialogOpen, setResultsDialogOpen] = useState(false)
     const location = useLocation()
     const tokenData = location.state.token
     const isVisitor = location.state.isVisitor
     const navigate = useNavigate()
     const votation = location.state.votation
     const user = location.state.user
+    const showDialog = () => {
+        setResultsDialogOpen(true)
+    }
+
+    const closeDialog = () => {
+        setResultsDialogOpen(false)
+    }
 
     const getVotationParties = async () => {
-        const response= await getParties(votation.title)
-        console.log(response)
-        if(isInstanceOfAuthError(response)) {
+        const response = await getParties(votation.title)
+        if (isInstanceOfAuthError(response)) {
             navigate('/error', {state: {error: response}})
-        }else{
+        } else {
             setPartyList(response)
         }
     }
 
+    const getCandidateResult = () => {
+        let candidateResult: CandidateResult[] = []
+        votation.votationResult.partyResults.forEach((partyResult: PartyResult) => {
+            partyResult.candidateResults.forEach((candidate: CandidateResult) => {
+                candidateResult.push(candidate)
+            })
+        })
+        return candidateResult
+    }
+
     useEffect(() => {
-        console.log(votation)
-        if(votation !== undefined && partyList===null) {
+        if (votation !== undefined && partyList === null) {
             getVotationParties()
         }
 
-    },[])
+    }, [])
 
     const handlePartyDetailsOpen = (value: any) => {
         navigate('/votations/votationDetails/partyDetails', {
@@ -78,6 +108,11 @@ const VotationDetails = () => {
 
     const login = () => {
         window.location.assign('http://localhost:8080/login')
+    }
+
+    const percentagetoFixed= (value: number) => {
+        value= value*100
+        return value.toFixed(2).toString() + '%'
     }
 
     return (
@@ -118,11 +153,11 @@ const VotationDetails = () => {
             </Grid>
 
             <Grid container display="flex" justifyContent="flex-start" alignItems="center"
-                  sx={{width: '100%', position:'fixed', top:100}} spacing={3}>
+                  sx={{width: '100%', position: 'fixed', top: 100}} spacing={3}>
                 <Grid item xs={12}>
                     <Box sx={{width: '100%', height: '100%', border: '2.5px solid #feac0d',}}>
                         <CssTextField
-                            sx={{input:{color:'white'}, width: '100%', height: '100%',}}
+                            sx={{input: {color: 'white'}, width: '100%', height: '100%',}}
                             value={votation.description}
                             maxRows={5}
                             multiline
@@ -140,10 +175,12 @@ const VotationDetails = () => {
                     <Box sx={{width: 1}}>
                         <Box display="grid" gridTemplateColumns="repeat(12, 1fr)" gap={2}>
                             <Box gridColumn="span 6" sx={{textAlign: "center"}}>
-                                Dal:    <Chip sx={{backgroundColor:'#feac0d'}}icon={<CalendarMonthIcon/>} label={dayjs.unix(votation.startDate).format('DD/MM/YYYY')}/>
+                                Dal: <Chip sx={{backgroundColor: '#feac0d'}} icon={<CalendarMonthIcon/>}
+                                           label={dayjs.unix(votation.startDate).format('DD/MM/YYYY')}/>
                             </Box>
                             <Box gridColumn="span 6" sx={{textAlign: "center"}}>
-                                Al:     <Chip sx={{backgroundColor:'#feac0d'}} icon={<CalendarMonthIcon/>} label={dayjs.unix(votation.endDate).format('DD/MM/YYYY')}/>
+                                Al: <Chip sx={{backgroundColor: '#feac0d'}} icon={<CalendarMonthIcon/>}
+                                          label={dayjs.unix(votation.endDate).format('DD/MM/YYYY')}/>
                             </Box>
                         </Box>
                     </Box>
@@ -169,9 +206,83 @@ const VotationDetails = () => {
                                     <Divider color='white'/>
                                 </>
                             );
-                        }):null}
+                        }) : null}
                     </List>
                 </Grid>
+                {
+                    votation.status === 'TERMINATED' ?
+                        <Grid item xs={12} display="flex" justifyContent="center" alignItems="center">
+                            <Button style={{
+                                borderRadius: 35,
+                                backgroundColor: "#ff3823",
+                                padding: "10px 20px",
+                                fontSize: "18px"
+                            }}
+                                    onClick={showDialog}
+                                    variant="contained">
+                                MOSTRA RISULTATI
+                            </Button>
+                        </Grid> : null
+                }
+                <Dialog maxWidth={"sm"} fullWidth={true} open={resultsDialogOpen} onClose={closeDialog}>
+                    <DialogTitle>Risultati {votation.title}</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText>
+                            <ListItemText primaryTypographyProps={{fontWeight: 'bold'}}
+                                          secondaryTypographyProps={{fontSize: '15px'}}
+                                          primary={'Numero di elettori totale:'}
+                                          secondary={votation.votationResult.numberOfVotes}/>
+                            <Divider/>
+                            <ListItemText
+                                primaryTypographyProps={{fontWeight: 'bold', fontSize: '19px', color: 'black'}}
+                                primary={'Per partito'}/>
+                            {
+                                votation.votationResult.partyResults.map((value: PartyResult) => {
+                                    return (
+                                        <>
+                                            <ListItem>
+                                                <ListItemText sx={{
+                                                    fontSize: '15px',
+                                                    fontWeight: 'bold',
+                                                    color: 'black'
+                                                }}>{value.partyId}</ListItemText>
+                                                <ListItemText>N° voti: {value.votes}</ListItemText>
+                                                <ListItemText>Percentuale: {percentagetoFixed(value.percentage)}</ListItemText>
+                                                <Divider/>
+                                            </ListItem>
+
+                                        </>
+                                    )
+                                })
+                            }
+                            <ListItemText
+                                primaryTypographyProps={{fontWeight: 'bold', fontSize: '19px', color: 'black'}}
+                                primary={'Per candidato'}/>
+                            {
+                                getCandidateResult().map((value: CandidateResult) => {
+                                    return (
+                                        <>
+                                            <ListItemText sx={{
+                                                fontSize: '15px',
+                                                fontWeight: 'bold',
+                                                color: 'black'
+                                            }}>{value.name} {value.surname}</ListItemText>
+                                            <ListItemText>N° voti: {value.votes}</ListItemText>
+                                            <ListItemText>Percentuale: {percentagetoFixed(value.percentage)}</ListItemText>
+
+                                        </>
+                                    )
+                                })
+                            }
+
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={closeDialog}>Chiudi</Button>
+                    </DialogActions>
+                </Dialog>
+
+
             </Grid>
 
         </>

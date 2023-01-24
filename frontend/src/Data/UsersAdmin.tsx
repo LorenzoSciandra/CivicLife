@@ -31,7 +31,6 @@ const UsersAdmin = () => {
     const [firstLoad, setFirstLoad] = useState(true)
 
     const getUsers = async () => {
-        console.log('tokenData', tokenData)
         const response = await getAllUsers(tokenData)
         if (isInstanceOfAuthError(response)) {
             navigate('/error', {state: {error: response}})

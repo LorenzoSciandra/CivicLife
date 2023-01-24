@@ -9,7 +9,7 @@ import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import {isInstanceOfAuthError, logoutUser} from "../APIs/OauthAPI";
-import {activeButtonColor, ButtonStyleType, inactiveButtonColor} from "../Utils/CustomTextFields";
+import {activeButtonColor, ButtonStyleType, inactiveButtonColor} from "../Utils/CustomComponents";
 import {getActiveVotations, getDoneVotations, getEndedVotations} from "../APIs/VotationsAPI";
 
 
@@ -18,7 +18,6 @@ const Votations = () => {
     const location = useLocation()
     const tokenData = location.state.token
     const isVisitor = location.state.isVisitor
-    console.log('arriva un visitatore? ' + isVisitor)
     const user = location.state.user
     const buttons = ['Attive', 'Concluse', 'Votate']
     const [activeList, setActiveList] = useState<any[] | null>(null)
@@ -64,7 +63,6 @@ const Votations = () => {
     useEffect(() => {
         if (firstLoad) {
             if (activeList === null) {
-                console.log('first load getting active votations')
                 getActives()
             }
         }
@@ -76,15 +74,12 @@ const Votations = () => {
         if (buttonChanged) {
             setLoginRequired(false)
             if (activeButton === buttons[0]) {
-                console.log('Attive')
                 getActives()
             }
             if (activeButton === buttons[1]) {
-                console.log('Concluse')
                 getEndeds()
             }
             if (activeButton === buttons[2]) {
-                console.log('get Votate votations but only if user is logged')
                 if (!isVisitor && user !== null && tokenData !== null) {
                     getVoted()
                 } else {

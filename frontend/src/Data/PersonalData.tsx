@@ -1,7 +1,7 @@
-import {Button, Dialog, Divider, Grid, IconButton, ListItemText, Typography,} from "@mui/material";
+import {AppBar, Button, Dialog, Divider, Grid, IconButton, ListItemText, Typography,} from "@mui/material";
 import '../App.css'
 import React, {useEffect, useState} from "react";
-import UpperButtonMenu from "../Utils/UpperButtonMenu";
+import UpperButtonMenu, {Android12Switch, CssTextField} from "../Utils/CustomComponents";
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
@@ -17,7 +17,6 @@ import {
 } from "../APIs/UsersAPI";
 import AuthRequired from "./AuthRequired";
 import dayjs, {Dayjs} from "dayjs";
-import {Android12Switch, CssTextField} from "../Utils/CustomTextFields";
 import {DatePicker, LocalizationProvider} from "@mui/x-date-pickers";
 import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs";
 import ListItemButton from "@mui/material/ListItemButton";
@@ -35,9 +34,7 @@ import FormControl from "@mui/material/FormControl";
 import FormLabel from "@mui/material/FormLabel";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import Box from '@mui/material/Box';
-import {AppBar} from "@mui/material";
 import Toolbar from '@mui/material/Toolbar';
-
 
 
 const PersonalData = () => {
@@ -84,6 +81,13 @@ const PersonalData = () => {
             setFiscalCode(user.fiscalCode)
             setBonusAccess(user.authorizeBonus)
             setVaccineAccess(user.authorizeVaccine)
+
+            if(user.authorizeBonus){
+                loadBonuses()
+            }
+            if(user.authorizeVaccine){
+                loadVaccines()
+            }
         }
     }, [user])
 
@@ -98,7 +102,6 @@ const PersonalData = () => {
         } else {
             navigate('/error', {state: {error: response}})
         }
-
     }
 
     const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
@@ -144,7 +147,7 @@ const PersonalData = () => {
         else{
             setBonusList(bonuslist)
             setShowBonusAuthorizationRequiredMessage(false)
-            somethingChanged()
+            //somethingChanged()
         }
     }
 
@@ -156,7 +159,7 @@ const PersonalData = () => {
         else{
             setVaccinesList(vaccineList)
             setShowVaccineAuthorizationRequiredMessage(false)
-            somethingChanged()
+            //somethingChanged()
         }
     }
 
@@ -174,10 +177,7 @@ const PersonalData = () => {
     };
 
     function toTimestamp(strDate: string){
-        console.log(strDate)
         const datum = Date.parse(strDate);
-        console.log(datum)
-        console.log(datum/1000)
         return datum/1000;
     }
 
@@ -192,8 +192,7 @@ const PersonalData = () => {
 
     const updateUserData = async (): Promise<boolean | AuthError> => {
         if (user) {
-            console.log('Bonus Access: ' + bonusAccess)
-            console.log('Vaccine Access: ' + vaccineAccess)
+
             const newUser: User = {
                 email: user.email,
                 name: name,
@@ -208,8 +207,7 @@ const PersonalData = () => {
                 authorizeBonus: bonusAccess !== null ? bonusAccess : user.authorizeBonus,
                 authorizeVaccine: vaccineAccess !== null ? vaccineAccess : user.authorizeVaccine
             }
-            console.log('newUser', newUser)
-            //return true
+
             return await updateUser(tokenData, newUser)
         }
         return false
@@ -217,55 +215,55 @@ const PersonalData = () => {
 
     const authBonus = async () => {
         const updateResult = await authorizeBonusAccess(tokenData)
-        if (updateResult) {
-            loadBonuses()
-            setShowBonusAuthorizationRequiredMessage(false)
-            somethingChanged()
+        if(typeof updateResult === 'boolean') {
+            if (updateResult) {
+                loadBonuses()
+                setShowBonusAuthorizationRequiredMessage(false)
+                setBonusAccess(true)
+            }
+        }
+        else{
+            navigate('/error', {state: {error: updateResult}})
         }
     }
 
     const authVaccine = async () => {
         const updateResult = await authorizeVaccineAccess(tokenData)
-        if (updateResult) {
-            loadVaccines()
-            setShowVaccineAuthorizationRequiredMessage(false)
-            somethingChanged()
+        if(typeof updateResult === 'boolean'){
+            if (updateResult) {
+                loadVaccines()
+                setShowVaccineAuthorizationRequiredMessage(false)
+                setVaccineAccess(true)
+            }
+        }
+        else{
+            navigate('/error', {state: {error: updateResult}})
         }
     }
 
     const handleVaccineAuthorizationChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
-        console.log('VACCINI A: ', event.target.checked)
         setVaccineAccess(event.target.checked)
     }
 
     const handleBonusAuthorizationChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
-        console.log('BONUS A: ', event.target.checked)
         setBonusAccess(event.target.checked)
     }
 
     useEffect(() => {
         if (user) {
-            if (activeButton === buttons[0]) {
-                setShowBonusAuthorizationRequiredMessage(false)
-                setShowVaccineAuthorizationRequiredMessage(false)
-            } else if (activeButton === buttons[1]) {
-                setShowBonusAuthorizationRequiredMessage(false)
+            setShowVaccineAuthorizationRequiredMessage(false)
+            setShowBonusAuthorizationRequiredMessage(false)
+            if (activeButton === buttons[1]) {
                 if (!user.authorizeVaccine) {
                     setShowVaccineAuthorizationRequiredMessage(true)
-                } else {
-                    loadVaccines()
                 }
             } else if (activeButton === buttons[2]) {
-                setShowVaccineAuthorizationRequiredMessage(false)
                 if (!user.authorizeBonus) {
                     setShowBonusAuthorizationRequiredMessage(true)
-                } else {
-                    loadBonuses()
                 }
             }
         }
     }, [activeButton])
-
 
     const handleOperation = async () => {
         if (activeButton === buttons[0]) {
@@ -273,9 +271,6 @@ const PersonalData = () => {
             if (update) {
                 somethingChanged('Dati aggiornati correttamente')
             }
-
-        } else if (activeButton === buttons[1]) { // qui forse si farà una specie di reload, DA VALUTARE
-        } else if (activeButton === buttons[2]) {
         }
     }
 
@@ -456,20 +451,22 @@ const PersonalData = () => {
 
                                 </>
                                 :
-                                activeButton === buttons[1] ?
+                                activeButton === buttons[1]  && vaccineAccess ?
 
                                     vaccinesList.map((value, index) => {
                                         return (
                                             <>
                                                 <ListItemButton onClick={() => handleDialogOpen(value)}>
                                                     <VaccinesIcon sx={{color: 'white', marginRight: '10px'}}/>
-                                                    <ListItemText primary={value.name}/>
+                                                    <ListItemText primary={value.vaccineName}/>
                                                 </ListItemButton>
                                                 <Divider color={'black'}/>
                                             </>
                                         );
                                     })
                                     :
+                                    activeButton === buttons[2] && bonusAccess ?
+
                                     bonusList.map((value, index) => {
                                             return (
                                                 <>
@@ -481,7 +478,7 @@ const PersonalData = () => {
                                                 </>
                                             );
                                         }
-                                    )
+                                    ): null
                             : null
                     }
 
@@ -489,8 +486,8 @@ const PersonalData = () => {
 
             </Grid>
             {
-                (showBonusAuthorizationRequiredMessage || showVaccineAuthorizationRequiredMessage) ?
-                    null
+
+                activeButton !== buttons[0] ? null
                     :
                     <Grid item xs={12} display="flex" justifyContent='center' alignItems="right">
                         <Button style={{
@@ -505,9 +502,7 @@ const PersonalData = () => {
                                 onClick={() => {
                                     handleOperation()
                                 }}>
-                            {
-                                activeButton === buttons[0] ? 'Salva' : activeButton === buttons[1] ? 'Aggiungi Vaccino' : 'aggiungi Bonus'
-                            }
+                            Salva
                         </Button>
                     </Grid>
             }
@@ -517,39 +512,42 @@ const PersonalData = () => {
                 <DialogTitle>Dettagli vaccino</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
-                        <ListItemText sx={{input: {color: 'white'}, style: {color: 'white'}}}
-                                      primary={'Nome Vaccino'} secondary={clickedVaccine ? clickedVaccine.name : null}/>
+                        <ListItemText primaryTypographyProps={{fontWeight: 'bold'}}
+                                      secondaryTypographyProps={{fontSize: '15px'}}
+                                      primary={'Nome Vaccino:'} secondary={clickedVaccine ? clickedVaccine.vaccineName : null}/>
                         <Divider/>
-                        <ListItemText sx={{input: {color: 'white'}, style: {color: 'white'}}}
-                                      primary={'Tipo Vaccino'} secondary={clickedVaccine ? clickedVaccine.type : null}/>
-                        <Divider/>
-                        <ListItemText sx={{input: {color: 'white'}, style: {color: 'white'}}}
-                                      primary={'Vaccino'} secondary={clickedVaccine ? clickedVaccine.vaccine : null}/>
-                        <Divider/>
-                        <ListItemText sx={{input: {color: 'white'}, style: {color: 'white'}}}
-                                      primary={'Data Somministrazione'} secondary={'something'}/>
-                        <Divider/><
-                        ListItemText sx={{input: {color: 'white'}, style: {color: 'white'}}}
-                                     primary={'Luogo Somministrazione'}
+
+                        <ListItemText primaryTypographyProps={{fontWeight: 'bold'}}
+                                      secondaryTypographyProps={{fontSize: '15px'}}
+                                     primary={'Luogo Somministrazione:'}
                                      secondary={clickedVaccine ? clickedVaccine.location : null}/>
                         <Divider/>
 
-                        <ListItemText sx={{input: {color: 'white'}, style: {color: 'white'}}}
-                                      primary={'Data somministrazione'}
-                                      secondary={clickedVaccine ? dayjs.unix(clickedVaccine.date / 1000).format('D MMMM YYYY').toString() : null}/>
+                        <ListItemText primaryTypographyProps={{fontWeight: 'bold'}}
+                                      secondaryTypographyProps={{fontSize: '15px'}}
+                                      primary={'Data somministrazione:'}
+                                      secondary={clickedVaccine ? dayjs.unix(clickedVaccine.date).format('D MMMM YYYY').toString() : null}/>
                         <Divider/>
-                        <ListItemText sx={{input: {color: 'white'}, style: {color: 'white'}}}
-                                      primary={'Descrizione Vaccino'}
+                        <ListItemText primaryTypographyProps={{fontWeight: 'bold'}}
+                                      secondaryTypographyProps={{fontSize: '15px'}}
+                                      primary={'Descrizione Vaccino:'}
                                       secondary={clickedVaccine ? clickedVaccine.description : null}/>
                         <Divider/>
-                        <ListItemText sx={{input: {color: 'white'}, style: {color: 'white'}}}
-                                      primary={'Casa produttrice'}
+                        <ListItemText primaryTypographyProps={{fontWeight: 'bold'}}
+                                      secondaryTypographyProps={{fontSize: '15px'}}
+                                      primary={'Dose n°: '} secondary={clickedVaccine ? clickedVaccine.dose : null}/>
+                        <Divider/>
+                        <ListItemText primaryTypographyProps={{fontWeight: 'bold'}}
+                                      secondaryTypographyProps={{fontSize: '15px'}}
+                                      primary={'Casa produttrice:'}
                                       secondary={clickedVaccine ? clickedVaccine.manufacturer : null}/>
                         <Divider/>
-                        <ListItemText sx={{input: {color: 'white'}, style: {color: 'white'}}}
+                        <ListItemText primaryTypographyProps={{fontWeight: 'bold'}}
+                                      secondaryTypographyProps={{fontSize: '15px'}}
                                       primary={'Medico'} secondary={clickedVaccine ? clickedVaccine.doctor : null}/>
                         <Divider/>
-                        <ListItemText sx={{input: {color: 'white'}, style: {color: 'white'}}}
+                        <ListItemText primaryTypographyProps={{fontWeight: 'bold'}}
+                                      secondaryTypographyProps={{fontSize: '15px'}}
                                       primary={'Infermiere'} secondary={clickedVaccine ? clickedVaccine.nurse : null}/>
                     </DialogContentText>
                 </DialogContent>
@@ -561,17 +559,21 @@ const PersonalData = () => {
                 <DialogTitle>Dettagli bonus</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
-                        <ListItemText sx={{input: {color: 'white'}, style: {color: 'white'}}}
+                        <ListItemText primaryTypographyProps={{fontWeight: 'bold'}}
+                                      secondaryTypographyProps={{fontSize: '15px'}}
                                       primary={'Nome Bonus'} secondary={clickedBonus ? clickedBonus.name : null}/>
                         <Divider/>
-                        <ListItemText sx={{input: {color: 'white'}, style: {color: 'white'}}}
+                        <ListItemText primaryTypographyProps={{fontWeight: 'bold'}}
+                                      secondaryTypographyProps={{fontSize: '15px'}}
                                       primary={'Tipo Bonus'} secondary={clickedBonus ? clickedBonus.type : null}/>
                         <Divider/>
-                        <ListItemText sx={{input: {color: 'white'}, style: {color: 'white'}}}
+                        <ListItemText primaryTypographyProps={{fontWeight: 'bold'}}
+                                      secondaryTypographyProps={{fontSize: '15px'}}
                                       primary={'Data scadenza'}
-                                      secondary={clickedBonus ? dayjs.unix(clickedBonus.end_date / 1000).format('D MMMM YYYY').toString() : null}/>
+                                      secondary={clickedBonus ? dayjs.unix(clickedBonus.end_date).format('D MMMM YYYY').toString() : null}/>
                         <Divider/>
-                        <ListItemText sx={{input: {color: 'white'}, style: {color: 'white'}}}
+                        <ListItemText primaryTypographyProps={{fontWeight: 'bold'}}
+                                      secondaryTypographyProps={{fontSize: '15px'}}
                                       primary={'Descrizione'}
                                       secondary={clickedBonus ? clickedBonus.description : null}/>
 

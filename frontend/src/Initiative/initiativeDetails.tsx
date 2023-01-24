@@ -1,8 +1,8 @@
-import {AppBar, Button, Chip, Container, Grid, IconButton, styled, Typography,} from "@mui/material";
+import {AppBar, Button, Chip, Grid, IconButton, Typography,} from "@mui/material";
 import '../App.css'
 import React, {useEffect, useState} from "react";
 import Box from '@mui/material/Box';
-import {CssTextField} from "../Utils/CustomTextFields";
+import {CssTextField} from "../Utils/CustomComponents";
 import {useLocation, useNavigate} from "react-router-dom";
 import Toolbar from "@mui/material/Toolbar";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -14,18 +14,20 @@ import {getAllUsersEmail, UserStatus} from "../APIs/UsersAPI";
 import dayjs, {Dayjs} from "dayjs";
 import {
     changeOrganizers,
-    deleteInitiative, getInitiativeByID,
+    deleteInitiative,
+    getInitiativeByID,
     Initiative,
     InitiativeType,
     InitiativeTypeColor,
-    modifyInitiative, subscribeInitiative, unsubscribeInitiative
+    modifyInitiative,
+    subscribeInitiative,
+    unsubscribeInitiative
 } from "../APIs/InitiativeAPI";
 import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs";
 import {DatePicker, LocalizationProvider} from "@mui/x-date-pickers";
 import MuiAlert, {AlertProps} from "@mui/material/Alert";
 import Snackbar from "@mui/material/Snackbar";
 import Stack from "@mui/material/Stack";
-
 
 
 const InitiativeDetails = () => {
@@ -65,7 +67,6 @@ const InitiativeDetails = () => {
             navigate('/error', {state: {error: response}})
         }
         else {
-            console.log(response)
             setModifiedDescription(response.description)
             setModifiedSelectedUsers(response.idOrganizers)
             setModifiedStartDate(dayjs.unix(response.startDate))
@@ -114,7 +115,6 @@ const InitiativeDetails = () => {
 
     const handleStartDateChanged = (newValue: Dayjs|null) => {
         if (dayjs(newValue, 'DD/MM/YYYY', true).isValid()) {
-            console.log('sto settando',newValue)
             setModifiedStartDate(newValue);
         }
         else{
@@ -184,7 +184,6 @@ const InitiativeDetails = () => {
                         location: initiative.location,
                         name: initiative.name,
                     }
-                    console.log(newInitiative)
                     const response = await modifyInitiative(tokenData, newInitiative)
                     if ( typeof response === 'boolean') {
                         if(response){
@@ -261,7 +260,6 @@ const InitiativeDetails = () => {
     const handleSubscribe = async () => {
 
         if(initiative){
-            console.log('subscribe')
             const response = await subscribeInitiative(tokenData, initiative.id)
             if(typeof response === 'boolean'){
                 if(response){
@@ -281,7 +279,6 @@ const InitiativeDetails = () => {
 
     const handleUnSubscribe = async () => {
         if(initiative){
-            console.log('unsubscribe')
             const response = await unsubscribeInitiative(tokenData, initiative.id)
             if(typeof response === 'boolean'){
                 if(response){
@@ -331,9 +328,7 @@ const InitiativeDetails = () => {
 
     const handleDeleteInitiative = async () => {
         if(initiative){
-            console.log('delete')
             const response= await deleteInitiative(tokenData, initiative.id)
-            console.log(response)
             if(typeof response === 'boolean'){
                 if(response){
                     navigate(-1)

@@ -1,35 +1,35 @@
 import {
     AppBar,
     Button,
-    Card, CardHeader,
-    Divider,
+    Card,
+    CardContent,
+    CardHeader,
     Grid,
     IconButton,
     ToggleButton,
     ToggleButtonGroup,
-    Typography,
-    CardContent
+    Typography
 } from "@mui/material";
 import '../App.css'
 import React, {useEffect, useState} from "react";
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from "@mui/material/ListItemButton";
 import List from "@mui/material/List";
 import {useLocation, useNavigate} from "react-router-dom";
 import {
     getAllInitiatives,
     getInitiativesForVisitor,
-    getMyInitiatives, getOrganizedInitiatives, getSubscribedInitiatives,
+    getMyInitiatives,
+    getOrganizedInitiatives,
+    getSubscribedInitiatives,
     Initiative,
-    InitiativeNameDesc, InitiativeTypeColor
+    InitiativeNameDesc,
+    InitiativeTypeColor
 } from "../APIs/InitiativeAPI";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import {isInstanceOfAuthError, logoutUser} from "../APIs/OauthAPI";
-import {ListItemText} from "@mui/material";
 import {UserStatus} from "../APIs/UsersAPI";
-import {activeButtonColor, ButtonStyleType, inactiveButtonColor} from "../Utils/CustomTextFields";
+import {activeButtonColor, ButtonStyleType, inactiveButtonColor} from "../Utils/CustomComponents";
 
 
 const Initiatives = () => {
@@ -117,18 +117,15 @@ const Initiatives = () => {
     useEffect(() => {
         if (buttonChanged) {
             if (activeButton === buttons[0]) {
-                console.log('Tutte')
                 getInitiatives()
             }
             if (activeButton === buttons[1]) {
                 getMy()
             }
             if (activeButton === buttons[2]) {
-                console.log('Sottoscritte')
                 getSubscribed()
             }
             if (activeButton === buttons[3]) {
-                console.log('Organizzate')
                 getOrganized()
             }
         }

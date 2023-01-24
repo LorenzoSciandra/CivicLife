@@ -1,14 +1,45 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import '../App.css';
 import {Button, Grid, Typography} from "@mui/material";
 import basquiaPulito from "../imgs/logo_CivicLife.png"
 import {useNavigate} from "react-router-dom";
+import {exchangeToken, isInstanceOfAuthError, TokenData} from "../APIs/OauthAPI";
 
-type LoginChoserPropsType = {
-    isMobile: boolean
-}
+const LoginChoser = () => {
 
-const LoginChoser = (props: LoginChoserPropsType) => {
+    const [firstLoad, setFirstLoad] = useState(true);
+    const [tokenData, setTokenData] = useState<TokenData| null>(null);
+
+    const getTokenData = async (token_cifrato: string) => {
+        const tokenResponse = await exchangeToken(token_cifrato);
+        if (isInstanceOfAuthError(tokenResponse)) {
+            navigate('/error', {state: {error: tokenResponse}})
+        } else {
+            if (tokenResponse) {
+                setTokenData(tokenResponse)
+                navigate('/home', {state: {tokenData: tokenResponse}})
+            } else {
+                console.log('error')
+            }
+
+        }
+    }
+
+    useEffect(() => {
+        if (firstLoad) {
+                if (window.location.href.includes('token=') && tokenData === null) {
+                    const token_cifrato = window.location.href.split("token=")[1].toString()
+                    if (token_cifrato !== "") {
+                        getTokenData(token_cifrato)
+
+                    }
+                } else {
+                    console.log("token non presente")
+                }
+            }
+        setFirstLoad(false)
+    }, [])
+
     const navigate = useNavigate();
     const loginWithService = () => {
         window.location.assign('http://localhost:8080/login')

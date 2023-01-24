@@ -5,20 +5,30 @@ import Table from '@mui/material/Table';
 import TableCell, {tableCellClasses} from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
 import CancelTwoToneIcon from '@mui/icons-material/CancelTwoTone';
+import {AuthError, ValidateCode} from "./APIs/OauthAPI";
 
 const Error = () => {
-    const [errorReason, setErrorReason] = useState<string>('');
     const location = useLocation()
     const error = location.state.error
     const navigate = useNavigate()
+    const [errorReason, setErrorReason] = useState<AuthError|null>(null)
     const [infoList, setInfoList] = useState<string[]>([])
 
-    console.log(error)
     useEffect(() => {
-        if (infoList.length === 0) {
-            splittedRequest()
+        if (infoList.length === 0 && error!==undefined) {
+            console.log(error)
+            setErrorReason(error)
+            splittedRequest(error)
         }
-    })
+        else if (window.location.href.includes('errorReason=')) {
+                const errorReason = window.location.href.split("errorReason=")[1].toString()
+                const authError= generateErrorReason(errorReason)
+                setErrorReason(authError)
+                splittedRequest(authError)
+        } else{
+            navigate('/')
+        }
+    },[])
 
     const StyledTableCell = styled(TableCell)(({theme}) => ({
         [`&.${tableCellClasses.head}`]: {
@@ -30,29 +40,43 @@ const Error = () => {
         },
     }));
 
-    const splittedRequest = () => {
-        const path = error.requestedPath.split('/')
-        const returnValue = []
-        let pathtoprint = ''
-        for (let value = 0; value < path.length; value++) {
-            if (path[value] !== '') {
-                if(value ===2){
-                    let split = path[value].split(':')
-                    returnValue.push(split[0])
-                    returnValue.push(split[1])
+    const generateErrorReason = (errorReason:string) => {
+        const path = errorReason.split('requestedPath=')[1].split(',')[0]
+        const method = errorReason.split('method=')[1].split(',')[0]
+        const authError : AuthError = {
+            code: ValidateCode.AUTH_SERVER_ERROR,
+            requestedPath: path,
+            method: method
+        }
+        return authError
 
-                }
-                if (value === 3) {
-                    returnValue.push(path[value])
-                }
-                if (value > 4) {
-                    pathtoprint += path[value] + '/'
+    }
+
+    const splittedRequest = (errorReason:AuthError) => {
+        if(errorReason!==null) {
+            const path = errorReason.requestedPath.split('/')
+            const returnValue = []
+            let pathtoprint = ''
+            for (let value = 0; value < path.length; value++) {
+                if (path[value] !== '') {
+                    if (value === 2) {
+                        let split = path[value].split(':')
+                        returnValue.push(split[0])
+                        returnValue.push(split[1])
+
+                    }
+                    if (value === 3) {
+                        returnValue.push(path[value])
+                    }
+                    if (value > 4) {
+                        pathtoprint += path[value] + '/'
+                    }
                 }
             }
-        }
-        returnValue.push(pathtoprint)
+            returnValue.push(pathtoprint)
 
-        setInfoList(returnValue)
+            setInfoList(returnValue)
+        }
     }
 
     return (
@@ -65,6 +89,9 @@ const Error = () => {
                     ATTENZIONE
                 </Typography>
             </Grid>
+            {
+                infoList.length > 3 && errorReason ?
+
             <Grid item display="flex" justifyContent="center" alignItems="center">
                 <TableContainer sx={{backgroundColor:'white', width:'90%'}}>
                     <Table aria-label='customized-table'>
@@ -77,11 +104,11 @@ const Error = () => {
                         <TableBody>
                             <TableRow>
                                 <StyledTableCell component='th' scope='row'>Error code</StyledTableCell>
-                                <StyledTableCell align='right'>{error.code}</StyledTableCell>
+                                <StyledTableCell align='right'>{errorReason.code}</StyledTableCell>
                             </TableRow>
                             <TableRow>
                                 <StyledTableCell component='th' scope='row'>Method</StyledTableCell>
-                                <StyledTableCell align='right'>{error.method}</StyledTableCell>
+                                <StyledTableCell align='right'>{errorReason.method}</StyledTableCell>
                             </TableRow>
                             <TableRow>
                                 <StyledTableCell component='th' scope='row'>IP</StyledTableCell>
@@ -102,7 +129,8 @@ const Error = () => {
                         </TableBody>
                     </Table>
                 </TableContainer>
-            </Grid>
+            </Grid>: null
+            }
             <Grid item display="flex" justifyContent="center" alignItems="center">
                 <Button style={{
                     borderRadius: 35,
