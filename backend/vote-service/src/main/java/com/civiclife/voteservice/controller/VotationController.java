@@ -23,19 +23,19 @@ public class VotationController {
     @Autowired
     private ApiCall apiCall;
 
-    @CrossOrigin(origins = "http://localhost:3000", maxAge = 600)
+    @CrossOrigin(origins = "http://localhost:3000", maxAge = 1000)
     @GetMapping(value = "/votations/active", produces = MediaType.APPLICATION_JSON_VALUE)
     public Set<Votation> getAllVotationsByStatus() {
         return votationRepository.votationsByStatus(Votation.VotationStatus.valueOf("ACTIVE"));
     }
 
-    @CrossOrigin(origins = "http://localhost:3000", maxAge = 600)
+    @CrossOrigin(origins = "http://localhost:3000", maxAge = 1000)
     @GetMapping(value = "/votations/terminated", produces = MediaType.APPLICATION_JSON_VALUE)
     public Set<Votation> getAllVotationsByStatusTerminated() {
         return votationRepository.votationsByStatus(Votation.VotationStatus.valueOf("TERMINATED"));
     }
 
-    @CrossOrigin(origins = "http://localhost:3000", maxAge = 600)
+    @CrossOrigin(origins = "http://localhost:3000", maxAge = 1000)
     @GetMapping(value= "/votations/programmed/{userId}/{emailRichiedente}", produces = MediaType.APPLICATION_JSON_VALUE)
     public Set<Votation> getAllVotationsByStatusProgrammed(@PathVariable String userId,
                                                             @PathVariable String emailRichiedente){
@@ -49,7 +49,7 @@ public class VotationController {
         return new HashSet<>();
     }
 
-    @CrossOrigin(origins = "http://localhost:3000", maxAge = 600)
+    @CrossOrigin(origins = "http://localhost:3000", maxAge = 1000)
     @GetMapping(value = "/votations/done/{userId}/{emailRichiedente}", produces = MediaType.APPLICATION_JSON_VALUE)
     public Set<Votation> getAllVotationsDoneByUser(@PathVariable String userId,
                                                    @PathVariable String emailRichiedente) {
@@ -61,7 +61,7 @@ public class VotationController {
         return new HashSet<>();
     }
 
-    @CrossOrigin(origins = "http://localhost:3000", maxAge = 600)
+    @CrossOrigin(origins = "http://localhost:3000", maxAge = 1000)
     @GetMapping(value = "/votation/get/parties/{votationId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Party> getAllPartiesFromVotation(@PathVariable String votationId){
         String votationIdDecoded = new String(Base64.getDecoder().decode(votationId));
@@ -73,7 +73,7 @@ public class VotationController {
         return new ArrayList<>();
     }
 
-    @CrossOrigin(origins = "http://localhost:3000", maxAge = 600)
+    @CrossOrigin(origins = "http://localhost:3000", maxAge = 1000)
     @GetMapping(value = "/error/{code}/{path}/{method}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ErrorMessage error(@PathVariable(value = "code") ValidateCode code,
                               @PathVariable(value = "path") String path,
@@ -82,7 +82,7 @@ public class VotationController {
         return new ErrorMessage(code, pathUrl, method);
     }
 
-    @CrossOrigin(origins = "http://localhost:3000", maxAge = 600)
+    @CrossOrigin(origins = "http://localhost:3000", maxAge = 1000)
     @GetMapping(value = "/votation/voteCandidate/{votationId}/{partyId}/{candidateId}/{voterId}/{emailRichiedente}",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public boolean voteCandidate(@PathVariable String votationId,
@@ -125,7 +125,7 @@ public class VotationController {
         return false;
     }
 
-    @CrossOrigin(origins = "http://localhost:3000", maxAge = 600)
+    @CrossOrigin(origins = "http://localhost:3000", maxAge = 1000)
     @GetMapping(value = "/votation/voteParty/{votationId}/{partyId}/{voterId}/{emailRichiedente}", produces = MediaType.APPLICATION_JSON_VALUE)
     public boolean voteParty(@PathVariable String votationId,
                              @PathVariable String partyId,
@@ -146,7 +146,7 @@ public class VotationController {
                     for (PartyResult partyResult : votationResult.getPartyResults()) {
                         if (partyResult.getPartyId().equals(decodedPartyId)) {
                             for(CandidateResult candidateResult: partyResult.getCandidateResults()){
-                                if(candidateResult.isLeader()){
+                                if(candidateResult.getLeader()){
                                     candidateResult.setVotes(candidateResult.getVotes() + 1);
                                     partyResult.setVotes(partyResult.getVotes() + 1);
                                     votationResult.setNumberOfVotes(votationResult.getNumberOfVotes() + 1);
@@ -171,7 +171,7 @@ public class VotationController {
         return now < votation.getEndDate() && now > votation.getStartDate();
     }
 
-    @CrossOrigin(origins = "http://localhost:3000", maxAge = 600)
+    @CrossOrigin(origins = "http://localhost:3000", maxAge = 1000)
     @PostMapping(value = "/votation/updateStatus/{votationId}/{email}/{emailRichiedente}",
             consumes = MediaType.TEXT_PLAIN_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)

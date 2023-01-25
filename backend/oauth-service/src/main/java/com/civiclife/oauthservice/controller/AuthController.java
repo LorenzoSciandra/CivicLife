@@ -119,7 +119,7 @@ public class AuthController {
     }
 
     private TokenKey parseToken(String token){
-        System.out.println("Parser: " + token);
+        //System.out.println("Parser: " + token);
         TokenKey tokenKey = new TokenKey();
         String[] campi = token.split(",");
 

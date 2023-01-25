@@ -21,7 +21,7 @@ public class BonusController {
     private BonusRepository bonusRepository;
 
 
-    @CrossOrigin(origins = "http://localhost:3000", maxAge = 600)
+    @CrossOrigin(origins = "http://localhost:3000", maxAge = 1000)
     @GetMapping(value = "/bonuses/{email_owner}/{email_richiedente}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Bonus> getBonusesByOwner(@PathVariable(value = "email_owner") String email_owner,
                                          @PathVariable(value = "email_richiedente") String email_richiedente) {
@@ -32,7 +32,7 @@ public class BonusController {
         return new ArrayList<>();
     }
 
-    @CrossOrigin(origins = "http://localhost:3000", maxAge = 600)
+    @CrossOrigin(origins = "http://localhost:3000", maxAge = 1000)
     @GetMapping(value = "/error/{code}/{path}/{method}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ErrorMessage error(@PathVariable(value = "code") ValidateCode code,
                               @PathVariable(value = "path") String path,

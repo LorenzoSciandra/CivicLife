@@ -21,7 +21,7 @@ public class VaccinationController {
     @Autowired
     private VaccinationRepository vaccinationRepository;
 
-    @CrossOrigin(origins = "http://localhost:3000", maxAge = 600)
+    @CrossOrigin(origins = "http://localhost:3000", maxAge = 1000)
     @GetMapping(value = "/vaccinations/{email_owner}/{email_richiedente}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Vaccination> getBVaccinationsByOwner(@PathVariable(value = "email_owner") String email_owner,
                                                      @PathVariable(value = "email_richiedente") String email_richiedente) {
@@ -32,7 +32,7 @@ public class VaccinationController {
         return new ArrayList<>();
     }
 
-    @CrossOrigin(origins = "http://localhost:3000", maxAge = 600)
+    @CrossOrigin(origins = "http://localhost:3000", maxAge = 1000)
     @GetMapping(value = "/error/{code}/{path}/{method}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ErrorMessage error(@PathVariable(value = "code") ValidateCode code,
                               @PathVariable(value = "path") String path,

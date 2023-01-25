@@ -42,8 +42,8 @@ public class OAuth2Service {
         String token;
         String details;
 
-        System.out.println("oauth2ProviderName: " + oauth2ProviderName);
-        System.out.println(principal.getAttributes().toString());
+        //System.out.println("oauth2ProviderName: " + oauth2ProviderName);
+        //System.out.println(principal.getAttributes().toString());
 
         switch (TokenKey.OauthProvider.valueOf(oauth2ProviderName)) {
             case Google -> {
@@ -57,7 +57,6 @@ public class OAuth2Service {
                 oauth2UserName = Objects.requireNonNull(principal.getAttribute("name"));
                 oauth2UserSurname = "";
                 details = authData.getDetails().toString();
-                System.out.println("values: " + details);
                 token = details.substring(details.indexOf("SessionId="))
                         .replaceAll("]", "")
                         .replaceAll(",", "")
@@ -69,7 +68,6 @@ public class OAuth2Service {
                 oauth2UserEmail = principal.getAttribute("email");
                 token = "";
                 details = authData.getDetails().toString();
-                System.out.println("values: " + details);
                 token = details.substring(details.indexOf("SessionId="))
                         .replaceAll("]", "")
                         .replaceAll(",", "")

@@ -20,7 +20,7 @@ public class UserController {
     @Autowired
     UserRepository userRepository;
 
-    @CrossOrigin(origins = "http://localhost:3000", maxAge = 600)
+    @CrossOrigin(origins = "http://localhost:3000", maxAge = 1000)
     @GetMapping(value = "/users/{email}/{emailRichiedente}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<User> getAllUtenti(@PathVariable(value = "email") String email,
                                    @PathVariable(value = "emailRichiedente") String emailRichiedente) {
@@ -35,7 +35,7 @@ public class UserController {
         return new ArrayList<>();
     }
 
-    @CrossOrigin(origins = "http://localhost:3000", maxAge = 600)
+    @CrossOrigin(origins = "http://localhost:3000", maxAge = 1000)
     @GetMapping(value = "/users/emails/{email}/{emailRichiedente}", produces = MediaType.APPLICATION_JSON_VALUE)
     public Set<String> getAllUtentiEmail(@PathVariable(value = "email") String email,
                                          @PathVariable(value = "emailRichiedente") String emailRichiedente) {
@@ -47,7 +47,7 @@ public class UserController {
         return new HashSet<>();
     }
 
-    @CrossOrigin(origins = "http://localhost:3000", maxAge = 600)
+    @CrossOrigin(origins = "http://localhost:3000", maxAge = 1000)
     @GetMapping(value = "/user/getStatus/{email}", produces = MediaType.APPLICATION_JSON_VALUE)
     public UserStatus getStatus(@PathVariable(value = "email") String email) {
         Optional<User> optionalUser = userRepository.findById(email);
@@ -55,7 +55,7 @@ public class UserController {
 
     }
 
-    @CrossOrigin(origins = "http://localhost:3000", maxAge = 600)
+    @CrossOrigin(origins = "http://localhost:3000", maxAge = 1000)
     @GetMapping(value = "/user/get/{email}/{emailRichiedente}",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public User getUser(@PathVariable(value = "email") String email,
@@ -75,7 +75,7 @@ public class UserController {
         return null;
     }
 
-    @CrossOrigin(origins = "http://localhost:3000", maxAge = 600)
+    @CrossOrigin(origins = "http://localhost:3000", maxAge = 1000)
     @GetMapping(value = "/user/isAdmin/{email}/{emailRichiedente}", produces = MediaType.APPLICATION_JSON_VALUE)
     public boolean isAdmin(@PathVariable(value = "email") String email,
                            @PathVariable(value = "emailRichiedente") String emailRichiedente) {
@@ -92,7 +92,7 @@ public class UserController {
         return false;
     }
 
-    @CrossOrigin(origins = "http://localhost:3000", maxAge = 600)
+    @CrossOrigin(origins = "http://localhost:3000", maxAge = 1000)
     @GetMapping(value = "/user/authorizeBonus/{email}/{emailRichiedente}",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public boolean authorizeBonus(@PathVariable(value = "email") String email,
@@ -109,7 +109,7 @@ public class UserController {
         return false;
     }
 
-    @CrossOrigin(origins = "http://localhost:3000", maxAge = 600)
+    @CrossOrigin(origins = "http://localhost:3000", maxAge = 1000)
     @GetMapping(value = "/user/authorizeVaccine/{email}/{emailRichiedente}",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public boolean authorizeVaccine(@PathVariable(value = "email") String email,
@@ -126,7 +126,7 @@ public class UserController {
         return false;
     }
 
-    @CrossOrigin(origins = "http://localhost:3000", maxAge = 600)
+    @CrossOrigin(origins = "http://localhost:3000", maxAge = 1000)
     @GetMapping(value = "/error/{code}/{path}/{method}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ErrorMessage error(@PathVariable(value = "code") ValidateCode code,
                               @PathVariable(value = "path") String path,
@@ -135,7 +135,7 @@ public class UserController {
         return new ErrorMessage(code, pathUrl, method);
     }
 
-    @CrossOrigin(origins = "http://localhost:3000", maxAge = 600)
+    @CrossOrigin(origins = "http://localhost:3000", maxAge = 1000)
     @PostMapping(value = "/user/update/{email}/{emailRichiedente}",
             consumes = MediaType.TEXT_PLAIN_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)

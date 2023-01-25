@@ -8,6 +8,7 @@ services:
     ports:
       - "8761:8761"
     deploy:
+       
       restart_policy:
         condition: on-failure
     networks:
@@ -20,6 +21,7 @@ services:
       - "5672:5672"
       - "15672:15672"
     deploy:
+       
       restart_policy:
         condition: on-failure
     networks:
@@ -39,7 +41,21 @@ services:
     networks:
       - clnet
 
-  #  ----------------------------------------------
+  frontend:
+    #    build: frontend
+    image: lorenzos98/civiclife:frontend
+    container_name: frontend
+    ports:
+      - "3000:3000"
+    stdin_open: true
+    tty: true
+    deploy:
+      restart_policy:
+        condition: on-failure
+    networks:
+      - clnet
+
+    #  ----------------------------------------------
   #  APPLICATION SERVICES
   user-service:
     #build: user-service
@@ -55,6 +71,25 @@ services:
       - rabbitmq
       - oauth-service
     deploy:
+       
+      restart_policy:
+        condition: on-failure
+    networks:
+      - clnet
+  oauth-service:
+    #build: oauth-service
+    image: lorenzos98/civiclife:oauth-service
+    container_name: oauth-service
+    links:
+      - token-db
+    depends_on:
+      - token-db
+      - service-discovery
+      - rabbitmq
+    ports:
+      - "8085:8085"
+    deploy:
+      
       restart_policy:
         condition: on-failure
     networks:
@@ -77,23 +112,6 @@ services:
     networks:
       - clnet
 
-  oauth-service:
-    #build: oauth-service
-    image: lorenzos98/civiclife:oauth-service
-    container_name: oauth-service
-    links:
-      - token-db
-    depends_on:
-      - token-db
-      - service-discovery
-      - rabbitmq
-    ports:
-      - "8085:8085"
-    deploy:
-      restart_policy:
-        condition: on-failure
-    networks:
-      - clnet
 
   vote-service:
     #build: vote-service
@@ -132,20 +150,6 @@ services:
   #  ----------------------------------------------
   #  DATABASES
 
-  initiative-db:
-    image: mongo:latest
-    container_name: initiative-db
-    restart: unless-stopped
-    volumes:
-      - initiative-db:/var/lib/initiativeDB/data
-    ports:
-      - "27018:27017"
-    deploy:
-      restart_policy:
-        condition: on-failure
-    networks:
-      - clnet
-
   user-db:
     image: mongo:latest
     container_name: user-db
@@ -155,6 +159,7 @@ services:
     ports:
       - "27019:27017"
     deploy:
+      
       restart_policy:
         condition: on-failure
     networks:
@@ -169,6 +174,7 @@ services:
     ports:
       - "27021:2017"
     deploy:
+      
       restart_policy:
         condition: on-failure
     networks:
@@ -199,6 +205,22 @@ services:
     deploy:
       restart_policy:
         condition: on-failure
+    networks:
+      - clnet
+
+  initiative-db:
+    image: mongo:latest
+    container_name: initiative-db
+    restart: unless-stopped
+    volumes:
+      - initiative-db:/var/lib/initiativeDB/data
+    ports:
+      - "27018:27017"
+    deploy:
+      restart_policy:
+        condition: on-failure
+    networks:
+      - clnet
 
 volumes:
   external-resources-db:

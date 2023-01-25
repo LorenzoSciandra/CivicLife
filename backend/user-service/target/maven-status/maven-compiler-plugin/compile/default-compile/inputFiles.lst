@@ -1,6 +1,5 @@
 /home/lorenzosciandra/Documenti/Code/GithubProjects/CivicLife/backend/user-service/src/main/java/com/civiclife/userservice/utils/ErrorMessage.java
 /home/lorenzosciandra/Documenti/Code/GithubProjects/CivicLife/backend/user-service/src/main/java/com/civiclife/userservice/utils/ValidateCode.java
-/home/lorenzosciandra/Documenti/Code/GithubProjects/CivicLife/backend/user-service/src/main/java/com/civiclife/userservice/config/CorsConfig.java
 /home/lorenzosciandra/Documenti/Code/GithubProjects/CivicLife/backend/user-service/src/main/java/com/civiclife/userservice/component/UserComponent.java
 /home/lorenzosciandra/Documenti/Code/GithubProjects/CivicLife/backend/user-service/src/main/java/com/civiclife/userservice/UserServiceApplication.java
 /home/lorenzosciandra/Documenti/Code/GithubProjects/CivicLife/backend/user-service/src/main/java/com/civiclife/userservice/model/User.java

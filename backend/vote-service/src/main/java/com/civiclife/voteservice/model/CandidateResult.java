@@ -16,7 +16,7 @@ public class CandidateResult {
     private String name;
 
     private String surname;
-    private boolean isLeader;
+    private boolean leader;
     private float votes;
     private float percentage;
 
@@ -44,12 +44,12 @@ public class CandidateResult {
         this.percentage = percentage;
     }
 
-    public boolean isLeader() {
-        return isLeader;
+    public boolean getLeader() {
+        return leader;
     }
 
-    public void setLeader(boolean isLeader) {
-        this.isLeader = isLeader;
+    public void setLeader(boolean leader) {
+        this.leader = leader;
     }
 
     public String getName() {
