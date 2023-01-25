@@ -1,0 +1,113 @@
+[
+    {
+        "title": "Elezioni politiche 2022",
+        "description": "Le elezioni politiche in Italia del 2022 per il rinnovo di entrambi i rami del Parlamento italiano - Camera dei deputati e Senato della Repubblica - si sono tenute domenica 25 settembre 2022, a seguito dello scioglimento anticipato delle Camere decretato dal Presidente della Repubblica Sergio Mattarella il 21 luglio, provocato dalla crisi del governo Draghi. Nella stessa data si sono svolte anche le elezioni regionali in Sicilia.",
+        "startDate": 1664928000,
+        "endDate": 1678924800,
+        "status": "ACTIVE",
+        "partiesIds": [
+            "Partito Democratico",
+            "Lega per Salvini Premier",
+            "Movimento 5 Stelle"
+        ],
+        "votationResult": {
+            "numberOfVotes": 0,
+            "votersIdList": [],
+            "partyResults": [
+                {
+                    "partyId": "Movimento 5 Stelle",
+                    "votes": 0,
+                    "percentage": 0,
+                    "candidateResults": [
+                        {
+                            "candidateId": "88aa888888",
+                            "name": "Michele",
+                            "surname": "Gubitosa",
+                            "votes": 0,
+                            "isLeader": false,
+                            "percentage": 0
+                        },
+                        {
+                            "candidateId": "55555555ff",
+                            "name": "Paolo",
+                            "surname": "Taverna",
+                            "votes": 0,
+                            "isLeader": false,
+                            "percentage": 0
+                        },
+                        {
+                            "candidateId": "bbbbbbbbbba",
+                            "name": "Giuseppe",
+                            "surname": "Conte",
+                            "votes": 0,
+                            "isLeader": true,
+                            "percentage": 0
+                        }
+                    ]
+                },
+                {
+                    "partyId": "Partito Democratico",
+                    "votes": 0,
+                    "percentage": 0,
+                    "candidateResults": [
+                        {
+                            "candidateId": "5454545ff",
+                            "name": "Enrico",
+                            "surname": "Letta",
+                            "votes": 0,
+                            "isLeader": true,
+                            "percentage": 0
+                        },
+                        {
+                            "candidateId": "1454111asas",
+                            "name": "Giuseppe",
+                            "surname": "Provenzano",
+                            "votes": 0,
+                            "isLeader": false,
+                            "percentage": 0
+                        },
+                        {
+                            "candidateId": "545454asas",
+                            "name": "Irene",
+                            "surname": "Tinagli",
+                            "votes": 0,
+                            "isLeader": false,
+                            "percentage": 0
+                        }
+                    ]
+                },
+                {
+                    "partyId": "Lega per Salvini Premier",
+                    "votes": 0,
+                    "percentage": 0,
+                    "candidateResults": [
+                        {
+                            "candidateId": "111145ff",
+                            "name": "Matteo",
+                            "surname": "Salvini",
+                            "votes": 0,
+                            "isLeader": true,
+                            "percentage": 0
+                        },
+                        {
+                            "candidateId": "5454ggaazz5ff",
+                            "name": "Giancarlo",
+                            "surname": "Giorgetti",
+                            "votes": 0,
+                            "isLeader": false,
+                            "percentage": 0
+                        },
+                        {
+                            "candidateId": "aaaaaaaab",
+                            "name": "Alessandra",
+                            "surname": "Locatelli",
+                            "votes": 0,
+                            "isLeader": false,
+                            "percentage": 0
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+]

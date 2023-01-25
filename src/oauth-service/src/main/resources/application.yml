@@ -1,0 +1,42 @@
+server:
+  port: 8085
+  forward-headers-strategy: framework
+
+spring:
+  rabbitmq:
+    host: rabbitmq
+    username: guest
+    password: guest
+    port: 15672
+    template:
+      exchange: oauth-exchange
+      routing-key: oauth-key
+  application:
+    name: oauth-service
+  data:
+    mongodb:
+      database: Token
+      host: token-db
+      port: 27017
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id : 592921883582-daoe1pufsfjspjeo54aur75jiagc2bp9.apps.googleusercontent.com
+            client-secret: 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
+          facebook:
+            client-id: 628741832036486
+            client-secret: e0ddcee6c1c7065677f8ad1a921e4741
+          github:
+            client-id: 3ae8c8b43b693811999c
+            client-secret: 0ae5a90e28b97d2ca815f86044c7cea1c48e34be
+
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://service-discovery:8761/eureka

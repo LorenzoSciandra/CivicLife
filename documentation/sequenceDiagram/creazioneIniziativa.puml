@@ -1,0 +1,84 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+skinparam style strictuml
+
+title Creazione di un'iniziativa
+
+actor User
+participant Frontend
+participant ApiGateway as api
+participant "oauth-service" as oauthS
+database "TokenDB" as tokendb
+participant "user-service" as userS
+database "UserDB" as userdb
+participant "initiative-service" as initS
+database "InitiativeDB" as initdb
+
+== Get Users Email==
+... L'utente preme sul bottone "Crea" ...
+User -> Frontend: Crea Iniziativa
+activate Frontend
+Frontend -> Frontend: /createInitiative
+Frontend -> api: GET: /users/emails
+activate api
+api->userS: GET: /users/emails
+deactivate api
+activate userS
+userS -> userdb: findAllEmails()
+activate userdb
+userdb -> userS: emails
+deactivate userdb
+userS -> Frontend: emails
+deactivate userS
+Frontend -> User: Pagina di creazione iniziativa con\n lista di email per organizzatori
+deactivate Frontend
+
+== Creazione ==
+... L'utente inserisce i dati e preme sul bottone "Crea" ...
+
+User -> Frontend: Crea Iniziativa
+activate Frontend
+Frontend -> api: POST: /initiative/create?Token
+activate api
+api -> oauthS: GET: /validate/{Token}
+activate oauthS
+oauthS -> tokendb: findToken(Token)
+activate tokendb
+tokendb -> oauthS: Token
+deactivate tokendb
+oauthS -> api: ValidateCode
+deactivate oauthS
+
+alt #LightGreen ValidateCode è ACTIVE
+    api->initS: POST: /initiative/create
+    activate initS
+    initS-> userS: GET: /user/getStatus/{email}
+    activate userS
+    userS -> userdb: findStatusByEmail(email)
+    activate userdb
+    userdb -> userS: Status
+    deactivate userdb
+    userS -> initS: Status
+    deactivate userS
+
+    alt #LightBlue Status è ACTIVE && checkDate(NuovaIniziativa)
+        initS -> initdb: save(NuovaIniziativa)
+        initS->Frontend: Creazione con esito: true
+        Frontend -> User: Banner di successo
+    else #LightGoldenRodYellow Status è BANNED or SUSPENDED or !checkDate(NuovaIniziativa)
+        initS->Frontend: Creazione con esito: false
+        Frontend -> User: Banner di errore
+    end
+    
+
+else #Pink ValidateCode è EXPIRED || INVALID_EMAIL || INVALID_TOKEN || INVALID_PROVIDER || INCOMPLETE_CREDENTIALS || AUTH_SERVER_ERROR
+    api -> initS: GET: /error/{ValidateCode}/{method}/{path}
+    deactivate api
+    initS -> initS: generateErrorMessage(ValidateCode, method, path)
+    initS -> Frontend: ErrorMessage
+    deactivate initS
+    Frontend -> User: Pagina di Errore
+end
+
+@enduml

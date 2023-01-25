@@ -1,0 +1,87 @@
+[
+    {
+        "id": "afanajnajnaj",
+        "name": "Ristrutturare l'aula studio del dipartimento di informatica",
+        "description": "Il progetto nasce dato il crescente numero di iscritti al corso di laurea triennale e magistrale in informatica avvenuto nel corso degli ultimi anni. L'idea sarebbe quella di ampliare le aree dedicate agli studenti e chiunque voglia contribuire è ben accetto",
+        "status": "PROGRAMMED",
+        "type": "EDUCATIONAL",
+        "idCreator": "lollos.98@gmail.com",
+        "idOrganizers": [
+            "lollos.98@gmail.com",
+            "michelestaf@gmail.com"
+        ],
+        "idMembers": [
+            "lollos.98@gmail.com",
+            "michelestaf@gmail.com"
+        ],
+        "startDate": 1664928000,
+        "endDate": 1678924800,
+        "location": "Via Pessineto, 12 Torino"
+    },
+    {
+        "id": "jkhkhkhhkhkh",
+        "name": "Trasformare la mensa Dubai in un ristorante stellato",
+        "description": "Pensiamo che la cucina del Dubai sia davvero ottima, cerchiamo persone giovani piene di idee per cercare di strappare una stella Michelin",
+        "status": "TERMINATED",
+        "type": "SOCIAL",
+        "idCreator": "lollos.98@gmail.com",
+        "idOrganizers": [
+            "lollos.98@gmail.com",
+            "michelestaf@gmail.com"
+        ],
+        "idMembers": [
+            "lollos.98@gmail.com",
+            "stefa168@hotmail.com",
+            "evilscript@protonmail.com",
+            "michelestaf@gmail.com",
+            "ivan.spada@edu.unito.it"
+        ],
+        "startDate": 1664928000,
+        "endDate": 1678924800,
+        "location": "Via Pessineto, 12 Torino"
+    },
+    {
+        "id": "bbbbbbbbb",
+        "name": "Incremetare gli incontri tra ragazzi in corso Reggina",
+        "description": "Vogliamo rendere socialmente attiva e giovane una zona che sta morendo",
+        "status": "ONGOING",
+        "type": "FOOD",
+        "idCreator": "michelestaf@gmail.com",
+        "idOrganizers": [
+            "stefa168@hotmail.com",
+            "michelestaf@gmail.com",
+            "michelestaf@gmail.com"
+        ],
+        "idMembers": [
+            "stefa168@hotmail.com",
+            "lollos.98@gmail.com",
+            "michelestaf@gmail.com"
+        ],
+        "startDate": 1664928000,
+        "endDate": 1678924800,
+        "location": "Corso Reggina, 2"
+    },
+    {
+        "id": "cddcdcdcdcd",
+        "name": "Pulire il Parco del Valentino",
+        "description": "E' tutto sporco!!!",
+        "status": "ONGOING",
+        "type": "ENVIRONMENTAL",
+        "idCreator": "michelestaf@gmail.com",
+        "idOrganizers": [
+            "michelestaf@gmail.com",
+            "stefa168@hotmail.com",
+            "ivan.spada@edu.unito.it"
+        ],
+        "idMembers": [
+            "michelestaf@gmail.com",
+            "stefa168@hotmail.com",
+            "ivan.spada@edu.unito.it",
+            "lollos.98@gmail.com",
+            "ivan.spada@edu.unito.it"
+        ],
+        "startDate": 1664928000,
+        "endDate": 1678924800,
+        "location": "Parco del Valentino, Torino"
+    }
+]

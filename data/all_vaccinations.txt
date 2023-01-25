@@ -1,0 +1,74 @@
+[
+    {
+        "id": "aanamanmana",
+        "email_owner": "lorenzo.sciandra@edu.unito.it",
+        "vaccineName": "COVID-19",
+        "dose": "terza",
+        "date": 1664928000,
+        "location": "Via Po 123",
+        "description": "La vaccinazione è avvenuta senza complicazioni di alcun tipo",
+        "doctor": "Dottor Pino",
+        "nurse": "Gigina",
+        "manufacturer": "Pfizer"
+    },
+    {
+        "id": "bnbnbnbn",
+        "email_owner": "lorenzo.sciandra@edu.unito.it",
+        "vaccineName": "TETANO",
+        "dose": "richiamo",
+        "date": 1664929020,
+        "location": "Via Delle Langhe, 5 Cuneo",
+        "description": "Il bambino ha opposto resistenza",
+        "doctor": "Dottor Gino",
+        "nurse": "Pipino",
+        "manufacturer": "Tetaizer"
+    },
+    {
+        "id": "cdcdcdcdcd",
+        "email_owner": "lorenzo.sciandra@edu.unito.it",
+        "vaccineName": "EPATITE B",
+        "dose": "prima dose",
+        "date": 1664928020,
+        "location": "Via del tiro a segno, 7 Mondovì",
+        "description": "L'infermiere dormiva ha fatto tutto il medico",
+        "doctor": "Dottor Pigo",
+        "nurse": "Gipino",
+        "manufacturer": "Epatizer"
+    },
+    {
+        "id": "amlamlamlam",
+        "email_owner": "michelestaf@gmail.com",
+        "vaccineName": "COVID-19",
+        "dose": "terza",
+        "date": 1664928000,
+        "location": "Via del tribunale, Matera",
+        "description": "Il medico è stato male ed è stato gestito tutto dall'infermiera",
+        "doctor": "Dottor Pino",
+        "nurse": "Gigina",
+        "manufacturer": "Pfizer"
+    },
+    {
+        "id": "opopopopaka",
+        "email_owner": "michelestaf@gmail.com",
+        "vaccineName": "TETANO",
+        "dose": "richiamo",
+        "date": 1654929020,
+        "location": "Via Ponzi Ponzi Ponzi Po 5, Cagliari",
+        "description": "Il bambino ha opposto resistenza ed è stato sedato",
+        "doctor": "Dottor Gino",
+        "nurse": "Pipino",
+        "manufacturer": "Tetaizer"
+    },
+    {
+        "id": "fhsjalwpmc",
+        "email_owner": "michele.staffieri@edu.unito.it",
+        "vaccineName": "EPATITE B",
+        "dose": "prima dose",
+        "date": 1664928020,
+        "location": "Via del caciocavallo 7, Bari",
+        "description": "L'infermiere dormiva ha fatto tutto il medico",
+        "doctor": "Dottor Pigo",
+        "nurse": "Gipino",
+        "manufacturer": "Epatizer"
+    }
+]

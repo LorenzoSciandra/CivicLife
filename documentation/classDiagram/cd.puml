@@ -1,0 +1,211 @@
+@startuml Class Diagram
+'https://plantuml.com/class-diagram
+hide empty members
+skinparam classAttributeIconSize 0
+
+namespace external.resources.service{
+    class Bonus{
+        - String id 
+        - String name 
+        - String description 
+        - String type 
+        - long end_date
+        + getters()
+        + setters()
+        + toString()
+    }
+
+    Bonus "1" -r- "1" user.service.User: ownerId
+
+    class Vaccination{
+        - String id 
+        - Long date 
+        - String location 
+        - String description 
+        - String vaccineName 
+        - String dose 
+        - String manufacturer 
+        - String doctor 
+        - String nurse
+        + getters()
+        + setters()
+        + toString() 
+    }
+
+    Vaccination "1" -r- "1" user.service.User: userId
+
+}
+
+namespace initiative.service{
+
+    enum InitiativeType{
+        SOCIAL
+        SPORT
+        EDUCATIONAL
+        ENVIRONMENTAL
+        HEALTH
+        FOOD
+        OTHER
+    }
+
+    class Initiative{
+        -  String id 
+        -  String name 
+        -  String description  
+        -  long startDate 
+        -  long endDate 
+        -  String location
+        + getters()
+        + setters()
+        + toString() 
+    }
+
+    Initiative "1" -l- "n" InitiativeType: type
+    Initiative "1" -u- "1" user.service.User: creatorId
+    Initiative "1" -u- "n" user.service.User: membersIdSet
+    Initiative "1" -u- "n" user.service.User: organizersIdSet
+
+}
+
+
+
+namespace oauth.service{
+    enum OauthProvider {
+        Google
+        Facebook
+        Github
+    }
+
+    class TokenKey{
+        + getters()
+        + setters()
+        + toString() 
+    }
+
+    TokenKey "1" -d- "1" OauthProvider: provider
+    TokenKey "1" -l- "1" user.service.User: userEmail
+
+    class Token{
+        - HashMap<String, Instant> tokens
+        + removeExpired()
+        + getMostRecentToken()
+        + getters()
+        + setters()
+        + toString()
+    }
+
+    Token "1" *-l- "1" TokenKey: keys
+
+}
+
+namespace vote.service{
+    class Candidate{
+        -  String id  
+        -  String imageLink  
+        -  String partyId  
+        -  String name  
+        -  String surname  
+        -  String description
+        + getters()
+        + setters()
+        + toString()  
+    }
+
+    class Party{
+        -  String name 
+        -  String logoLink 
+        -  String description
+        -  String leaderId
+        + getters()
+        + setters()
+        + toString()
+    }
+
+    Party "1" -l- "n" Candidate: candidatesIdList
+
+    class CandidateResult{
+        - int votes 
+        - float percentage
+        - boolean isAdmin
+        - String name
+        - String surname
+        + getters()
+        + setters()
+        + toString()
+    }
+
+    CandidateResult "1" -u- "1" Candidate: candidateId
+
+    class PartyResult{
+        - int votes 
+        - float percentage
+        + getters()
+        + setters()
+        + toString()
+    }
+
+    PartyResult "1" *-l- "n" CandidateResult: candidateResults
+    PartyResult "1" -u- "1" Party: partyName
+
+    class VotationResult{
+        -  int numberOfVotes
+        + getters()
+        + setters()
+        + toString()
+
+    }
+
+    VotationResult "1" *-l- "n" PartyResult: partyResults
+    VotationResult "1" -d- "n" user.service.User: votersIdList
+
+    enum VotationStatus{
+        ACTIVE
+        TERMINATE
+        PROGRAMMED
+    }
+
+    class Votation{
+        - String title 
+        - String description 
+        - long startDate 
+        - long endDate  
+        + getters()
+        + setters()
+        + toString() 
+    }
+
+    Votation "1" -u- "1" VotationStatus: status
+    Votation "1" -l- "n" Party: partiesIdList
+    Votation "1" *-d- "1" VotationResult: votationResult
+}
+
+namespace user.service{
+
+    enum UserStatus{
+        ACTIVE
+        SUSPENDED
+        BANNED 
+    }
+
+    class User{
+        -  String email 
+        -  boolean admin 
+        -  String name 
+        -  String surname 
+        -  String fiscalCode 
+        -  String residence
+        -  String domicile
+        -  long birthDate 
+        -  long telephonNumber 
+        -  boolean authorizeBonus 
+        -  boolean authorizeVaccine 
+        + getters()
+        + setters()
+        + toString()
+    }
+
+    User "1" -r- "1" UserStatus: status
+}
+
+
+@enduml
