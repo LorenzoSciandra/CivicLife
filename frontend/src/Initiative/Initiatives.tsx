@@ -104,11 +104,13 @@ const Initiatives = () => {
     useEffect(() => {
         if (firstLoad) {
             if (allInitiativesList === null) {
-                if (isVisitor===true) {
-                    getInitiativesReadOnly()
-                } else {
+                if (!isVisitor) {
                     getInitiatives()
-
+                }
+            }
+            if(readOnlyInitiativeList=== null){
+                if(isVisitor){
+                    getInitiativesReadOnly()
                 }
             }
         }

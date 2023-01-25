@@ -48,6 +48,7 @@ export const exchangeToken = async (token: string):Promise<TokenData|AuthError>=
             token: values[2],
         }
     }).catch(() => {
+        console.log("errore nella catch")
         const authError: AuthError = {
             code: ValidateCode.LOGIN_FAIL,
             method: 'GET',

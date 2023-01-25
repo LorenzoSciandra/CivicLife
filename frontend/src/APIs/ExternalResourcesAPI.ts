@@ -24,7 +24,6 @@ export type VaccineType={
 }
 
 export const getAllBonuses=(tokenData: TokenData): Promise<BonusType[]|AuthError>=>{
-    console.log('recupero bonus')
     const emailBase64= Base64.encode(tokenData.email)
     const providerBase64= Base64.encode(tokenData.provider)
     const tokenBase64= Base64.encode(tokenData.token)
@@ -43,7 +42,6 @@ export const getAllBonuses=(tokenData: TokenData): Promise<BonusType[]|AuthError
 }
 
 export const getAllVaccines=(tokenData: TokenData): Promise<VaccineType[]|AuthError>=>{
-    console.log('recupero vaccini')
     const emailBase64= Base64.encode(tokenData.email)
     const providerBase64= Base64.encode(tokenData.provider)
     const tokenBase64= Base64.encode(tokenData.token)

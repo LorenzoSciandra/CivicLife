@@ -6,7 +6,7 @@ import {useNavigate} from "react-router-dom";
 import {exchangeToken, isInstanceOfAuthError, TokenData} from "../APIs/OauthAPI";
 
 const LoginChoser = () => {
-
+    const navigate = useNavigate();
     const [firstLoad, setFirstLoad] = useState(true);
     const [tokenData, setTokenData] = useState<TokenData| null>(null);
 
@@ -40,7 +40,8 @@ const LoginChoser = () => {
         setFirstLoad(false)
     }, [])
 
-    const navigate = useNavigate();
+
+
     const loginWithService = () => {
         window.location.assign('http://localhost:8080/login')
     }

@@ -37,7 +37,7 @@ const MainPage = () => {
     const [user, setUser] = useState<User | null>(null);
 
     const getUserData = async () => {
-        if (tokenData !== null) {
+        if (tokenData !== undefined) {
             const response = await getLoggedUser(tokenData)
             if (isInstanceOfAuthError(response)) {
                 navigate('/error', {state: {error: response}})
