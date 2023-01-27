@@ -41,6 +41,8 @@ services:
     container_name: frontend
     ports:
       - "3000:3000"
+    depends_on:
+      - api-gateway
     restart: always
     networks:
       - clnet
@@ -117,6 +119,7 @@ services:
     networks:
       - clnet
     restart: always
+    
   #  ----------------------------------------------
   #  DATABASES
 

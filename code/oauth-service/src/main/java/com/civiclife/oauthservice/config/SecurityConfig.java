@@ -92,15 +92,15 @@ public class SecurityConfig {
                     String encryptedToken = AES.encrypt(tokenData, secret);
                     String base64Token = Base64.getEncoder().encodeToString(Objects.requireNonNull(encryptedToken).getBytes());
 
-                    response.sendRedirect("http://frontend:3000/?token=" + base64Token);
+                    response.sendRedirect("http://localhost:3000/?token=" + base64Token);
                 }
                 else {
-                    ErrorMessage errorMessage = new ErrorMessage(ValidateCode.AUTH_SERVER_ERROR, "http://frontend:8080/authAPI/v1/login","GET");
-                    response.sendRedirect("http://frontend:3000/error?errorReason=" + errorMessage);
+                    ErrorMessage errorMessage = new ErrorMessage(ValidateCode.AUTH_SERVER_ERROR, "http://localhost:8080/authAPI/v1/login","GET");
+                    response.sendRedirect("http://localhost:3000/error?errorReason=" + errorMessage);
                 }
             } catch (ResponseStatusException ex) {
-                ErrorMessage errorMessage = new ErrorMessage(ValidateCode.AUTH_SERVER_ERROR, "http://frontend:8080/authAPI/v1/login","GET");
-                response.sendRedirect("http://frontend:3000/error?errorReason="+errorMessage);
+                ErrorMessage errorMessage = new ErrorMessage(ValidateCode.AUTH_SERVER_ERROR, "http://localhost:8080/authAPI/v1/login","GET");
+                response.sendRedirect("http://localhost:3000/error?errorReason="+errorMessage);
             }
         };
     }
@@ -115,7 +115,7 @@ public class SecurityConfig {
                         .allowedHeaders("Authorization", "Cache-Control", "Content-Type",
                                 "Access-Control-Request-Headers", "Access-Control-Request-Method",
                                 "Access-Control-Allow-Origin", "Access-Control-Allow-Headers")
-                        .allowedOrigins("http://frontend:3000");
+                        .allowedOrigins("http://localhost:3000");
             }
         };
     }

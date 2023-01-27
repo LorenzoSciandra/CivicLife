@@ -22,7 +22,7 @@ public class AuthController {
     @Autowired
     TokenRepository tokenRepository;
 
-    @CrossOrigin(origins = "http://frontend:3000", maxAge = 600)
+    @CrossOrigin(origins = "http://localhost:3000", maxAge = 600)
     @GetMapping(value = "/token/{encryptToken}",
             produces = MediaType.TEXT_PLAIN_VALUE)
     public String token(@PathVariable(value = "encryptToken") String encryptToken){
@@ -37,7 +37,7 @@ public class AuthController {
     }
 
 
-    @CrossOrigin(origins = "http://frontend:3000", maxAge = 600)
+    @CrossOrigin(origins = "http://localhost:3000", maxAge = 600)
     @GetMapping("/getAllTokens/{email}")
     public String getAllTokens(@PathVariable(value = "email") String email) {
         List<Optional<Token>> tokens = tokenRepository.getOauthCredentialsByEmail(email);
@@ -54,7 +54,7 @@ public class AuthController {
         return result.toString();
     }
 
-    @CrossOrigin(origins = "http://frontend:3000", maxAge = 600)
+    @CrossOrigin(origins = "http://localhost:3000", maxAge = 600)
     @GetMapping("/getToken/{email}/{provider}")
     public String getToken(@PathVariable(value = "email") String email,
                            @PathVariable(value = "provider") TokenKey.OauthProvider provider) {
@@ -69,7 +69,7 @@ public class AuthController {
         return result;
     }
 
-    @CrossOrigin(origins = "http://frontend:3000", maxAge = 600)
+    @CrossOrigin(origins = "http://localhost:3000", maxAge = 600)
     @GetMapping(value = "/validate/{email}/{token}/{provider}",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ValidateCode validate(@PathVariable(value = "email") String email,
@@ -97,7 +97,7 @@ public class AuthController {
         return ValidateCode.INVALID_PROVIDER;
     }
 
-    @CrossOrigin(origins = "http://frontend:3000", maxAge = 600)
+    @CrossOrigin(origins = "http://localhost:3000", maxAge = 600)
     @PostMapping(value = "/deleteToken/{email}",
             consumes = MediaType.TEXT_PLAIN_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
