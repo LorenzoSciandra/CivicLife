@@ -23,7 +23,7 @@ All the documentation that we have produced is in the [documentation folder](./d
 
 The application has a microservice architecture made with Spring and React. Without boring you much here this is an image that sumps up some ideas: 
 
-![Arch](./documentation/arch/arch.png)
+<img src="./documentation/arch/arch.png" style="width: 80%;" />
 
 # Data
 
@@ -36,7 +36,7 @@ The application could run as a docker or kubernetes project. All the microservic
 
 ## Docker
 
-To run all the containers all you have to do is to go to the [src folder](./src) and do the following command: 
+To run all the containers all you have to do is to go to the [code folder](./code) and do the following command: 
 
 `docker compose up`
 

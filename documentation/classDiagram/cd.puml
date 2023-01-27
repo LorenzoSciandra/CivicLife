@@ -5,10 +5,10 @@ skinparam classAttributeIconSize 0
 
 namespace external.resources.service{
     class Bonus{
-        - String id 
-        - String name 
-        - String description 
-        - String type 
+        - String id
+        - String name
+        - String description
+        - String type
         - long end_date
         + getters()
         + setters()
@@ -18,18 +18,18 @@ namespace external.resources.service{
     Bonus "1" -r- "1" user.service.User: ownerId
 
     class Vaccination{
-        - String id 
-        - Long date 
-        - String location 
-        - String description 
-        - String vaccineName 
-        - String dose 
-        - String manufacturer 
-        - String doctor 
+        - String id
+        - Long date
+        - String location
+        - String description
+        - String vaccineName
+        - String dose
+        - String manufacturer
+        - String doctor
         - String nurse
         + getters()
         + setters()
-        + toString() 
+        + toString()
     }
 
     Vaccination "1" -r- "1" user.service.User: userId
@@ -49,15 +49,15 @@ namespace initiative.service{
     }
 
     class Initiative{
-        -  String id 
-        -  String name 
-        -  String description  
-        -  long startDate 
-        -  long endDate 
+        -  String id
+        -  String name
+        -  String description
+        -  long startDate
+        -  long endDate
         -  String location
         + getters()
         + setters()
-        + toString() 
+        + toString()
     }
 
     Initiative "1" -l- "n" InitiativeType: type
@@ -79,7 +79,7 @@ namespace oauth.service{
     class TokenKey{
         + getters()
         + setters()
-        + toString() 
+        + toString()
     }
 
     TokenKey "1" -d- "1" OauthProvider: provider
@@ -87,8 +87,6 @@ namespace oauth.service{
 
     class Token{
         - HashMap<String, Instant> tokens
-        + removeExpired()
-        + getMostRecentToken()
         + getters()
         + setters()
         + toString()
@@ -100,20 +98,20 @@ namespace oauth.service{
 
 namespace vote.service{
     class Candidate{
-        -  String id  
-        -  String imageLink  
-        -  String partyId  
-        -  String name  
-        -  String surname  
+        -  String id
+        -  String imageLink
+        -  String partyId
+        -  String name
+        -  String surname
         -  String description
         + getters()
         + setters()
-        + toString()  
+        + toString()
     }
 
     class Party{
-        -  String name 
-        -  String logoLink 
+        -  String name
+        -  String logoLink
         -  String description
         -  String leaderId
         + getters()
@@ -124,7 +122,7 @@ namespace vote.service{
     Party "1" -l- "n" Candidate: candidatesIdList
 
     class CandidateResult{
-        - int votes 
+        - int votes
         - float percentage
         - boolean isAdmin
         - String name
@@ -137,7 +135,7 @@ namespace vote.service{
     CandidateResult "1" -u- "1" Candidate: candidateId
 
     class PartyResult{
-        - int votes 
+        - int votes
         - float percentage
         + getters()
         + setters()
@@ -165,13 +163,13 @@ namespace vote.service{
     }
 
     class Votation{
-        - String title 
-        - String description 
-        - long startDate 
-        - long endDate  
+        - String title
+        - String description
+        - long startDate
+        - long endDate
         + getters()
         + setters()
-        + toString() 
+        + toString()
     }
 
     Votation "1" -u- "1" VotationStatus: status
@@ -184,21 +182,21 @@ namespace user.service{
     enum UserStatus{
         ACTIVE
         SUSPENDED
-        BANNED 
+        BANNED
     }
 
     class User{
-        -  String email 
-        -  boolean admin 
-        -  String name 
-        -  String surname 
-        -  String fiscalCode 
+        -  String email
+        -  boolean admin
+        -  String name
+        -  String surname
+        -  String fiscalCode
         -  String residence
         -  String domicile
-        -  long birthDate 
-        -  long telephonNumber 
-        -  boolean authorizeBonus 
-        -  boolean authorizeVaccine 
+        -  long birthDate
+        -  long telephonNumber
+        -  boolean authorizeBonus
+        -  boolean authorizeVaccine
         + getters()
         + setters()
         + toString()

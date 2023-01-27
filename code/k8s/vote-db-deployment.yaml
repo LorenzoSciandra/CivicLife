@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -f docker-compose.yaml --out ./k8s/
+    kompose.version: 1.28.0 (c4137012e)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: vote-db
+  name: vote-db
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      io.kompose.service: vote-db
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose.yaml --out ./k8s/
+        kompose.version: 1.28.0 (c4137012e)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/civiclife-clnet: "true"
+        io.kompose.service: vote-db
+    spec:
+      containers:
+        - image: mongo:latest
+          name: vote-db
+          ports:
+            - containerPort: 27017
+          resources: {}
+          volumeMounts:
+            - mountPath: /var/lib/voteDB/data
+              name: vote-db
+      restartPolicy: Always
+      volumes:
+        - name: vote-db
+          persistentVolumeClaim:
+            claimName: vote-db
+status: {}
