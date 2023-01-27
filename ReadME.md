@@ -23,7 +23,7 @@ All the documentation that we have produced is in the [documentation folder](./d
 
 The application has a microservice architecture made with Spring and React. Without boring you much here this is an image that sumps up some ideas: 
 
-<img src="./documentation/arch/arch.png" style="width: 80%;" />
+<img src="./documentation/arch/arch.png" style="width: 80%; backgroundColor:white;" />
 
 # Data
 
