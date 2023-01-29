@@ -186,23 +186,25 @@ const InitiativeDetails = () => {
 
                     }
                 }
-                if (modifiedSelectedUsers && modifiedSelectedUsers.length > 0) {
-                    if (initiative.idOrganizers !== modifiedSelectedUsers) {
-                        if (user.email === initiative.idCreator || userIsOrganizer()) {
-                            console.log(modifiedSelectedUsers)
-                            const response = await changeOrganizers(tokenData, initiative.id, modifiedSelectedUsers)
-                            if (typeof response === 'boolean') {
-                                if (response) {
-                                    somethingChanged("Organizzatori modificati con successo")
+                if (modifiedSelectedUsers){
+                    if(modifiedSelectedUsers.length > 0) {
+                        if (initiative.idOrganizers !== modifiedSelectedUsers) {
+                            if (user.email === initiative.idCreator || userIsOrganizer()) {
+                                console.log(modifiedSelectedUsers)
+                                const response = await changeOrganizers(tokenData, initiative.id, modifiedSelectedUsers)
+                                if (typeof response === 'boolean') {
+                                    if (response) {
+                                        somethingChanged("Organizzatori modificati con successo")
+                                    } else {
+                                        setOpenError(true)
+                                        setMessageError("Non è stato possibile modificare gli organizzatori")
+                                    }
                                 } else {
-                                    setOpenError(true)
-                                    setMessageError("Non è stato possibile modificare gli organizzatori")
+                                    navigate('/error', {state: {error: response}})
                                 }
                             } else {
-                                navigate('/error', {state: {error: response}})
+                                console.log('non puoi')
                             }
-                        } else {
-                            console.log('non puoi')
                         }
                     }
                 }
@@ -239,7 +241,7 @@ const InitiativeDetails = () => {
     }
 
     const handleDelete = (userToDelete: any) => () => {
-        if (modifiedSelectedUsers) {
+        if (modifiedSelectedUsers && modifiedSelectedUsers.length>1) {
             setModifiedSelectedUsers(modifiedSelectedUsers.filter((user) => user !== userToDelete))
         }
     };
