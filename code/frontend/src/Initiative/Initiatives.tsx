@@ -72,34 +72,44 @@ const Initiatives = () => {
         }
     }
 
-    const getMy = async () => {
-        const response = await getMyInitiatives(tokenData)
-        if (isInstanceOfAuthError(response)) {
-            navigate('/error', {state: {error: response}})
-        } else {
-            setMyInitiativesList(response)
+    const getMy = () => {
+        if(allInitiativesList!==null){
+            const myInitiatives= allInitiativesList.filter((initiative) => initiative.idCreator === user.email)
+            setMyInitiativesList(myInitiatives)
         }
+        // const response = await getMyInitiatives(tokenData)
+        // if (isInstanceOfAuthError(response)) {
+        //     navigate('/error', {state: {error: response}})
+        // } else {
+        //     setMyInitiativesList(response)
+        // }
     }
 
-    const getSubscribed= async () => {
-        const response = await getSubscribedInitiatives(tokenData)
-        if (isInstanceOfAuthError(response)) {
-            navigate('/error', {state: {error: response}})
-        } else {
-            setSubscribedInitiativesList(response)
+    const getSubscribed=  () => {
+        if(allInitiativesList!==null){
+            const mySubscribedInitiatives= allInitiativesList.filter((initiative) => initiative.idMembers.includes(user.email))
+            setSubscribedInitiativesList(mySubscribedInitiatives)
         }
+        // const response = await getSubscribedInitiatives(tokenData)
+        // if (isInstanceOfAuthError(response)) {
+        //     navigate('/error', {state: {error: response}})
+        // } else {
+        //     setSubscribedInitiativesList(response)
+        // }
     }
 
-    const getOrganized = async () => {
-        const response = await getOrganizedInitiatives(tokenData)
-        if (isInstanceOfAuthError(response)) {
-            navigate('/error', {state: {error: response}})
-        } else {
-            setOrganizedInitiativesList(response)
+    const getOrganized =  () => {
+        if(allInitiativesList!==null){
+            const myOrganizedInitiatives= allInitiativesList.filter((initiative) => initiative.idOrganizers.includes(user.email))
+            setOrganizedInitiativesList(myOrganizedInitiatives)
         }
+        // const response = await getOrganizedInitiatives(tokenData)
+        // if (isInstanceOfAuthError(response)) {
+        //     navigate('/error', {state: {error: response}})
+        // } else {
+        //     setOrganizedInitiativesList(response)
+        // }
     }
-
-
 
     useEffect(() => {
         if (firstLoad) {

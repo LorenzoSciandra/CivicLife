@@ -152,7 +152,7 @@ export const updateUserStatus = async (tokenData:TokenData, newStatus:UserStatus
             headers: {"Content-Type": "text/plain"}
         })
         .then((response) => {
-        // console.log('response', response.data)
+        console.log('response', response.data)
         return response.data
     }).catch(() => {
             const authError: AuthError = {

@@ -37,7 +37,6 @@ const UsersAdmin = () => {
         } else {
             setUsersList(response)
         }
-
     }
 
     useEffect(() => {
@@ -45,7 +44,7 @@ const UsersAdmin = () => {
             getUsers()
         }
         setFirstLoad(false)
-    })
+    },[])
 
     const handleUserClick = (user: any) => {
         setSelectedUser(user)
@@ -56,7 +55,14 @@ const UsersAdmin = () => {
             const userUpdateResponse = await updateUserStatus(tokenData, newStatus, selectedUser.email)
             if (typeof userUpdateResponse === 'boolean') {
                 if (userUpdateResponse) {
-                    getUsers()
+                    const index = usersList.findIndex((user) => user.email === selectedUser.email)
+                    if (index !== -1) {
+                        const updatedUser = usersList[index]
+                        updatedUser.status = newStatus
+                        const newList = [...usersList]
+                        newList[index] = updatedUser
+                        setUsersList(newList)
+                    }
                 } else {
                     console.log('error')
                 }
@@ -141,7 +147,6 @@ const UsersAdmin = () => {
                                     onClick={() => setSelectedUser(null)}><DeselectIcon/></IconButton>
                             </span>
                     </Tooltip>
-
 
                     {usersList.map((value, index) => {
                         return (

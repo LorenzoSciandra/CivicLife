@@ -82,8 +82,6 @@ const InitiativeDetails = () => {
     useEffect(() => {
         if (initiative) {
             //set all
-
-
             if (usersList === null && !isVisitor && user.email === initiative.idCreator) {
                 getUsers()
             }
@@ -174,6 +172,7 @@ const InitiativeDetails = () => {
                         location: initiative.location,
                         name: initiative.name,
                     }
+                    console.log('new ',newInitiative)
                     const response = await modifyInitiative(tokenData, newInitiative)
                     if (typeof response === 'boolean') {
                         if (response) {
@@ -190,6 +189,7 @@ const InitiativeDetails = () => {
                 if (modifiedSelectedUsers && modifiedSelectedUsers.length > 0) {
                     if (initiative.idOrganizers !== modifiedSelectedUsers) {
                         if (user.email === initiative.idCreator || userIsOrganizer()) {
+                            console.log(modifiedSelectedUsers)
                             const response = await changeOrganizers(tokenData, initiative.id, modifiedSelectedUsers)
                             if (typeof response === 'boolean') {
                                 if (response) {
