@@ -10,7 +10,7 @@ metadata:
     io.kompose.service: initiative-service
   name: initiative-service
 spec:
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
       io.kompose.service: initiative-service

@@ -10,7 +10,7 @@ metadata:
     io.kompose.service: oauth-service
   name: oauth-service
 spec:
-  replicas: 1
+  replicas: 4
   selector:
     matchLabels:
       io.kompose.service: oauth-service
