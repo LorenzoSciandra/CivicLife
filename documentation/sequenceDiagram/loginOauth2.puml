@@ -20,28 +20,38 @@ queue "RabbitMQ" as rabbitmq
 ... L'utente preme sul bottone "Accedi" ...
 User -> Frontend: Accedi
 activate Frontend
-Frontend -> api: Redirect alla pagina di login
+Frontend -> api: Richiesta della pagina di login
 activate api
-api -> oauthS: /login
+api -> oauthS:  /login page
 deactivate api
-deactivate Frontend
 activate oauthS
-oauthS -> User: Pagina di login
+oauthS -> Frontend: Pagina di login
 deactivate oauthS
+Frontend -> Frontend: Redirect a /login
+deactivate Frontend
 
-User -> api: Scelta Provider Oauth2
+
+User->Frontend: Scelta Provider Oauth2
+activate Frontend
+Frontend -> api: Scelta Provider Oauth2
 activate api
 api -> oauthS: GET: /oauth2/authorization/{provider}
 deactivate api
-
 activate oauthS
-oauthS -> oauthS: Redirect alla pagina di accesso del provider
-oauthS -> User: Pagina di accesso del provider
+oauthS -> Provider: Pagina per scelta account
+activate Provider
+Provider -> oauthS: Pagina per scelta account
+deactivate Provider
+oauthS -> Frontend: Pagina per scelta account
 deactivate oauthS
+Frontend -> Frontend: Redirect pagina accesso account
+deactivate Frontend
 
 ... L'utente inserisce le credenziali ...
 
-User -> api: Credenziali
+User -> Frontend: Inserimento Credenziali
+activate Frontend
+Frontend -> api: Credenziali
 activate api
 api -> oauthS: Credenziali
 deactivate api
@@ -49,10 +59,10 @@ activate oauthS
 oauthS -> Provider: Credenziali
 deactivate oauthS
 activate Provider
-Provider -> api: FOUND: /auth/login/oauth2/code/{provider}
+Provider -> api: Risposta a: /auth/login/oauth2/code/{provider}
 deactivate Provider
 activate api
-api -> oauthS: FOUND: /auth/login/oauth2/code/{provider}
+api -> oauthS: Risposta a: /auth/login/oauth2/code/{provider}
 deactivate api
 activate oauthS
 oauthS->oauthS: processOauthPostLogin()
@@ -75,11 +85,12 @@ else #LightGoldenRodYellow Coppia <Mail, Provider> non presente nel db
     deactivate userS
 end
 
-
 oauthS -> oauthS: encryptToken(Token)
-oauthS -> Frontend: encryptToken
+oauthS -> Frontend: fai redirect a loginChoser con parametro "encryptToken"
 deactivate oauthS
-activate Frontend
+Frontend -> Frontend: redirect a loginChoser?encryptToken
+
+
 Frontend -> api: GET: /token/{encryptToken}
 activate api
 api -> oauthS: GET: /token/{encryptToken}
@@ -94,7 +105,7 @@ deactivate oauthS
 
 ... L'utente viene reindirizzato alla pagina di home ...
 
-Frontend -> Frontend: Redirect a \home con Token
+Frontend -> Frontend: Redirect a \home con Token salvato
 
 Frontend -> api: GET: /user/get/{email}?Token
 activate api
@@ -116,7 +127,8 @@ alt #LightGreen ValidateCode è ACTIVE
     deactivate userdb
     userS -> Frontend: Utente
     deactivate userS
-    Frontend -> User: Pagina di Home con \nUser loggato
+    Frontend -> Frontend: set User = Utente
+    
 else #Pink ValidateCode è EXPIRED || INVALID_EMAIL || INVALID_TOKEN || INVALID_PROVIDER || INCOMPLETE_CREDENTIALS || AUTH_SERVER_ERROR
     api -> userS: GET: /error/{ValidateCode}/{method}/{path}
     deactivate api
@@ -124,7 +136,8 @@ else #Pink ValidateCode è EXPIRED || INVALID_EMAIL || INVALID_TOKEN || INVALID_
     userS -> userS: generateErrorMessage(ValidateCode, method, path)
     userS -> Frontend: ErrorMessage
     deactivate userS
-    Frontend -> User: Pagina di Errore
+    Frontend -> Frontend: Redirect a \error?message=ErrorMessage
+    
 end
 deactivate Frontend
 

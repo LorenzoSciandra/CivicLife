@@ -158,7 +158,7 @@ namespace vote.service{
 
     enum VotationStatus{
         ACTIVE
-        TERMINATE
+        TERMINATED
         PROGRAMMED
     }
 

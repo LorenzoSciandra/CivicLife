@@ -19,7 +19,6 @@ database "InitiativeDB" as initdb
 ... L'utente preme sul bottone "Crea" ...
 User -> Frontend: Crea Iniziativa
 activate Frontend
-Frontend -> Frontend: /createInitiative
 Frontend -> api: GET: /users/emails
 activate api
 api->userS: GET: /users/emails
@@ -31,13 +30,13 @@ userdb -> userS: emails
 deactivate userdb
 userS -> Frontend: emails
 deactivate userS
-Frontend -> User: Pagina di creazione iniziativa con\n lista di email per organizzatori
+Frontend -> Frontend: redirect a /createInitiative
 deactivate Frontend
 
 == Creazione ==
 ... L'utente inserisce i dati e preme sul bottone "Crea" ...
 
-User -> Frontend: Crea Iniziativa
+User -> Frontend: Inserisce dati e \n clicca Crea Iniziativa
 activate Frontend
 Frontend -> api: POST: /initiative/create?Token
 activate api
@@ -65,10 +64,10 @@ alt #LightGreen ValidateCode è ACTIVE
     alt #LightBlue Status è ACTIVE && checkDate(NuovaIniziativa)
         initS -> initdb: save(NuovaIniziativa)
         initS->Frontend: Creazione con esito: true
-        Frontend -> User: Banner di successo
+        Frontend -> Frontend: Banner di successo
     else #LightGoldenRodYellow Status è BANNED or SUSPENDED or !checkDate(NuovaIniziativa)
         initS->Frontend: Creazione con esito: false
-        Frontend -> User: Banner di errore
+        Frontend -> Frontend: Banner di errore
     end
     
 
@@ -78,7 +77,7 @@ else #Pink ValidateCode è EXPIRED || INVALID_EMAIL || INVALID_TOKEN || INVALID_
     initS -> initS: generateErrorMessage(ValidateCode, method, path)
     initS -> Frontend: ErrorMessage
     deactivate initS
-    Frontend -> User: Pagina di Errore
+    Frontend -> Frontend: Redirect a \error?message=ErrorMessage
 end
 
 @enduml
