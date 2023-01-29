@@ -3,6 +3,7 @@ kind: PersistentVolumeClaim
 metadata:
   creationTimestamp: null
   labels:
+    app: backend
     io.kompose.service: initiative-db
   name: initiative-db
 spec:

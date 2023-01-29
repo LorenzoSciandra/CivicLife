@@ -6,6 +6,7 @@ metadata:
     kompose.version: 1.28.0 (c4137012e)
   creationTimestamp: null
   labels:
+    app: backend
     io.kompose.service: api-gateway
   name: api-gateway
 spec:
@@ -13,6 +14,7 @@ spec:
     - name: "8080"
       port: 8080
       targetPort: 8080
+      protocol: TCP
   selector:
     io.kompose.service: api-gateway
 status:

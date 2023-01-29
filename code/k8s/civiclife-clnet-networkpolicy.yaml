@@ -3,6 +3,8 @@ kind: NetworkPolicy
 metadata:
   creationTimestamp: null
   name: civiclife-clnet
+  labels:
+    app: backend
 spec:
   ingress:
     - from:

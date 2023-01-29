@@ -6,6 +6,7 @@ metadata:
     kompose.version: 1.28.0 (c4137012e)
   creationTimestamp: null
   labels:
+    app: backend
     io.kompose.service: external-resources-db
   name: external-resources-db
 spec:

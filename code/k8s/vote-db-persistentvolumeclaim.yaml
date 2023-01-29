@@ -3,6 +3,7 @@ kind: PersistentVolumeClaim
 metadata:
   creationTimestamp: null
   labels:
+    app: backend
     io.kompose.service: vote-db
   name: vote-db
 spec:
