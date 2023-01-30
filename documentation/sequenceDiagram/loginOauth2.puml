@@ -66,79 +66,86 @@ api -> oauthS: Risposta a: /auth/login/oauth2/code/{provider}
 deactivate api
 activate oauthS
 oauthS->oauthS: processOauthPostLogin()
-alt #LightBlue Coppia <Mail, Provider> presente nel db
-    oauthS-> tokendb: salva il nuovo Hash e cancella quelli scaduti\n per coppia <Mail, Provider>
-else #LightGoldenRodYellow Coppia <Mail, Provider> non presente nel db
-    oauthS-> tokendb: salva il nuovo oggetto Token <Mail, Provider> \n con Hash appena ottenuto
-    oauthS -> oauthS: UserComponent(name, surname, email)
-    oauthS-> rabbitmq: ProducerService.sendMessage(UserComponent)
-    activate rabbitmq
-    rabbitmq -> userS: nuovo messaggio "UserComponent" nella coda
-    deactivate rabbitmq
-    activate userS
-    userS -> userS: ConsumerService.receivedMessage(UserComponent)
 
-    alt #LightBlue Utente Non Presente nel DB
-        userS->userdb: salva il nuovo utente User
+alt #LightGreen Credenziali corrette e Provider restituisce corretto Oauth2
+
+    alt #LightBlue Coppia <Mail, Provider> presente nel db
+        oauthS-> tokendb: salva il nuovo Hash e cancella quelli scaduti\n per coppia <Mail, Provider>
+    else #LightGoldenRodYellow Coppia <Mail, Provider> non presente nel db
+        oauthS-> tokendb: salva il nuovo oggetto Token <Mail, Provider> \n con Hash appena ottenuto
+        oauthS -> oauthS: UserComponent(name, surname, email)
+        oauthS-> rabbitmq: ProducerService.sendMessage(UserComponent)
+        activate rabbitmq
+        rabbitmq -> userS: nuovo messaggio "UserComponent" nella coda
+        deactivate rabbitmq
+        activate userS
+        userS -> userS: ConsumerService.receivedMessage(UserComponent)
+
+        alt #LightBlue Utente Non Presente nel DB
+            userS->userdb: salva il nuovo utente User
+        end
+
+        deactivate userS
     end
 
-    deactivate userS
-end
-
-oauthS -> oauthS: encryptToken(Token)
-oauthS -> Frontend: fai redirect a loginChoser con parametro "encryptToken"
-deactivate oauthS
-Frontend -> Frontend: redirect a loginChoser?encryptToken
-
-
-Frontend -> api: GET: /token/{encryptToken}
-activate api
-api -> oauthS: GET: /token/{encryptToken}
-deactivate api
-activate oauthS
-oauthS -> oauthS: decryptToken(encryptToken)
-oauthS -> Frontend: Token <Mail, Provider, String>
-deactivate oauthS
-
-
-== Gestione User ==
-
-... L'utente viene reindirizzato alla pagina di home ...
-
-Frontend -> Frontend: Redirect a \home con Token salvato
-
-Frontend -> api: GET: /user/get/{email}?Token
-activate api
-api -> oauthS: GET: /validate/{Token}
-activate oauthS
-oauthS -> tokendb: findToken(Token)
-activate tokendb
-tokendb -> oauthS: Token
-deactivate tokendb
-oauthS -> api: ValidateCode
-deactivate oauthS
-
-alt #LightGreen ValidateCode è ACTIVE
-    api-> userS: GET: /user/get/{email}
-    activate userS
-    userS -> userdb: getUtenteById(email)
-    activate userdb
-    userdb -> userS: Utente
-    deactivate userdb
-    userS -> Frontend: Utente
-    deactivate userS
-    Frontend -> Frontend: set User = Utente
+    oauthS -> oauthS: encryptToken(Token)
+    oauthS -> Frontend: fai redirect a loginChoser con parametro "encryptToken"
     
-else #Pink ValidateCode è EXPIRED || INVALID_EMAIL || INVALID_TOKEN || INVALID_PROVIDER || INCOMPLETE_CREDENTIALS || AUTH_SERVER_ERROR
-    api -> userS: GET: /error/{ValidateCode}/{method}/{path}
+    Frontend -> Frontend: redirect a loginChoser?encryptToken
+
+
+    Frontend -> api: GET: /token/{encryptToken}
+    activate api
+    api -> oauthS: GET: /token/{encryptToken}
     deactivate api
-    activate userS
-    userS -> userS: generateErrorMessage(ValidateCode, method, path)
-    userS -> Frontend: ErrorMessage
-    deactivate userS
-    Frontend -> Frontend: Redirect a \error?message=ErrorMessage
+    oauthS -> oauthS: decryptToken(encryptToken)
+    oauthS -> Frontend: Token <Mail, Provider, String>
+
+
+    == Gestione User ==
+
+    ... L'utente viene reindirizzato alla pagina di home ...
+
+    Frontend -> Frontend: Redirect a \home con Token salvato
+
+    Frontend -> api: GET: /user/get/{email}?Token
+    activate api
+    api -> oauthS: GET: /validate/{Token}
+    oauthS -> tokendb: findToken(Token)
+    activate tokendb
+    tokendb -> oauthS: Token
+    deactivate tokendb
+    oauthS -> api: ValidateCode
+
+    alt #GreenYellow ValidateCode è ACTIVE
+        api-> userS: GET: /user/get/{email}
+        activate userS
+        userS -> userdb: getUtenteById(email)
+        activate userdb
+        userdb -> userS: Utente
+        deactivate userdb
+        userS -> Frontend: Utente
+        deactivate userS
+        Frontend -> Frontend: set User = Utente
     
+    else #IndianRed ValidateCode è EXPIRED || INVALID_EMAIL || INVALID_TOKEN || INVALID_PROVIDER || INCOMPLETE_CREDENTIALS || AUTH_SERVER_ERROR
+        api -> userS: GET: /error/{ValidateCode}/{method}/{path}
+        deactivate api
+        activate userS
+        userS -> userS: generateErrorMessage(ValidateCode, method, path)
+        userS -> Frontend: ErrorMessage
+        deactivate userS
+        Frontend -> Frontend: Redirect a \error?message=ErrorMessage
+    
+    end
+
+else #Pink Credenziali errate o Provider restituisce un Oauth2 non corretto
+    oauthS -> oauthS: generateErrorMessage(ValidateCode, method, path)
+    oauthS -> Frontend: Redirect a \error?message=ErrorMessage
+    deactivate oauthS
+    Frontend -> Frontend: Redirect a \error?message=ErrorMessage
 end
-deactivate Frontend
+
+
 
 @enduml
