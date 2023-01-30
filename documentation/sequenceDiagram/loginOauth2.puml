@@ -51,13 +51,7 @@ deactivate Frontend
 
 User -> Frontend: Inserimento Credenziali
 activate Frontend
-Frontend -> api: Credenziali
-activate api
-api -> oauthS: Credenziali
-deactivate api
-activate oauthS
-oauthS -> Provider: Credenziali
-deactivate oauthS
+Frontend -> Provider: Credenziali
 activate Provider
 Provider -> api: Risposta a: /auth/login/oauth2/code/{provider}
 deactivate Provider
