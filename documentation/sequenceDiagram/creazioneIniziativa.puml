@@ -19,6 +19,7 @@ database "InitiativeDB" as initdb
 ... L'utente preme sul bottone "Crea" ...
 User -> Frontend: Crea Iniziativa
 activate Frontend
+Frontend -> Frontend: redirect a /createInitiative
 Frontend -> api: GET: /users/emails
 activate api
 api->userS: GET: /users/emails
@@ -30,7 +31,6 @@ userdb -> userS: emails
 deactivate userdb
 userS -> Frontend: emails
 deactivate userS
-Frontend -> Frontend: redirect a /createInitiative
 deactivate Frontend
 
 == Creazione ==
