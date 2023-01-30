@@ -62,6 +62,3 @@ Then, to stop and delete everything:
 
 `kubectl delete all --all`
 
-### Some clarification about the use of Kubernetes:
-At the moment, the use of the application's features is dependent on the access services provided by Google, Facebook and GitHub which require the use of localhost as IP address. Moreover the oauth service, that we implemented with Spring Security, handles the oauth2 logins with different redirects depending on success or failure and doing so require the backend to know the IP of the frontend. In any case, we have configured the Kubernetes deployment with a configuration that we consider ideal in the number of replicas. In a future and hypothetical distribution of the application it will be sufficient to set the correct real ip addresses and it will be possible to run the application with kubernetes.
-
