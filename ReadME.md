@@ -32,7 +32,7 @@ To test the application with some default data you can use the following link to
 
 # How to run it
 
-The application could run as a docker or kubernetes project. All the microservices images will be downloaded from the [Docker Hub](https://hub.docker.com/repository/docker/lorenzos98/civiclife/general) repository
+The application could run as a docker or kubernetes project. All the microservices images and the frontend image will be downloaded from the [Docker Hub](https://hub.docker.com/repository/docker/lorenzos98/civiclife/general) repository
 
 ## Docker
 
@@ -58,7 +58,7 @@ To see everything running use:
 
 `kubectl get all`
  
-Then, to stop and delete everything:
+Then, to stop and delete all:
 
 `kubectl delete all --all`
 
