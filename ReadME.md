@@ -48,7 +48,7 @@ to stop all the containers and remove the containers, networks, volumes, and ima
 
 ## Kubernetes
 
-To run all the pods each within its own node, go to the [k8s folder](./src/k8s) and run:
+To run all the pods each within its own node, go to the [k8s folder](./code/k8s) and run:
 
 `minikube start`
 
