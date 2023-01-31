@@ -34,12 +34,8 @@ public class ConsumerService {
         return false;
     }
 
-    private final UserRepository userRepository;
-
     @Autowired
-    public ConsumerService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
+    private final UserRepository userRepository;
 
     @RabbitListener(queues = "oauth-queue")
     public void receivedMessage(UserComponent userComponent) {
