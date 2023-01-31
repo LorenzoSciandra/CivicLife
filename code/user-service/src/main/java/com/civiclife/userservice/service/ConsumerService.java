@@ -35,7 +35,7 @@ public class ConsumerService {
     }
 
     @Autowired
-    private final UserRepository userRepository;
+    private UserRepository userRepository;
 
     @RabbitListener(queues = "oauth-queue")
     public void receivedMessage(UserComponent userComponent) {
